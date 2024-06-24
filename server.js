@@ -1,6 +1,17 @@
 const express = require('express');
+const bodyParser=require("body-parser"); 
+
 const app = express();
 const PORT = 3000;
+
+
+app.use(bodyParser.json()); 
+app.use(express.static('public')); 
+app.use(bodyParser.urlencoded({ 
+	extended: true
+})); 
+
+require('./routes/api/apiRoutes')(app);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
