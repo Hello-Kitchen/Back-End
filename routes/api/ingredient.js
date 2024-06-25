@@ -1,10 +1,11 @@
 var express = require('express');
 var router = express.Router();
 const keys = require("./keys.apiRoutes.js");
+const {client, DB_NAME} = require('../../config/config.js');
 
 router.get('/', (req, res) => {
     client.connect().then(client => {
-        const db = client.db(keys.DB_NAME);
+        const db = client.db(DB_NAME);
         const collection = db.collection(keys.INGREDIENT_COLLECTION_NAME);
 
         collection.find({}).toArray().then(ingredients => {
@@ -19,7 +20,7 @@ router.get('/', (req, res) => {
 
 router.get('/:id', (req, res) => {
     client.connect().then(client => {
-        const db = client.db(keys.DB_NAME);
+        const db = client.db(DB_NAME);
         const collection = db.collection(keys.INGREDIENT_COLLECTION_NAME);
 
         collection.findOne({ id: Number(req.params.id) }).then(ingredient => {
@@ -34,7 +35,7 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
     client.connect().then(client => {
-        const db = client.db(keys.DB_NAME);
+        const db = client.db(DB_NAME);
         const collection = db.collection(keys.INGREDIENT_COLLECTION_NAME);
 
         collection.insertOne(req.body).then(result => {
@@ -49,7 +50,7 @@ router.post('/', (req, res) => {
 
 router.put('/:id', (req, res) => {
     client.connect().then(client => {
-        const db = client.db(keys.DB_NAME);
+        const db = client.db(DB_NAME);
         const collection = db.collection(keys.INGREDIENT_COLLECTION_NAME);
 
         collection.updateOne({ id: Number(req.params.id) }, { $set: req.body }).then(result => {
@@ -64,7 +65,7 @@ router.put('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
     client.connect().then(client => {
-        const db = client.db(keys.DB_NAME);
+        const db = client.db(DB_NAME);
         const collection = db.collection(keys.INGREDIENT_COLLECTION_NAME);
 
         collection.deleteOne({ id: Number(req.params.id) }).then(result => {

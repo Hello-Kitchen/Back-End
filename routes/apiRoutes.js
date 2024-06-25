@@ -1,9 +1,5 @@
 var express = require('express');
 var router = express.Router();
-const keys = require("./api/keys.apiRoutes.js");
-
-const { MongoClient } = require('mongodb');
-const client = new MongoClient(keys.DB_URL, { serverSelectionTimeoutMS: 500 });
 
 var detail = require('./api/detail.js');
 var food = require('./api/food.js');
@@ -23,6 +19,6 @@ router.use('/food_category', food_category);
 router.use('/food_ordered', food_ordered);
 router.use('/ingredient', ingredient);
 router.use('/order', order);
-router.use('/user', user);
+router.use('/users', user);
 
 module.exports = router;
