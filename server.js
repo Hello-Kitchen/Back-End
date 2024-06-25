@@ -4,14 +4,14 @@ const bodyParser=require("body-parser");
 const app = express();
 const PORT = 3000;
 
+var apiRoutes = require('./routes/apiRoutes');
 
 app.use(bodyParser.json()); 
 app.use(express.static('public')); 
 app.use(bodyParser.urlencoded({ 
 	extended: true
-})); 
-
-require('./routes/api/apiRoutes')(app);
+}));
+app.use('/api', apiRoutes); 
 
 app.get('/', (req, res) => {
   res.send('Hello World!');

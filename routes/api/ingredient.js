@@ -1,80 +1,80 @@
-module.exports = function(app, client) {
+var express = require('express');
+var router = express.Router();
+const keys = require("./keys.apiRoutes.js");
 
-    const keys = require("./keys.apiroutes.js");
+router.get('/', (req, res) => {
+    client.connect().then(client => {
+        const db = client.db(keys.DB_NAME);
+        const collection = db.collection(keys.INGREDIENT_COLLECTION_NAME);
 
-    app.get('/api/ingredients', (req, res) => {
-        client.connect().then(client => {
-            const db = client.db(keys.DB_NAME);
-            const collection = db.collection(keys.INGREDIENT_COLLECTION_NAME);
-
-            collection.find({}).toArray().then(ingredients => {
-                res.json(ingredients);
-            }).catch(err => {
-                res.status(500).send("Error reading ingredients from database : " + err);
-            });
+        collection.find({}).toArray().then(ingredients => {
+            res.json(ingredients);
         }).catch(err => {
-            res.status(500).send("Error connecting to database : " + err);
+            res.status(500).send("Error reading ingredients from database : " + err);
         });
+    }).catch(err => {
+        res.status(500).send("Error connecting to database : " + err);
     });
+});
 
-    app.get('/api/ingredients/:id', (req, res) => {
-        client.connect().then(client => {
-            const db = client.db(keys.DB_NAME);
-            const collection = db.collection(keys.INGREDIENT_COLLECTION_NAME);
+router.get('/:id', (req, res) => {
+    client.connect().then(client => {
+        const db = client.db(keys.DB_NAME);
+        const collection = db.collection(keys.INGREDIENT_COLLECTION_NAME);
 
-            collection.findOne({id: Number(req.params.id)}).then(ingredient => {
-                res.json(ingredient);
-            }).catch(err => {
-                res.status(500).send("Error reading ingredient from database : " + err);
-            });
+        collection.findOne({ id: Number(req.params.id) }).then(ingredient => {
+            res.json(ingredient);
         }).catch(err => {
-            res.status(500).send("Error connecting to database : " + err);
+            res.status(500).send("Error reading ingredient from database : " + err);
         });
+    }).catch(err => {
+        res.status(500).send("Error connecting to database : " + err);
     });
+});
 
-    app.post('/api/ingredients', (req, res) => {
-        client.connect().then(client => {
-            const db = client.db(keys.DB_NAME);
-            const collection = db.collection(keys.INGREDIENT_COLLECTION_NAME);
+router.post('/', (req, res) => {
+    client.connect().then(client => {
+        const db = client.db(keys.DB_NAME);
+        const collection = db.collection(keys.INGREDIENT_COLLECTION_NAME);
 
-            collection.insertOne(req.body).then(result => {
-                res.json(result);
-            }).catch(err => {
-                res.status(500).send("Error inserting ingredient into database : " + err);
-            });
+        collection.insertOne(req.body).then(result => {
+            res.json(result);
         }).catch(err => {
-            res.status(500).send("Error connecting to database : " + err);
+            res.status(500).send("Error inserting ingredient into database : " + err);
         });
+    }).catch(err => {
+        res.status(500).send("Error connecting to database : " + err);
     });
+});
 
-    app.put('/api/ingredients/:id', (req, res) => {
-        client.connect().then(client => {
-            const db = client.db(keys.DB_NAME);
-            const collection = db.collection(keys.INGREDIENT_COLLECTION_NAME);
+router.put('/:id', (req, res) => {
+    client.connect().then(client => {
+        const db = client.db(keys.DB_NAME);
+        const collection = db.collection(keys.INGREDIENT_COLLECTION_NAME);
 
-            collection.updateOne({id: Number(req.params.id)}, {$set: req.body}).then(result => {
-                res.json(result);
-            }).catch(err => {
-                res.status(500).send("Error updating ingredient in database : " + err);
-            });
+        collection.updateOne({ id: Number(req.params.id) }, { $set: req.body }).then(result => {
+            res.json(result);
         }).catch(err => {
-            res.status(500).send("Error connecting to database : " + err);
+            res.status(500).send("Error updating ingredient in database : " + err);
         });
+    }).catch(err => {
+        res.status(500).send("Error connecting to database : " + err);
     });
+});
 
-    app.delete('/api/ingredients/:id', (req, res) => {
-        client.connect().then(client => {
-            const db = client.db(keys.DB_NAME);
-            const collection = db.collection(keys.INGREDIENT_COLLECTION_NAME);
+router.delete('/:id', (req, res) => {
+    client.connect().then(client => {
+        const db = client.db(keys.DB_NAME);
+        const collection = db.collection(keys.INGREDIENT_COLLECTION_NAME);
 
-            collection.deleteOne({id: Number(req.params.id)}).then(result => {
-                res.json(result);
-            }).catch(err => {
-                res.status(500).send("Error deleting ingredient from database : " + err);
-            });
+        collection.deleteOne({ id: Number(req.params.id) }).then(result => {
+            res.json(result);
         }).catch(err => {
-            res.status(500).send("Error connecting to database : " + err);
+            res.status(500).send("Error deleting ingredient from database : " + err);
         });
+    }).catch(err => {
+        res.status(500).send("Error connecting to database : " + err);
     });
+});
 
-}
+module.exports = router
