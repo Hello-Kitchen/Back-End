@@ -23,11 +23,77 @@ router.get('/:id', (req, res) => {
         const db = client.db(DB_NAME);
         const collection = db.collection(keys.ORDER_COLLECTION_NAME);
 
-        collection.findOne({ id: Number(req.params.id) }).then(order => {
-            res.json(order);
-        }).catch(err => {
-            res.status(500).send("Error reading order from database : " + err);
-        });
+        if (req.query.forKDS === "true") {
+            var orderData;
+            var foodOrderedData;
+            var foodData;
+
+            async function getOrderData() {
+                await collection.findOne({ id: Number(req.params.id) }).then(order => {
+                    orderData = order
+                    }).then (() => {
+                        async function getOrderedFoodData() {
+                            await db.collection(keys.FOOD_ORDERED_COLLECTION_NAME).find({ id: {$in: orderData.food_ordered} }).toArray().then(foodOrdered => {
+                                foodOrderedData = foodOrdered;
+                            }).then(() => {
+                                const foodIdList = [];
+                                foodOrderedData.map((foodOrdered) => {
+                                    foodIdList.push(foodOrdered.food);
+                                });
+
+                                async function getFoodData() {
+                                    await db.collection(keys.FOOD_COLLECTION_NAME).find({ id: {$in: foodIdList} }).toArray().then(food => {
+                                        foodData = food;
+                                    }).then(() => {
+                                        const foodDetailsList = [];
+                        
+                                        foodOrderedData.map((foodOrdered) => {
+                                            const food = foodData.find((food) => food.id === foodOrdered.food);
+                                            foodDetailsList.push({
+                                                "name": food.name,
+                                                "mods_ingredients" : foodOrdered.mods_ingredients,
+                                                "details": foodOrdered.details,
+                                                "note": foodOrdered.note,
+                                                "is_ready": foodOrdered.is_ready,
+                                            });
+                                        });
+                        
+                        
+                                        res.status(200).send({
+                                            "channel": orderData.channel,
+                                            "number": orderData.number,
+                                            "date": orderData.date,
+                                            "food": foodDetailsList
+                                        });
+                                    })
+                                    .catch(err => {
+                                        res.status(500).send("Error reading foodOrdered from database : " + err);
+                                    });
+                                };
+                                getFoodData();
+                            })
+                            .catch(err => {
+                                res.status(500).send("Error reading foodOrdered from database : " + err);
+                            });
+                        };
+                        getOrderedFoodData();
+                }).catch(err => {
+                    res.status(500).send("Error reading order from database : " + err);
+                });
+            }
+
+            getOrderData().catch(err => {
+                res.status(500).send("Error reading order from database : " + err);
+            });
+
+
+        } else {
+            collection.findOne({ id: Number(req.params.id) }).then(order => {
+                res.json(order);
+            }).catch(err => {
+                res.status(500).send("Error reading order from database : " + err);
+            });
+        }
     }).catch(err => {
         res.status(500).send("Error connecting to database : " + err);
     });
