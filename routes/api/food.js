@@ -8,11 +8,19 @@ router.get('/', (req, res) => {
         const db = client.db(DB_NAME);
         const collection = db.collection(keys.FOOD_COLLECTION_NAME);
 
-        collection.find({}).toArray().then(foods => {
-            res.json(foods);
-        }).catch(err => {
-            res.status(500).send("Error reading foods from database : " + err);
-        });
+        if (req.query.category) {
+            collection.find({ id_category: Number(req.query.category) }).toArray().then(food => {
+                res.json(food);
+            }).catch(err => {
+                res.status(500).send("Error reading food from database : " + err);
+            });
+        } else {
+            collection.find({}).toArray().then(foods => {
+                res.json(foods);
+            }).catch(err => {
+                res.status(500).send("Error reading foods from database : " + err);
+            });
+        }
     }).catch(err => {
         res.status(500).send("Error connecting to database : " + err);
     });
@@ -23,19 +31,11 @@ router.get('/:id', (req, res) => {
         const db = client.db(DB_NAME);
         const collection = db.collection(keys.FOOD_COLLECTION_NAME);
 
-        if (req.query.category) {
-            collection.find({ id_category: Number(req.params.id) }).toArray().then(food => {
-                res.json(food);
-            }).catch(err => {
-                res.status(500).send("Error reading food from database : " + err);
-            });
-        } else {
-            collection.findOne({ id: Number(req.params.id) }).then(food => {
-                res.json(food);
-            }).catch(err => {
-                res.status(500).send("Error reading food from database : " + err);
-            });
-        }
+        collection.findOne({ id: Number(req.params.id) }).then(food => {
+            res.json(food);
+        }).catch(err => {
+            res.status(500).send("Error reading food from database : " + err);
+        });
     }).catch(err => {
         res.status(500).send("Error connecting to database : " + err);
     });
