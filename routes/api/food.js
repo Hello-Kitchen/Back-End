@@ -8,11 +8,19 @@ router.get('/', (req, res) => {
         const db = client.db(DB_NAME);
         const collection = db.collection(keys.FOOD_COLLECTION_NAME);
 
-        collection.find({}).toArray().then(foods => {
-            res.json(foods);
-        }).catch(err => {
-            res.status(500).send("Error reading foods from database : " + err);
-        });
+        if (req.query.category) {
+            collection.find({ id_category: Number(req.query.category) }).toArray().then(food => {
+                res.json(food);
+            }).catch(err => {
+                res.status(500).send("Error reading food from database : " + err);
+            });
+        } else {
+            collection.find({}).toArray().then(foods => {
+                res.json(foods);
+            }).catch(err => {
+                res.status(500).send("Error reading foods from database : " + err);
+            });
+        }
     }).catch(err => {
         res.status(500).send("Error connecting to database : " + err);
     });
