@@ -28,65 +28,56 @@ router.get('/:id', (req, res) => {
             var foodOrderedData;
             var foodData;
 
-            async function getOrderData() {
-                await collection.findOne({ id: Number(req.params.id) }).then(order => {
-                    orderData = order
-                    }).then (() => {
-                        async function getOrderedFoodData() {
-                            await db.collection(keys.FOOD_ORDERED_COLLECTION_NAME).find({ id: {$in: orderData.food_ordered} }).toArray().then(foodOrdered => {
-                                foodOrderedData = foodOrdered;
-                            }).then(() => {
-                                const foodIdList = [];
-                                foodOrderedData.map((foodOrdered) => {
-                                    foodIdList.push(foodOrdered.food);
-                                });
+            // Get the order data
+            collection.findOne({ id: Number(req.params.id) }).then(order => {
+                orderData = order
+            }).then (() => {
 
-                                async function getFoodData() {
-                                    await db.collection(keys.FOOD_COLLECTION_NAME).find({ id: {$in: foodIdList} }).toArray().then(food => {
-                                        foodData = food;
-                                    }).then(() => {
-                                        const foodDetailsList = [];
-                        
-                                        foodOrderedData.map((foodOrdered) => {
-                                            const food = foodData.find((food) => food.id === foodOrdered.food);
-                                            foodDetailsList.push({
-                                                "name": food.name,
-                                                "mods_ingredients" : foodOrdered.mods_ingredients,
-                                                "details": foodOrdered.details,
-                                                "note": foodOrdered.note,
-                                                "is_ready": foodOrdered.is_ready,
-                                            });
-                                        });
-                        
-                        
-                                        res.status(200).send({
-                                            "channel": orderData.channel,
-                                            "number": orderData.number,
-                                            "date": orderData.date,
-                                            "food": foodDetailsList
-                                        });
-                                    })
-                                    .catch(err => {
-                                        res.status(500).send("Error reading foodOrdered from database : " + err);
-                                    });
-                                };
-                                getFoodData();
-                            })
-                            .catch(err => {
-                                res.status(500).send("Error reading foodOrdered from database : " + err);
+                // For each food ordered, get the food_ordered data
+                db.collection(keys.FOOD_ORDERED_COLLECTION_NAME).find({ id: {$in: orderData.food_ordered} }).toArray().then(foodOrdered => {
+                    foodOrderedData = foodOrdered;
+                }).then(() => {
+                    const foodIdList = [];
+                    foodOrderedData.map((foodOrdered) => {
+                        foodIdList.push(foodOrdered.food);
+                    });
+
+                    // For each food_ordered, get the food data
+                    db.collection(keys.FOOD_COLLECTION_NAME).find({ id: {$in: foodIdList} }).toArray().then(food => {
+                        foodData = food;
+                    }).then(() => {
+                        const foodDetailsList = [];
+        
+                        // For every food ordered, wrap the necessary food data in an object
+                        foodOrderedData.map((foodOrdered) => {
+                            const food = foodData.find((food) => food.id === foodOrdered.food);
+                            foodDetailsList.push({
+                                "name": food.name,
+                                "mods_ingredients" : foodOrdered.mods_ingredients,
+                                "details": foodOrdered.details,
+                                "note": foodOrdered.note,
+                                "is_ready": foodOrdered.is_ready,
                             });
-                        };
-                        getOrderedFoodData();
-                }).catch(err => {
-                    res.status(500).send("Error reading order from database : " + err);
+                        });
+                
+                        // Send the list 
+                        res.status(200).send({
+                            "channel": orderData.channel,
+                            "number": orderData.number,
+                            "date": orderData.date,
+                            "food": foodDetailsList
+                        });
+                    })
+                    .catch(err => {
+                        res.status(500).send("Error reading foodOrdered from database : " + err);
+                    });
+                })
+                .catch(err => {
+                    res.status(500).send("Error reading foodOrdered from database : " + err);
                 });
-            }
-
-            getOrderData().catch(err => {
+            }).catch(err => {
                 res.status(500).send("Error reading order from database : " + err);
             });
-
-
         } else {
             collection.findOne({ id: Number(req.params.id) }).then(order => {
                 res.json(order);
