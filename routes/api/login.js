@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const keys = require("./keys.apiRoutes.js");
-const {client, DB_NAME} = require('../../config/config.js');
+const {client, DB_NAME, salt} = require('../../config/config.js');
 const bcrypt = require('bcryptjs')
 
 router.post('/', (req, res) => {
@@ -12,7 +12,7 @@ router.post('/', (req, res) => {
         collection.findOne({ username: req.body.username }).then(user => {
             if (user === null) {
                 res.status(500).send("USER NOT FOUND");
-            } else if (bcrypt.hashSync(req.body.password, "$2a$10$uSADqxe22jNkrHd8mudiCO") === user.password) {
+            } else if (bcrypt.hashSync(req.body.password, salt) === user.password) {
                 res.status(200).send("OK");
             } else {
                 res.status(500).send("WRONG PASSWORD");
