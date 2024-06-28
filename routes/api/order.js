@@ -30,7 +30,7 @@ router.get('/:id', (req, res) => {
 
             // Get the order data
             collection.findOne({ id: Number(req.params.id) }).then(order => {
-                orderData = order
+                orderData = order;
             }).then (() => {
 
                 // For each food ordered, get the food_ordered data

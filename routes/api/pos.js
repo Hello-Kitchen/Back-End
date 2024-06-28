@@ -28,12 +28,12 @@ router.get('/:id', (req, res) => {
                     if (food.details) {
                         food.details.map((id) => {
                             detailIdList.push(id);
-                        })
+                        });
                     }
                     if (food.ingredients) {
                         food.ingredients.map((id) => {
                             ingIdList.push(id);
-                        })
+                        });
                     }
                 });
                 db.collection(keys.DETAIL_COLLECTION_NAME).find({ id: {$in: detailIdList} }).toArray().then(detail => {
@@ -50,7 +50,7 @@ router.get('/:id', (req, res) => {
                                 price: food.price,
                                 details: detailData.filter(detail => food.details != null && food.details.includes(detail.id)),
                                 ingredients: ingData.filter(ing => food.ingredients != null && food.ingredients.includes(ing.id))
-                            }
+                            };
                         });
                         const resultFood = catData.map(category => {
                             return {
