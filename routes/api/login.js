@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const keys = require("./keys.apiRoutes.js");
 const {client, DB_NAME, salt} = require('../../config/config.js');
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcryptjs');
 
 router.post('/', (req, res) => {
     client.connect().then(client => {
