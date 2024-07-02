@@ -149,20 +149,30 @@ router.get('/status/ready', async (req, res) => {
             const allReady = foodOrdered.every(food => food.is_ready);
 
             if (allReady) {
-                const foodDetailsList = foodOrdered.map(food => ({
-                    name: food.name,
-                    mods_ingredients: food.mods_ingredients,
-                    details: food.details,
-                    note: food.note,
-                    is_ready: food.is_ready
-                }));
+                readyOrders.push(order);
+            }
+        }
+        res.status(200).json(readyOrders);
+    } catch (err) {
+        res.status(500).send("Error connecting to database: " + err);
+    }
+});
 
-                readyOrders.push({
-                    channel: order.channel,
-                    number: order.number,
-                    date: order.date,
-                    food: foodDetailsList
-                });
+router.get('/status/pending', async (req, res) => {
+    try {
+        await client.connect();
+        const db = client.db(DB_NAME);
+        const collection = db.collection(keys.ORDER_COLLECTION_NAME);
+
+        const orders = await collection.find({}).toArray();
+        const readyOrders = [];
+
+        for (let order of orders) {
+            const foodOrdered = await db.collection(keys.FOOD_ORDERED_COLLECTION_NAME).find({ id: { $in: order.food_ordered } }).toArray();
+            const allReady = foodOrdered.every(food => food.is_ready);
+
+            if (!allReady) {
+                readyOrders.push(order);
             }
         }
         res.status(200).json(readyOrders);
