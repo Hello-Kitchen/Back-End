@@ -92,10 +92,10 @@ router.post('/status/:id', (req, res) => {
             });
         }).catch((err) => {
             res.status(500).send("Error readinf foodOrdered from database " + err);
-        })
+        });
     }).catch(err => {
         res.status(500).send("Error connecting to database : " + err);
     });
-})
+});
 
 module.exports = router;
