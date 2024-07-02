@@ -78,4 +78,24 @@ router.delete('/:id', (req, res) => {
     });
 });
 
+router.post('/status/:id', (req, res) => {
+    client.connect().then(client => {
+        const db = client.db(DB_NAME);
+        const collection = db.collection(keys.FOOD_ORDERED_COLLECTION_NAME);
+
+        collection.findOne({ id: Number(req.params.id) }).then(food => {
+            food.is_ready = true;
+            collection.updateMany({ id: Number(req.params.id) }, { $set: food}).then(result => {
+                res.json(result);
+            }).catch(err => {
+                res.status(500).send("Error updating foodOrdered into database : " + err);
+            });
+        }).catch((err) => {
+            res.status(500).send("Error readinf foodOrdered from database " + err);
+        })
+    }).catch(err => {
+        res.status(500).send("Error connecting to database : " + err);
+    });
+})
+
 module.exports = router;

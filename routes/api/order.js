@@ -41,7 +41,6 @@ router.get('/:id', (req, res) => {
                     foodOrderedData.map((foodOrdered) => {
                         foodIdList.push(foodOrdered.food);
                     });
-
                     // For each food_ordered, get the food data
                     db.collection(keys.FOOD_COLLECTION_NAME).find({ id: {$in: foodIdList} }).toArray().then(food => {
                         foodData = food;
@@ -52,6 +51,7 @@ router.get('/:id', (req, res) => {
                         foodOrderedData.map((foodOrdered) => {
                             const food = foodData.find((food) => food.id === foodOrdered.food);
                             foodDetailsList.push({
+                                "id": foodOrdered.id,
                                 "name": food.name,
                                 "mods_ingredients" : foodOrdered.mods_ingredients,
                                 "details": foodOrdered.details,
