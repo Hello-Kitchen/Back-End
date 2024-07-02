@@ -41,13 +41,12 @@ router.get('/:id', (req, res) => {
                     foodOrderedData.map((foodOrdered) => {
                         foodIdList.push(foodOrdered.food);
                     });
-
                     // For each food_ordered, get the food data
                     db.collection(keys.FOOD_COLLECTION_NAME).find({ id: {$in: foodIdList} }).toArray().then(food => {
                         foodData = food;
                     }).then(() => {
                         const foodDetailsList = [];
-        
+
                         // For every food ordered, wrap the necessary food data in an object
                         foodOrderedData.forEach(foodOrdered => {
                             const food = foodData.find(food => food.id === foodOrdered.food);
@@ -59,7 +58,7 @@ router.get('/:id', (req, res) => {
                                 is_ready: foodOrdered.is_ready
                             };
 
-                            const existingFoodDetails = foodDetailsList.find(item => 
+                            const existingFoodDetails = foodDetailsList.find(item =>
                                 JSON.stringify(item) === JSON.stringify({ ...foodDetails, quantity: item.quantity })
                             );
 
@@ -67,6 +66,7 @@ router.get('/:id', (req, res) => {
                                 existingFoodDetails.quantity += 1;
                             } else {
                                 foodDetailsList.push({
+                                "id": foodOrdered.id,
                                     ...foodDetails,
                                     quantity: 1
                                 });
@@ -80,7 +80,7 @@ router.get('/:id', (req, res) => {
                             date: orderData.date,
                             food: foodDetailsList
                         });
-                
+
                     })
                     .catch(err => {
                         res.status(500).send("Error reading foodOrdered from database : " + err);
@@ -148,5 +148,52 @@ router.delete('/:id', (req, res) => {
         res.status(500).send("Error connecting to database : " + err);
     });
 });
+
+router.get('/status/ready', async (req, res) => {
+    try {
+        await client.connect();
+        const db = client.db(DB_NAME);
+        const collection = db.collection(keys.ORDER_COLLECTION_NAME);
+
+        const orders = await collection.find({}).toArray();
+        const readyOrders = [];
+
+        for (let order of orders) {
+            const foodOrdered = await db.collection(keys.FOOD_ORDERED_COLLECTION_NAME).find({ id: { $in: order.food_ordered } }).toArray();
+            const allReady = foodOrdered.every(food => food.is_ready);
+
+            if (allReady) {
+                readyOrders.push(order);
+            }
+        }
+        res.status(200).json(readyOrders);
+    } catch (err) {
+        res.status(500).send("Error connecting to database: " + err);
+    }
+});
+
+router.get('/status/pending', async (req, res) => {
+    try {
+        await client.connect();
+        const db = client.db(DB_NAME);
+        const collection = db.collection(keys.ORDER_COLLECTION_NAME);
+
+        const orders = await collection.find({}).toArray();
+        const readyOrders = [];
+
+        for (let order of orders) {
+            const foodOrdered = await db.collection(keys.FOOD_ORDERED_COLLECTION_NAME).find({ id: { $in: order.food_ordered } }).toArray();
+            const allReady = foodOrdered.every(food => food.is_ready);
+
+            if (!allReady) {
+                readyOrders.push(order);
+            }
+        }
+        res.status(200).json(readyOrders);
+    } catch (err) {
+        res.status(500).send("Error connecting to database: " + err);
+    }
+});
+
 
 module.exports = router;
