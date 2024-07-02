@@ -48,25 +48,39 @@ router.get('/:id', (req, res) => {
                         const foodDetailsList = [];
 
                         // For every food ordered, wrap the necessary food data in an object
-                        foodOrderedData.map((foodOrdered) => {
-                            const food = foodData.find((food) => food.id === foodOrdered.food);
-                            foodDetailsList.push({
+                        foodOrderedData.forEach(foodOrdered => {
+                            const food = foodData.find(food => food.id === foodOrdered.food);
+                            const foodDetails = {
+                                name: food.name,
+                                mods_ingredients: foodOrdered.mods_ingredients,
+                                details: foodOrdered.details,
+                                note: foodOrdered.note,
+                                is_ready: foodOrdered.is_ready
+                            };
+
+                            const existingFoodDetails = foodDetailsList.find(item =>
+                                JSON.stringify(item) === JSON.stringify({ ...foodDetails, quantity: item.quantity })
+                            );
+
+                            if (existingFoodDetails) {
+                                existingFoodDetails.quantity += 1;
+                            } else {
+                                foodDetailsList.push({
                                 "id": foodOrdered.id,
-                                "name": food.name,
-                                "mods_ingredients" : foodOrdered.mods_ingredients,
-                                "details": foodOrdered.details,
-                                "note": foodOrdered.note,
-                                "is_ready": foodOrdered.is_ready,
-                            });
+                                    ...foodDetails,
+                                    quantity: 1
+                                });
+                            }
                         });
 
                         // Send the list
                         res.status(200).send({
-                            "channel": orderData.channel,
-                            "number": orderData.number,
-                            "date": orderData.date,
-                            "food": foodDetailsList
+                            channel: orderData.channel,
+                            number: orderData.number,
+                            date: orderData.date,
+                            food: foodDetailsList
                         });
+
                     })
                     .catch(err => {
                         res.status(500).send("Error reading foodOrdered from database : " + err);
