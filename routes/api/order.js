@@ -58,16 +58,24 @@ router.get('/:id', (req, res) => {
                                 is_ready: foodOrdered.is_ready
                             };
 
-                            const existingFoodDetails = foodDetailsList.find(item =>
-                                JSON.stringify(item) === JSON.stringify({ ...foodDetails, quantity: item.quantity })
-                            );
+                            function omit(obj, keys) {
+                                const newObj = { ...obj };
+                                keys.forEach(key => delete newObj[key]);
+                                return newObj;
+                            }
+                            
+                            const existingFoodDetails = foodDetailsList.find(item => {
+                                const modifiedItem = omit(item, ['id']);
+                                const modifiedFoodDetails = omit(foodDetails, ['id']);
+                                return JSON.stringify(modifiedItem) === JSON.stringify({ ...modifiedFoodDetails, quantity: modifiedItem.quantity });
+                            });
 
                             if (existingFoodDetails) {
                                 existingFoodDetails.quantity += 1;
                             } else {
                                 foodDetailsList.push({
-                                "id": foodOrdered.id,
                                     ...foodDetails,
+                                    "id": foodOrdered.id,
                                     quantity: 1
                                 });
                             }
