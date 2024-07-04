@@ -127,8 +127,8 @@ router.post('/', async (req, res) => {
         const collectionToGet = db.collection('counter');
 
         collectionToGet.findOneAndUpdate({ _id: 'orderId' }, { $inc: { sequence_value: 1 } }, { returnNewDocument: true }).then(result => {
-            collectionToInsert.insertOne({ ...req.body, part: 1, date: new Date().toISOString(), id: result.sequence_value }).then(result => {
-                res.json(result);
+            collectionToInsert.insertOne({ ...req.body, part: 1, date: new Date().toISOString(), id: result.sequence_value }).then(() => {
+                res.json({id: result.sequence_value});
             }).catch(err => {
                 res.status(500).send("Error inserting order into database : " + err);
             });
