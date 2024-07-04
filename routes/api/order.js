@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const keys = require("./keys.apiRoutes.js");
-const {client, DB_NAME} = require('../../config/config.js');
+const { client, DB_NAME } = require('../../config/config.js');
 
 router.get('/', (req, res) => {
     client.connect().then(client => {
@@ -39,10 +39,10 @@ router.get('/:id', (req, res) => {
             // Get the order data
             collection.findOne({ id: Number(req.params.id) }).then(order => {
                 orderData = order;
-            }).then (() => {
+            }).then(() => {
 
                 // For each food ordered, get the food_ordered data
-                db.collection(keys.FOOD_ORDERED_COLLECTION_NAME).find({ id: {$in: orderData.food_ordered}, part: orderData.part }).toArray().then(foodOrdered => {
+                db.collection(keys.FOOD_ORDERED_COLLECTION_NAME).find({ id: { $in: orderData.food_ordered }, part: orderData.part }).toArray().then(foodOrdered => {
                     foodOrderedData = foodOrdered;
                 }).then(() => {
                     const foodIdList = [];
@@ -50,7 +50,7 @@ router.get('/:id', (req, res) => {
                         foodIdList.push(foodOrdered.food);
                     });
                     // For each food_ordered, get the food data
-                    db.collection(keys.FOOD_COLLECTION_NAME).find({ id: {$in: foodIdList} }).toArray().then(food => {
+                    db.collection(keys.FOOD_COLLECTION_NAME).find({ id: { $in: foodIdList } }).toArray().then(food => {
                         foodData = food;
                     }).then(() => {
                         const foodDetailsList = [];
@@ -71,7 +71,7 @@ router.get('/:id', (req, res) => {
                                 keys.forEach(key => delete newObj[key]);
                                 return newObj;
                             }
-                            
+
                             const existingFoodDetails = foodDetailsList.find(item => {
                                 const modifiedItem = omit(item, ['id']);
                                 const modifiedFoodDetails = omit(foodDetails, ['id']);
@@ -98,13 +98,13 @@ router.get('/:id', (req, res) => {
                         });
 
                     })
+                        .catch(err => {
+                            res.status(500).send("Error reading foodOrdered from database : " + err);
+                        });
+                })
                     .catch(err => {
                         res.status(500).send("Error reading foodOrdered from database : " + err);
                     });
-                })
-                .catch(err => {
-                    res.status(500).send("Error reading foodOrdered from database : " + err);
-                });
             }).catch(err => {
                 res.status(500).send("Error reading order from database : " + err);
             });
@@ -120,19 +120,25 @@ router.get('/:id', (req, res) => {
     });
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
     client.connect().then(client => {
         const db = client.db(DB_NAME);
-        const collection = db.collection(keys.ORDER_COLLECTION_NAME);
+        const collectionToInsert = db.collection(keys.ORDER_COLLECTION_NAME);
+        const collectionToGet = db.collection('counter');
 
-        collection.insertOne({...req.body, part: 1, date: new Date().toISOString()}).then(result => {
-            res.json(result);
+        collectionToGet.findOneAndUpdate({ _id: 'orderId' }, { $inc: { sequence_value: 1 } }, { returnNewDocument: true }).then(result => {
+            collectionToInsert.insertOne({ ...req.body, part: 1, date: new Date().toISOString(), id: result.sequence_value }).then(result => {
+                res.json(result);
+            }).catch(err => {
+                res.status(500).send("Error inserting order into database : " + err);
+            });
         }).catch(err => {
-            res.status(500).send("Error inserting order into database : " + err);
+            res.status(500).send("Error getting id into database : " + err);
         });
     }).catch(err => {
         res.status(500).send("Error connecting to database : " + err);
-    });
+    });;
+
 });
 
 router.put('/:id', (req, res) => {
@@ -218,18 +224,18 @@ router.put('/next/:id', async (req, res) => {
         const collection = db.collection(keys.ORDER_COLLECTION_NAME);
 
         collection.findOne({ id: Number(req.params.id) })
-        .then ((order) => {
-            const newPart = order.part + 1;
-            collection.updateOne({ id: Number(req.params.id) }, { $set: { part: newPart, date: new Date().toISOString() } })
-            .then(() => {
-                res.status(200).send();
+            .then((order) => {
+                const newPart = order.part + 1;
+                collection.updateOne({ id: Number(req.params.id) }, { $set: { part: newPart, date: new Date().toISOString() } })
+                    .then(() => {
+                        res.status(200).send();
+                    }).catch(err => {
+                        res.status(500).send("Error updating order in database : " + err);
+                    });
             }).catch(err => {
-                res.status(500).send("Error updating order in database : " + err);
+                res.status(500).send("Error reading order from database : " + err);
             });
-        }).catch(err => {
-            res.status(500).send("Error reading order from database : " + err);
-        });
-        
+
     } catch (err) {
         res.status(500).send("Error connecting to database: " + err);
     }
