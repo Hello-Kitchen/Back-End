@@ -203,7 +203,7 @@ router.get('/status/pending', async (req, res) => {
     }
 });
 
-router.get('/next/:id', async (req, res) => {
+router.put('/next/:id', async (req, res) => {
     try {
         await client.connect();
         const db = client.db(DB_NAME);
