@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const keys = require("./keys.apiRoutes.js");
-const {client, DB_NAME} = require('../../config/config.js');
+const { client, DB_NAME } = require('../../config/config.js');
 
 router.get('/', (req, res) => {
     client.connect().then(client => {
@@ -33,15 +33,22 @@ router.get('/:id', (req, res) => {
     });
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
     client.connect().then(client => {
         const db = client.db(DB_NAME);
-        const collection = db.collection(keys.FOOD_ORDERED_COLLECTION_NAME);
+        const collectionToInsert = db.collection(keys.FOOD_ORDERED_COLLECTION_NAME);
+        const collectionToGet = db.collection('counter');
 
-        collection.insertOne(req.body).then(result => {
-            res.json(result);
+        collectionToGet.findOneAndUpdate({ _id: 'foodOrderId' }, { $inc: { sequence_value: 1 } }, { returnNewDocument: true }).then(id => {
+            collectionToInsert.insertOne({...req.body, id: id.sequence_value, is_ready: false}).then(() => {
+                res.json({id : id.sequence_value});
+            }).catch(err => {
+                console.log(err);
+                res.status(500).send("Error inserting foodOrdered into database : " + err);
+            });
         }).catch(err => {
-            res.status(500).send("Error inserting foodOrdered into database : " + err);
+            console.log(err);
+            res.status(500).send("Error getting id into database : " + err);
         });
     }).catch(err => {
         res.status(500).send("Error connecting to database : " + err);
@@ -85,7 +92,7 @@ router.post('/status/:id', (req, res) => {
 
         collection.findOne({ id: Number(req.params.id) }).then(food => {
             food.is_ready = true;
-            collection.updateMany({ id: Number(req.params.id) }, { $set: food}).then(result => {
+            collection.updateMany({ id: Number(req.params.id) }, { $set: food }).then(result => {
                 res.json(result);
             }).catch(err => {
                 res.status(500).send("Error updating foodOrdered into database : " + err);
