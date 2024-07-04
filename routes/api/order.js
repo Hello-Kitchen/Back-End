@@ -117,7 +117,7 @@ router.post('/', (req, res) => {
         const db = client.db(DB_NAME);
         const collection = db.collection(keys.ORDER_COLLECTION_NAME);
 
-        collection.insertOne(req.body).then(result => {
+        collection.insertOne({...req.body, part: 1, date: new Date().toISOString()}).then(result => {
             res.json(result);
         }).catch(err => {
             res.status(500).send("Error inserting order into database : " + err);
