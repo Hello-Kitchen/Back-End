@@ -34,7 +34,7 @@ router.get('/:id', (req, res) => {
             }).then (() => {
 
                 // For each food ordered, get the food_ordered data
-                db.collection(keys.FOOD_ORDERED_COLLECTION_NAME).find({ id: {$in: orderData.food_ordered} }).toArray().then(foodOrdered => {
+                db.collection(keys.FOOD_ORDERED_COLLECTION_NAME).find({ id: {$in: orderData.food_ordered}, part: orderData.part }).toArray().then(foodOrdered => {
                     foodOrderedData = foodOrdered;
                 }).then(() => {
                     const foodIdList = [];
@@ -198,6 +198,30 @@ router.get('/status/pending', async (req, res) => {
             }
         }
         res.status(200).json(readyOrders);
+    } catch (err) {
+        res.status(500).send("Error connecting to database: " + err);
+    }
+});
+
+router.get('/next/:id', async (req, res) => {
+    try {
+        await client.connect();
+        const db = client.db(DB_NAME);
+        const collection = db.collection(keys.ORDER_COLLECTION_NAME);
+
+        collection.findOne({ id: Number(req.params.id) })
+        .then ((order) => {
+            const newPart = order.part + 1;
+            collection.updateOne({ id: Number(req.params.id) }, { $set: { part: newPart, date: new Date().toISOString() } })
+            .then(() => {
+                res.status(200).send();
+            }).catch(err => {
+                res.status(500).send("Error updating order in database : " + err);
+            });
+        }).catch(err => {
+            res.status(500).send("Error reading order from database : " + err);
+        });
+        
     } catch (err) {
         res.status(500).send("Error connecting to database: " + err);
     }
