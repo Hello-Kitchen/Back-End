@@ -8,11 +8,19 @@ router.get('/', (req, res) => {
         const db = client.db(DB_NAME);
         const collection = db.collection(keys.ORDER_COLLECTION_NAME);
 
-        collection.find({}).toArray().then(orders => {
-            res.json(orders);
-        }).catch(err => {
-            res.status(500).send("Error reading orders from database : " + err);
-        });
+        if (req.query.sort === "time") {
+            collection.find({}).sort({ date: 1 }).toArray().then(orders => {
+                res.json(orders);
+            }).catch(err => {
+                res.status(500).send("Error reading orders from database : " + err);
+            });
+        } else {
+            collection.find({}).toArray().then(orders => {
+                res.json(orders);
+            }).catch(err => {
+                res.status(500).send("Error reading orders from database : " + err);
+            });
+        }
     }).catch(err => {
         res.status(500).send("Error connecting to database : " + err);
     });
