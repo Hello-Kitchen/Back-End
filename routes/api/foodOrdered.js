@@ -40,14 +40,14 @@ router.post('/', async (req, res) => {
         const collectionToGet = db.collection('counter');
 
         collectionToGet.findOneAndUpdate({ _id: 'foodOrderId' }, { $inc: { sequence_value: 1 } }, { returnNewDocument: true }).then(id => {
-            collectionToInsert.insertOne({...req.body, id: id.sequence_value, is_ready: false}).then(result => {
+            collectionToInsert.insertOne({...req.body, id: id.sequence_value, is_ready: false}).then(() => {
                 res.json({id : id.sequence_value});
             }).catch(err => {
-                console.log(err)
+                console.log(err);
                 res.status(500).send("Error inserting foodOrdered into database : " + err);
             });
         }).catch(err => {
-            console.log(err)
+            console.log(err);
             res.status(500).send("Error getting id into database : " + err);
         });
     }).catch(err => {
