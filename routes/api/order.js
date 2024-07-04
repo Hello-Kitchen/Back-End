@@ -8,7 +8,36 @@ router.get('/', (req, res) => {
         const db = client.db(DB_NAME);
         const collection = db.collection(keys.ORDER_COLLECTION_NAME);
 
-        if (req.query.sort === "time") {
+        if (req.query.status) {
+            let readyOrders = [];
+        
+            collection.find({}).toArray().then(orders => {
+                let promises = orders.map(order => {
+                    return db.collection(keys.FOOD_ORDERED_COLLECTION_NAME).find({ id: { $in: order.food_ordered }, part: order.part }).toArray()
+                        .then(foodOrdered => {
+                            if (req.query.status == "pending" && foodOrdered.some(food => food.is_ready) && !foodOrdered.every(food => food.is_ready))
+                                readyOrders.push(order);
+                            else if (req.query.status == "ready" && foodOrdered.every(food => food.is_ready))
+                                readyOrders.push(order);
+                        })
+                        .catch(err => {
+                            res.status(500).send("Error reading foodOrdered from database: " + err);
+                            throw err; // Re-throw error to ensure Promise.all fails
+                        });
+                });
+        
+                Promise.all(promises)
+                    .then(() => {
+                        res.json(readyOrders);
+                    })
+                    .catch(() => {
+                        res.status(500).send("Error processing orders");
+                    });
+            })
+            .catch(err => {
+                res.status(500).send("Error reading orders from database: " + err);
+            });
+        } else if (req.query.sort === "time") {
             collection.find({}).sort({ date: 1 }).toArray().then(orders => {
                 res.json(orders);
             }).catch(err => {
@@ -169,52 +198,6 @@ router.delete('/:id', (req, res) => {
     }).catch(err => {
         res.status(500).send("Error connecting to database : " + err);
     });
-});
-
-router.get('/status/ready', async (req, res) => {
-    try {
-        await client.connect();
-        const db = client.db(DB_NAME);
-        const collection = db.collection(keys.ORDER_COLLECTION_NAME);
-
-        const orders = await collection.find({}).toArray();
-        const readyOrders = [];
-
-        for (let order of orders) {
-            const foodOrdered = await db.collection(keys.FOOD_ORDERED_COLLECTION_NAME).find({ id: { $in: order.food_ordered } }).toArray();
-            const allReady = foodOrdered.every(food => food.is_ready);
-
-            if (allReady) {
-                readyOrders.push(order);
-            }
-        }
-        res.status(200).json(readyOrders);
-    } catch (err) {
-        res.status(500).send("Error connecting to database: " + err);
-    }
-});
-
-router.get('/status/pending', async (req, res) => {
-    try {
-        await client.connect();
-        const db = client.db(DB_NAME);
-        const collection = db.collection(keys.ORDER_COLLECTION_NAME);
-
-        const orders = await collection.find({}).toArray();
-        const readyOrders = [];
-
-        for (let order of orders) {
-            const foodOrdered = await db.collection(keys.FOOD_ORDERED_COLLECTION_NAME).find({ id: { $in: order.food_ordered } }).toArray();
-            const allReady = foodOrdered.every(food => food.is_ready);
-
-            if (!allReady) {
-                readyOrders.push(order);
-            }
-        }
-        res.status(200).json(readyOrders);
-    } catch (err) {
-        res.status(500).send("Error connecting to database: " + err);
-    }
 });
 
 router.put('/next/:id', async (req, res) => {
