@@ -7,4 +7,5 @@ module.exports = {
     FOOD_ORDERED_COLLECTION_NAME: 'food_ordered',
     INGREDIENT_COLLECTION_NAME: 'ingredient',
     RESTAURANT_COLLECTION_NAME: 'restaurant',
+    PERMISSION_COLLECTION_NAME: 'permission'
 };

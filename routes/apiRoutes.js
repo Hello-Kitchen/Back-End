@@ -13,6 +13,7 @@ router.use('/ingredient', require('./api/ingredient.js'));
 router.use('/orders', require('./api/order.js'));
 router.use('/users', require('./api/user.js'));
 router.use('/restaurants', require('./api/restaurant.js'));
+router.use('/permission', require('./api/permission.js'));
 router.use('/pos', require('./api/pos.js'));
 router.use('/login', require('./api/login.js'));
 
