@@ -9,7 +9,6 @@ router.get('/', (req, res) => {
         const collection = db.collection(keys.ORDER_COLLECTION_NAME);
 
         const handleOrders = (orders) => {
-            console.log(orders);
             if (req.query.status) {
                 let readyOrders = [];
             
