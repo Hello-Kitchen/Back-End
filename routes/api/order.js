@@ -8,10 +8,10 @@ router.get('/', (req, res) => {
         const db = client.db(DB_NAME);
         const collection = db.collection(keys.ORDER_COLLECTION_NAME);
 
-        if (req.query.status) {
-            let readyOrders = [];
-        
-            collection.find({}).toArray().then(orders => {
+        const handleOrders = (orders) => {
+            if (req.query.status) {
+                let readyOrders = [];
+            
                 let promises = orders.map(order => {
                     return db.collection(keys.FOOD_ORDERED_COLLECTION_NAME).find({ id: { $in: order.food_ordered }, part: order.part }).toArray()
                         .then(foodOrdered => {
@@ -28,28 +28,28 @@ router.get('/', (req, res) => {
         
                 Promise.all(promises)
                     .then(() => {
+                        if (req.query.sort === "time")
+                            readyOrders.sort((a, b) => new Date(a.date) - new Date(b.date));
                         res.json(readyOrders);
                     })
                     .catch(() => {
                         res.status(500).send("Error processing orders");
                     });
-            })
-            .catch(err => {
-                res.status(500).send("Error reading orders from database: " + err);
-            });
-        } else if (req.query.sort === "time") {
-            collection.find({}).sort({ date: 1 }).toArray().then(orders => {
+
+            } else {
                 res.json(orders);
-            }).catch(err => {
-                res.status(500).send("Error reading orders from database : " + err);
-            });
-        } else {
-            collection.find({}).toArray().then(orders => {
-                res.json(orders);
-            }).catch(err => {
-                res.status(500).send("Error reading orders from database : " + err);
-            });
-        }
+            }
+        };
+
+        if (req.query.sort === "time")
+            collection.find({}).sort({ date: 1 }).toArray()
+            .then(orders => handleOrders(orders))
+            .catch(err => {res.status(500).send("Error reading orders from database: " + err);});
+        else
+            collection.find({}).toArray()
+            .then(orders => handleOrders(orders))
+            .catch(err => {res.status(500).send("Error reading orders from database: " + err);});
+
     }).catch(err => {
         res.status(500).send("Error connecting to database : " + err);
     });
