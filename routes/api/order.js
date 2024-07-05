@@ -29,7 +29,7 @@ router.get('/', (req, res) => {
                 Promise.all(promises)
                     .then(() => {
                         if (req.query.sort === "time")
-                            readyOrders.sort((a, b) => a.date - b.date);
+                            readyOrders.sort((a, b) => new Date(a.date) - new Date(b.date));
                         res.json(readyOrders);
                     })
                     .catch(() => {
