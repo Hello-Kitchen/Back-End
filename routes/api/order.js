@@ -47,7 +47,7 @@ router.get('/', (req, res) => {
             .then(orders => handleOrders(orders))
             .catch(err => {res.status(500).send("Error reading orders from database: " + err);});
         else
-            orders = collection.find({}).toArray()
+            collection.find({}).toArray()
             .then(orders => handleOrders(orders))
             .catch(err => {res.status(500).send("Error reading orders from database: " + err);});
 
