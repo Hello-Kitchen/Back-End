@@ -1,40 +1,40 @@
 import { Controller, Get, Req, Param, Post, Put, Delete, NotFoundException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { FoodCategoryService } from './food_category.service';
 
-@Controller('api/food_category')
+@Controller('api/food_category/:idRestaurant')
 export class FoodCategoryController {
   constructor(private readonly foodCategoryService: FoodCategoryService) {}
 
   @Get()
-  async getAllFoodCategory() {
+  async getAllFoodCategory(@Param('idRestaurant') idRestaurant: number) {
     try {
-      const foodCategory = await this.foodCategoryService.findAll();
+      const foodCategory = await this.foodCategoryService.findAll(Number(idRestaurant));
       if (!foodCategory || foodCategory.length === 0) {
         throw new NotFoundException('No foodCategory found');
       }
-      return foodCategory;
+      return foodCategory.food_category;
     } catch (error) {
       throw new InternalServerErrorException('Error fetching foodCategory');
     }
   }
 
   @Get(':id')
-  async getOneFoodCategory(@Param('id') id: number) {
+  async getOneFoodCategory(@Param('idRestaurant') idRestaurant: number, @Param('id') id: number) {
     try {
-      const foodCategory = await this.foodCategoryService.findById(Number(id));
+      const foodCategory = await this.foodCategoryService.findById(Number(idRestaurant), Number(id));
       if (!foodCategory) {
         throw new NotFoundException(`FoodCategory with id ${id} not found`);
       }
-      return foodCategory;
+      return foodCategory.food_category[0];
     } catch (error) {
       throw new InternalServerErrorException(`Error fetching foodCategory with id ${id}`);
     }
   }
 
   @Post()
-  async createFoodCategory(@Req() request: Request) {
+  async createFoodCategory(@Param('idRestaurant') idRestaurant: number, @Req() request: Request) {
     try {
-      const createdFoodCategory = await this.foodCategoryService.createOne(request.body);
+      const createdFoodCategory = await this.foodCategoryService.createOne(Number(idRestaurant), request.body);
       if (!createdFoodCategory) {
         throw new BadRequestException('Error creating foodCategory');
       }
@@ -45,9 +45,9 @@ export class FoodCategoryController {
   }
 
   @Put(':id')
-  async updateOneFoodCategory(@Param('id') id: number, @Req() request: Request) {
+  async updateOneFoodCategory(@Param('idRestaurant') idRestaurant: number, @Param('id') id: number, @Req() request: Request) {
     try {
-      const result = await this.foodCategoryService.updateOne(Number(id), request.body);
+      const result = await this.foodCategoryService.updateOne(Number(idRestaurant), Number(id), request.body);
       if (result.matchedCount === 0) {
         throw new NotFoundException(`FoodCategory with id ${id} not found`);
       }
@@ -61,10 +61,10 @@ export class FoodCategoryController {
   }
 
   @Delete(':id')
-  async deleteOneFoodCategory(@Param('id') id: number) {
+  async deleteOneFoodCategory(@Param('idRestaurant') idRestaurant: number, @Param('id') id: number) {
     try {
-      const result = await this.foodCategoryService.deleteOne(Number(id));
-      if (result.deletedCount === 0) {
+      const result = await this.foodCategoryService.deleteOne(Number(idRestaurant), Number(id));
+      if (result.modifiedCount === 0) {
         throw new NotFoundException(`FoodCategory with id ${id} not found`);
       }
       return { message: `FoodCategory with id ${id} deleted successfully` };

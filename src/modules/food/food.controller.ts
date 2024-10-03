@@ -1,40 +1,40 @@
 import { Controller, Get, Req, Param, Post, Put, Delete, NotFoundException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { FoodService } from './food.service';
 
-@Controller('api/food')
+@Controller('api/food/:idRestaurant')
 export class FoodController {
   constructor(private readonly foodService: FoodService) {}
 
   @Get()
-  async getAllFood() {
+  async getAllFood(@Param('idRestaurant') idRestaurant: number) {
     try {
-      const food = await this.foodService.findAll();
+      const food = await this.foodService.findAll(Number(idRestaurant));
       if (!food || food.length === 0) {
         throw new NotFoundException('No food found');
       }
-      return food;
+      return food.foods;
     } catch (error) {
       throw new InternalServerErrorException('Error fetching food');
     }
   }
 
   @Get(':id')
-  async getOneFood(@Param('id') id: number) {
+  async getOneFood(@Param('idRestaurant') idRestaurant: number, @Param('id') id: number) {
     try {
-      const food = await this.foodService.findById(Number(id));
+      const food = await this.foodService.findById(Number(idRestaurant), Number(id));
       if (!food) {
         throw new NotFoundException(`Food with id ${id} not found`);
       }
-      return food;
+      return food.foods[0];
     } catch (error) {
       throw new InternalServerErrorException(`Error fetching food with id ${id}`);
     }
   }
 
   @Post()
-  async createFood(@Req() request: Request) {
+  async createFood(@Param('idRestaurant') idRestaurant: number, @Req() request: Request) {
     try {
-      const createdFood = await this.foodService.createOne(request.body);
+      const createdFood = await this.foodService.createOne(Number(idRestaurant), request.body);
       if (!createdFood) {
         throw new BadRequestException('Error creating food');
       }
@@ -45,9 +45,9 @@ export class FoodController {
   }
 
   @Put(':id')
-  async updateOneFood(@Param('id') id: number, @Req() request: Request) {
+  async updateOneFood(@Param('idRestaurant') idRestaurant: number, @Param('id') id: number, @Req() request: Request) {
     try {
-      const result = await this.foodService.updateOne(Number(id), request.body);
+      const result = await this.foodService.updateOne(Number(idRestaurant), Number(id), request.body);
       if (result.matchedCount === 0) {
         throw new NotFoundException(`Food with id ${id} not found`);
       }
@@ -61,10 +61,10 @@ export class FoodController {
   }
 
   @Delete(':id')
-  async deleteOneFood(@Param('id') id: number) {
+  async deleteOneFood(@Param('idRestaurant') idRestaurant: number, @Param('id') id: number) {
     try {
-      const result = await this.foodService.deleteOne(Number(id));
-      if (result.deletedCount === 0) {
+      const result = await this.foodService.deleteOne(Number(idRestaurant), Number(id));
+      if (result.modifiedCount === 0) {
         throw new NotFoundException(`Food with id ${id} not found`);
       }
       return { message: `Food with id ${id} deleted successfully` };

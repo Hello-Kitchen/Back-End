@@ -1,40 +1,40 @@
 import { Controller, Get, Req, Res, Param, Post, Put, Delete, NotFoundException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { FoodOrderedService } from './food_ordered.service';
 
-@Controller('api/food_ordered')
+@Controller('api/food_ordered/:idOrder')
 export class FoodOrderedController {
   constructor(private readonly foodOrderedService: FoodOrderedService) {}
 
   @Get()
-  async getAllFoodOrdered() {
+  async getAllFoodOrdered(@Param('idOrder') idOrder: number) {
     try {
-      const foodOrdered = await this.foodOrderedService.findAll();
+      const foodOrdered = await this.foodOrderedService.findAll(Number(idOrder));
       if (!foodOrdered || foodOrdered.length === 0) {
         throw new NotFoundException('No foodOrdered found');
       }
-      return foodOrdered;
+      return foodOrdered.food_ordered;
     } catch (error) {
       throw new InternalServerErrorException('Error fetching foodOrdered');
     }
   }
 
   @Get(':id')
-  async getOneFoodOrdered(@Param('id') id: number) {
+  async getOneFoodOrdered(@Param('idOrder') idOrder: number, @Param('id') id: number) {
     try {
-      const foodOrdered = await this.foodOrderedService.findById(Number(id));
+      const foodOrdered = await this.foodOrderedService.findById(Number(idOrder), Number(id));
       if (!foodOrdered) {
         throw new NotFoundException(`FoodOrdered with id ${id} not found`);
       }
-      return foodOrdered;
+      return foodOrdered.food_ordered[0];
     } catch (error) {
       throw new InternalServerErrorException(`Error fetching foodOrdered with id ${id}`);
     }
   }
 
   @Post()
-  async createFoodOrdered(@Req() request: Request) {
+  async createFoodOrdered(@Param('idOrder') idOrder: number, @Req() request: Request) {
     try {
-      const createdFoodOrdered = await this.foodOrderedService.createOne(request.body);
+      const createdFoodOrdered = await this.foodOrderedService.createOne(Number(idOrder), request.body);
       if (!createdFoodOrdered) {
         throw new BadRequestException('Error creating foodOrdered');
       }
@@ -46,9 +46,9 @@ export class FoodOrderedController {
   }
 
   @Put(':id')
-  async updateOneFoodOrdered(@Param('id') id: number, @Req() request: Request) {
+  async updateOneFoodOrdered(@Param('idOrder') idOrder: number, @Param('id') id: number, @Req() request: Request) {
     try {
-      const result = await this.foodOrderedService.updateOne(Number(id), request.body);
+      const result = await this.foodOrderedService.updateOne(Number(idOrder), Number(id), request.body);
       if (result.matchedCount === 0) {
         throw new NotFoundException(`FoodOrdered with id ${id} not found`);
       }
@@ -62,10 +62,10 @@ export class FoodOrderedController {
   }
 
   @Delete(':id')
-  async deleteOneFoodOrdered(@Param('id') id: number) {
+  async deleteOneFoodOrdered(@Param('idOrder') idOrder: number, @Param('id') id: number) {
     try {
-      const result = await this.foodOrderedService.deleteOne(Number(id));
-      if (result.deletedCount === 0) {
+      const result = await this.foodOrderedService.deleteOne(Number(idOrder), Number(id));
+      if (result.modifiedCount === 0) {
         throw new NotFoundException(`FoodOrdered with id ${id} not found`);
       }
       return { message: `FoodOrdered with id ${id} deleted successfully` };
@@ -75,16 +75,16 @@ export class FoodOrderedController {
   }
 
   @Post('status/:id')
-  async updateManyFoodStatus(@Param('id') id: number) {
+  async updateManyFoodStatus(@Param('idOrder') idOrder: number, @Param('id') id: number) {
     try {
-      const food = await this.foodOrderedService.findById(Number(id));
+      const food = await this.foodOrderedService.findById(Number(idOrder), Number(id));
 
       if (!food) {
         throw new NotFoundException(`FoodOrdered with id ${id} not found`);
       }
 
-      food.is_ready = true;
-      this.foodOrderedService.updateMany(Number(id), food);
+      food.food_ordered.is_ready = true;
+      this.foodOrderedService.updateOne(Number(idOrder), Number(id), food.food_ordered);
       return { message: `FoodOrdereds with id ${id} updated successfully` };
       
     } catch (err) {

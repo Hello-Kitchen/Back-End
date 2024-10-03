@@ -1,40 +1,40 @@
 import { Controller, Get, Req, Param, Post, Put, Delete, NotFoundException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { DetailsService } from './details.service';
 
-@Controller('api/details')
+@Controller('api/details/:idRestaurant')
 export class DetailsController {
   constructor(private readonly detailsService: DetailsService) {}
 
   @Get()
-  async getAllDetail() {
+  async getAllDetail(@Param('idRestaurant') idRestaurant: number) {
     try {
-      const details = await this.detailsService.findAll();
+      const details = await this.detailsService.findAll(Number(idRestaurant));
       if (!details || details.length === 0) {
         throw new NotFoundException('No details found');
       }
-      return details;
+      return details.details;
     } catch (error) {
       throw new InternalServerErrorException('Error fetching details');
     }
   }
 
   @Get(':id')
-  async getOneDetail(@Param('id') id: number) {
+  async getOneDetail(@Param('idRestaurant') idRestaurant: number, @Param('id') id: number) {
     try {
-      const detail = await this.detailsService.findById(Number(id));
+      const detail = await this.detailsService.findById(Number(idRestaurant), Number(id));
       if (!detail) {
         throw new NotFoundException(`Detail with id ${id} not found`);
       }
-      return detail;
+      return detail.details[0];
     } catch (error) {
       throw new InternalServerErrorException(`Error fetching detail with id ${id}`);
     }
   }
 
   @Post()
-  async createDetail(@Req() request: Request) {
+  async createDetail(@Param('idRestaurant') idRestaurant: number, @Req() request: Request) {
     try {
-      const createdDetail = await this.detailsService.createOne(request.body);
+      const createdDetail = await this.detailsService.createOne(Number(idRestaurant), request.body);
       if (!createdDetail) {
         throw new BadRequestException('Error creating detail');
       }
@@ -45,9 +45,9 @@ export class DetailsController {
   }
 
   @Put(':id')
-  async updateOneDetail(@Param('id') id: number, @Req() request: Request) {
+  async updateOneDetail(@Param('idRestaurant') idRestaurant: number, @Param('id') id: number, @Req() request: Request) {
     try {
-      const result = await this.detailsService.updateOne(Number(id), request.body);
+      const result = await this.detailsService.updateOne(Number(idRestaurant), Number(id), request.body);
       if (result.matchedCount === 0) {
         throw new NotFoundException(`Detail with id ${id} not found`);
       }
@@ -61,10 +61,10 @@ export class DetailsController {
   }
 
   @Delete(':id')
-  async deleteOneDetail(@Param('id') id: number) {
+  async deleteOneDetail(@Param('idRestaurant') idRestaurant: number, @Param('id') id: number) {
     try {
-      const result = await this.detailsService.deleteOne(Number(id));
-      if (result.deletedCount === 0) {
+      const result = await this.detailsService.deleteOne(Number(idRestaurant), Number(id));
+      if (result.modifiedCount === 0) {
         throw new NotFoundException(`Detail with id ${id} not found`);
       }
       return { message: `Detail with id ${id} deleted successfully` };
