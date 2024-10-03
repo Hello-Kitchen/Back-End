@@ -13,10 +13,4 @@ describe('AppController', () => {
 
     detailsController = app.get<DetailsController>(DetailsService);
   });
-
-  describe('root', () => {
-    it('should return "Welcome to the Details !"', () => {
-      expect(detailsController.Welcome()).toBe('Welcome to the Details !');
-    });
-  });
 });

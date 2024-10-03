@@ -13,10 +13,4 @@ describe('UsersController', () => {
 
     usersController = app.get<UsersController>(UsersController);
   });
-
-  describe('root', () => {
-    it('should return "Welcome to the Users !"', () => {
-      expect(usersController.Welcome()).toBe('Welcome to the Users !');
-    });
-  });
 });

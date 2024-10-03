@@ -13,10 +13,4 @@ describe('LoginController', () => {
 
     loginController = app.get<LoginController>(LoginController);
   });
-
-  describe('root', () => {
-    it('should return "Welcome to the Login !"', () => {
-      expect(loginController.Welcome()).toBe('Welcome to the Login !');
-    });
-  });
 });

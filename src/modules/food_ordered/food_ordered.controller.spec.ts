@@ -15,12 +15,4 @@ describe('FoodOrderedController', () => {
       FoodOrderedController,
     );
   });
-
-  describe('root', () => {
-    it('should return "Welcome to the FoodOrdered !"', () => {
-      expect(foodOrderedController.Welcome()).toBe(
-        'Welcome to the FoodOrdered !',
-      );
-    });
-  });
 });

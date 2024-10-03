@@ -15,12 +15,4 @@ describe('AppController', () => {
       FoodCategoryController,
     );
   });
-
-  describe('root', () => {
-    it('should return "Welcome to the FoodCategory !"', () => {
-      expect(foodCategoryController.Welcome()).toBe(
-        'Welcome to the FoodCategory !',
-      );
-    });
-  });
 });

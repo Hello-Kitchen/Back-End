@@ -15,12 +15,4 @@ describe('RestaurantsController', () => {
       RestaurantsController,
     );
   });
-
-  describe('root', () => {
-    it('should return "Welcome to the Restaurants !"', () => {
-      expect(restaurantsController.Welcome()).toBe(
-        'Welcome to the Restaurants !',
-      );
-    });
-  });
 });

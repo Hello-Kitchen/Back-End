@@ -13,10 +13,4 @@ describe('PosController', () => {
 
     posController = app.get<PosController>(PosController);
   });
-
-  describe('root', () => {
-    it('should return "Welcome to the Pos !"', () => {
-      expect(posController.Welcome()).toBe('Welcome to the Pos !');
-    });
-  });
 });

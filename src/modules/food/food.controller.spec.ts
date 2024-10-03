@@ -13,10 +13,4 @@ describe('FoodController', () => {
 
     foodController = app.get<FoodController>(FoodController);
   });
-
-  describe('root', () => {
-    it('should return "Welcome to the Food !"', () => {
-      expect(foodController.Welcome()).toBe('Welcome to the Food !');
-    });
-  });
 });

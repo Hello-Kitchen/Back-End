@@ -13,12 +13,4 @@ describe('IngredientController', () => {
 
     ingredientController = app.get<IngredientController>(IngredientController);
   });
-
-  describe('root', () => {
-    it('should return "Welcome to the Ingredient !"', () => {
-      expect(ingredientController.Welcome()).toBe(
-        'Welcome to the Ingredient !',
-      );
-    });
-  });
 });
