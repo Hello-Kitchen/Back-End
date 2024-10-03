@@ -11,12 +11,16 @@ describe('FoodOrderedController', () => {
       providers: [FoodOrderedService],
     }).compile();
 
-    foodOrderedController = app.get<FoodOrderedController>(FoodOrderedController);
+    foodOrderedController = app.get<FoodOrderedController>(
+      FoodOrderedController,
+    );
   });
 
   describe('root', () => {
     it('should return "Welcome to the FoodOrdered !"', () => {
-      expect(foodOrderedController.Welcome()).toBe('Welcome to the FoodOrdered !');
+      expect(foodOrderedController.Welcome()).toBe(
+        'Welcome to the FoodOrdered !',
+      );
     });
   });
 });

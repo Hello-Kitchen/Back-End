@@ -16,7 +16,9 @@ describe('PermissionController', () => {
 
   describe('root', () => {
     it('should return "Welcome to the Permission !"', () => {
-      expect(permissionController.Welcome()).toBe('Welcome to the Permission !');
+      expect(permissionController.Welcome()).toBe(
+        'Welcome to the Permission !',
+      );
     });
   });
 });

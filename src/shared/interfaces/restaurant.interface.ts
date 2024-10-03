@@ -4,9 +4,9 @@ import { FoodCategory } from 'src/modules/food_category/interfaces/food_category
 import { Food } from 'src/modules/food/interfaces/food.interface';
 
 export interface Restaurant {
-    _id: ObjectId;
-    id: number;
-    ingredients: Ingredient[];
-    food_category: FoodCategory[];
-    foods: Food[];
+  _id: ObjectId;
+  id: number;
+  ingredients: Ingredient[];
+  food_category: FoodCategory[];
+  foods: Food[];
 }

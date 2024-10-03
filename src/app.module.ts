@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { DetailsModule } from './modules/details/details.module'
+import { DetailsModule } from './modules/details/details.module';
 import { FoodModule } from './modules/food/food.module';
 import { FoodCategoryModule } from './modules/food_category/food_category.module';
 import { FoodOrderedModule } from './modules/food_ordered/food_ordered.module';
@@ -18,11 +18,19 @@ import { UsersModule } from './modules/users/users.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    DetailsModule, FoodModule, FoodCategoryModule, 
-    FoodOrderedModule, IngredientModule, LoginModule, 
-    OrdersModule, PermissionModule, PosModule, 
-    RestaurantsModule, UsersModule],
+    DetailsModule,
+    FoodModule,
+    FoodCategoryModule,
+    FoodOrderedModule,
+    IngredientModule,
+    LoginModule,
+    OrdersModule,
+    PermissionModule,
+    PosModule,
+    RestaurantsModule,
+    UsersModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

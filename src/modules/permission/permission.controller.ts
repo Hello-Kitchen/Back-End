@@ -1,4 +1,15 @@
-import { Controller, Get, Req, Param, Post, Put, Delete, NotFoundException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Req,
+  Param,
+  Post,
+  Put,
+  Delete,
+  NotFoundException,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PermissionService } from './permission.service';
 
 @Controller('api/permission')
@@ -14,7 +25,9 @@ export class PermissionController {
       }
       return permissions;
     } catch (error) {
-      throw new InternalServerErrorException('Error fetching permissions');
+      throw new InternalServerErrorException(
+        `Error fetching permissions: ${error}`,
+      );
     }
   }
 
@@ -27,36 +40,49 @@ export class PermissionController {
       }
       return permission;
     } catch (error) {
-      throw new InternalServerErrorException(`Error fetching permission with id ${id}`);
+      throw new InternalServerErrorException(
+        `Error fetching permission with id ${id}: ${error}`,
+      );
     }
   }
 
   @Post()
   async createPermission(@Req() request: Request) {
     try {
-      const createdPermission = await this.permissionService.createOne(request.body);
+      const createdPermission = await this.permissionService.createOne(
+        request.body,
+      );
       if (!createdPermission) {
         throw new BadRequestException('Error creating permission');
       }
       return createdPermission;
     } catch (error) {
-      throw new InternalServerErrorException('Error creating permission');
+      throw new InternalServerErrorException(
+        `Error creating permission: ${error}`,
+      );
     }
   }
 
   @Put(':id')
   async updateOnePermission(@Param('id') id: number, @Req() request: Request) {
     try {
-      const result = await this.permissionService.updateOne(Number(id), request.body);
+      const result = await this.permissionService.updateOne(
+        Number(id),
+        request.body,
+      );
       if (result.matchedCount === 0) {
         throw new NotFoundException(`Permission with id ${id} not found`);
       }
       if (result.modifiedCount === 0) {
-        throw new BadRequestException(`No changes made to the permission with id ${id}`);
+        throw new BadRequestException(
+          `No changes made to the permission with id ${id}`,
+        );
       }
       return { message: `Permission with id ${id} updated successfully` };
     } catch (error) {
-      throw new InternalServerErrorException(`Error updating permission with id ${id}`);
+      throw new InternalServerErrorException(
+        `Error updating permission with id ${id}: ${error}`,
+      );
     }
   }
 
@@ -69,7 +95,9 @@ export class PermissionController {
       }
       return { message: `Permission with id ${id} deleted successfully` };
     } catch (error) {
-      throw new InternalServerErrorException(`Error deleting permission with id ${id}`);
+      throw new InternalServerErrorException(
+        `Error deleting permission with id ${id}: ${error}`,
+      );
     }
   }
 }

@@ -1,5 +1,5 @@
 export interface FoodCategory {
-    id: number;
-    name: string;
-    id_restaurant: number;
+  id: number;
+  name: string;
+  id_restaurant: number;
 }

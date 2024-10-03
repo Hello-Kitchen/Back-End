@@ -8,11 +8,13 @@ export class LoginController {
   @Post()
   async checkOneInfoUser(@Req() request: Request) {
     try {
-      const result = await this.loginService.authenticateUser(request.body['username'], request.body['password']);
+      const result = await this.loginService.authenticateUser(
+        request.body['username'],
+        request.body['password'],
+      );
       return result;
     } catch (error) {
       throw new UnauthorizedException(error.message);
     }
   }
-  
 }

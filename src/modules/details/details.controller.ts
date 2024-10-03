@@ -1,4 +1,15 @@
-import { Controller, Get, Req, Param, Post, Put, Delete, NotFoundException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Req,
+  Param,
+  Post,
+  Put,
+  Delete,
+  NotFoundException,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { DetailsService } from './details.service';
 
 @Controller('api/details/:idRestaurant')
@@ -14,62 +25,98 @@ export class DetailsController {
       }
       return details.details;
     } catch (error) {
-      throw new InternalServerErrorException('Error fetching details');
+      throw new InternalServerErrorException(
+        `Error fetching details: ${error}`,
+      );
     }
   }
 
   @Get(':id')
-  async getOneDetail(@Param('idRestaurant') idRestaurant: number, @Param('id') id: number) {
+  async getOneDetail(
+    @Param('idRestaurant') idRestaurant: number,
+    @Param('id') id: number,
+  ) {
     try {
-      const detail = await this.detailsService.findById(Number(idRestaurant), Number(id));
+      const detail = await this.detailsService.findById(
+        Number(idRestaurant),
+        Number(id),
+      );
       if (!detail) {
         throw new NotFoundException(`Detail with id ${id} not found`);
       }
       return detail.details[0];
     } catch (error) {
-      throw new InternalServerErrorException(`Error fetching detail with id ${id}`);
+      throw new InternalServerErrorException(
+        `Error fetching detail with id ${id}: ${error}`,
+      );
     }
   }
 
   @Post()
-  async createDetail(@Param('idRestaurant') idRestaurant: number, @Req() request: Request) {
+  async createDetail(
+    @Param('idRestaurant') idRestaurant: number,
+    @Req() request: Request,
+  ) {
     try {
-      const createdDetail = await this.detailsService.createOne(Number(idRestaurant), request.body);
+      const createdDetail = await this.detailsService.createOne(
+        Number(idRestaurant),
+        request.body,
+      );
       if (!createdDetail) {
         throw new BadRequestException('Error creating detail');
       }
       return createdDetail;
     } catch (error) {
-      throw new InternalServerErrorException('Error creating detail');
+      throw new InternalServerErrorException(`Error creating detail: ${error}`);
     }
   }
 
   @Put(':id')
-  async updateOneDetail(@Param('idRestaurant') idRestaurant: number, @Param('id') id: number, @Req() request: Request) {
+  async updateOneDetail(
+    @Param('idRestaurant') idRestaurant: number,
+    @Param('id') id: number,
+    @Req() request: Request,
+  ) {
     try {
-      const result = await this.detailsService.updateOne(Number(idRestaurant), Number(id), request.body);
+      const result = await this.detailsService.updateOne(
+        Number(idRestaurant),
+        Number(id),
+        request.body,
+      );
       if (result.matchedCount === 0) {
         throw new NotFoundException(`Detail with id ${id} not found`);
       }
       if (result.modifiedCount === 0) {
-        throw new BadRequestException(`No changes made to the detail with id ${id}`);
+        throw new BadRequestException(
+          `No changes made to the detail with id ${id}`,
+        );
       }
       return { message: `Detail with id ${id} updated successfully` };
     } catch (error) {
-      throw new InternalServerErrorException(`Error updating detail with id ${id}`);
+      throw new InternalServerErrorException(
+        `Error updating detail with id ${id}: ${error}`,
+      );
     }
   }
 
   @Delete(':id')
-  async deleteOneDetail(@Param('idRestaurant') idRestaurant: number, @Param('id') id: number) {
+  async deleteOneDetail(
+    @Param('idRestaurant') idRestaurant: number,
+    @Param('id') id: number,
+  ) {
     try {
-      const result = await this.detailsService.deleteOne(Number(idRestaurant), Number(id));
+      const result = await this.detailsService.deleteOne(
+        Number(idRestaurant),
+        Number(id),
+      );
       if (result.modifiedCount === 0) {
         throw new NotFoundException(`Detail with id ${id} not found`);
       }
       return { message: `Detail with id ${id} deleted successfully` };
     } catch (error) {
-      throw new InternalServerErrorException(`Error deleting detail with id ${id}`);
+      throw new InternalServerErrorException(
+        `Error deleting detail with id ${id}: ${error}`,
+      );
     }
   }
 }

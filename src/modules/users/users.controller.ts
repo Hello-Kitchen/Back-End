@@ -1,4 +1,15 @@
-import { Controller, Get, Req, Param, Post, Put, Delete, NotFoundException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Req,
+  Param,
+  Post,
+  Put,
+  Delete,
+  NotFoundException,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 
 @Controller('api/users')
@@ -14,7 +25,7 @@ export class UsersController {
       }
       return users;
     } catch (error) {
-      throw new InternalServerErrorException('Error fetching Users');
+      throw new InternalServerErrorException(`Error fetching Users: ${error}`);
     }
   }
 
@@ -27,7 +38,9 @@ export class UsersController {
       }
       return user;
     } catch (error) {
-      throw new InternalServerErrorException(`Error fetching user with id ${id}`);
+      throw new InternalServerErrorException(
+        `Error fetching user with id ${id}: ${error}`,
+      );
     }
   }
 
@@ -40,23 +53,30 @@ export class UsersController {
       }
       return createdUser;
     } catch (error) {
-      throw new InternalServerErrorException('Error creating user');
+      throw new InternalServerErrorException(`Error creating user: ${error}`);
     }
   }
 
   @Put(':id')
   async updateOneUser(@Param('id') id: number, @Req() request: Request) {
     try {
-      const result = await this.usersService.updateOne(Number(id), request.body);
+      const result = await this.usersService.updateOne(
+        Number(id),
+        request.body,
+      );
       if (result.matchedCount === 0) {
         throw new NotFoundException(`User with id ${id} not found`);
       }
       if (result.modifiedCount === 0) {
-        throw new BadRequestException(`No changes made to the user with id ${id}`);
+        throw new BadRequestException(
+          `No changes made to the user with id ${id}`,
+        );
       }
       return { message: `User with id ${id} updated successfully` };
     } catch (error) {
-      throw new InternalServerErrorException(`Error updating user with id ${id}`);
+      throw new InternalServerErrorException(
+        `Error updating user with id ${id}: ${error}`,
+      );
     }
   }
 
@@ -69,8 +89,9 @@ export class UsersController {
       }
       return { message: `User with id ${id} deleted successfully` };
     } catch (error) {
-      throw new InternalServerErrorException(`Error deleting user with id ${id}`);
+      throw new InternalServerErrorException(
+        `Error deleting user with id ${id}: ${error}`,
+      );
     }
   }
-  
 }
