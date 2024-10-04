@@ -8,14 +8,18 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
 ## Project setup
 
 ```bash
 $ npm install
+```
+
+## Setup .env
+
+```
+SALT_HASH = "encryption salt for login"
+DB_URL_LOCAL = "mongodb://URL_LOCAL:PORT"
+DB_URL = "mongodb+srv://USER:PASSWORD@URL/admin?replicaSet=replicaset&tls=true"
 ```
 
 ## Compile and run the project
