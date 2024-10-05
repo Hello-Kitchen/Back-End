@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { IngredientService } from './ingredient.service';
 
-@Controller('api/ingredient/:idRestaurant')
+@Controller('api/:idRestaurant/ingredient')
 export class IngredientController {
   constructor(private readonly ingredientService: IngredientService) {}
 
