@@ -6,7 +6,6 @@ import { AppService } from './app.service';
 import { DetailsModule } from './modules/details/details.module';
 import { FoodModule } from './modules/food/food.module';
 import { FoodCategoryModule } from './modules/food_category/food_category.module';
-import { FoodOrderedModule } from './modules/food_ordered/food_ordered.module';
 import { IngredientModule } from './modules/ingredient/ingredient.module';
 import { LoginModule } from './modules/login/login.module';
 import { OrdersModule } from './modules/orders/orders.module';
@@ -21,7 +20,6 @@ import { UsersModule } from './modules/users/users.module';
     DetailsModule,
     FoodModule,
     FoodCategoryModule,
-    FoodOrderedModule,
     IngredientModule,
     LoginModule,
     OrdersModule,

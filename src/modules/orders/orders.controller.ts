@@ -35,9 +35,7 @@ export class OrdersController {
   ) {
     try {
       const queryKey = `${status || ''}${sort || ''}`.trim() || 'default';
-      console.log(queryKey);
-      const queryFunc =
-        this.queryMapping[queryKey] || this.queryMapping['default'];
+      const queryFunc = this.queryMapping[queryKey] || this.queryMapping['default'];
 
       return await queryFunc();
     } catch (err) {
