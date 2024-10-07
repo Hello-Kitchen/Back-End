@@ -12,14 +12,14 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 
-@Controller('api/users')
+@Controller('api/:idRestaurant/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  async getAllUser() {
+  async getAllUser(@Param('idRestaurant') idRestaurant: number) {
     try {
-      const users = await this.usersService.findAll();
+      const users = await this.usersService.findAll(Number(idRestaurant));
       if (!users || users.length === 0) {
         throw new NotFoundException('No Users found');
       }
@@ -30,9 +30,9 @@ export class UsersController {
   }
 
   @Get(':id')
-  async getOneUser(@Param('id') id: number) {
+  async getOneUser(@Param('idRestaurant') idRestaurant: number, @Param('id') id: number) {
     try {
-      const user = await this.usersService.findById(Number(id));
+      const user = await this.usersService.findById(Number(idRestaurant), Number(id));
       if (!user) {
         throw new NotFoundException(`User with id ${id} not found`);
       }
@@ -45,9 +45,9 @@ export class UsersController {
   }
 
   @Post()
-  async createUser(@Req() request: Request) {
+  async createUser(@Param('idRestaurant') idRestaurant: number, @Req() request: Request) {
     try {
-      const createdUser = await this.usersService.createOne(request.body);
+      const createdUser = await this.usersService.createOne(Number(idRestaurant), request.body);
       if (!createdUser) {
         throw new BadRequestException('Error creating user');
       }
@@ -58,9 +58,10 @@ export class UsersController {
   }
 
   @Put(':id')
-  async updateOneUser(@Param('id') id: number, @Req() request: Request) {
+  async updateOneUser(@Param('idRestaurant') idRestaurant: number, @Param('id') id: number, @Req() request: Request) {
     try {
       const result = await this.usersService.updateOne(
+        Number(idRestaurant),
         Number(id),
         request.body,
       );
@@ -81,10 +82,10 @@ export class UsersController {
   }
 
   @Delete(':id')
-  async deleteOneUser(@Param('id') id: number) {
+  async deleteOneUser(@Param('idRestaurant') idRestaurant: number, @Param('id') id: number) {
     try {
-      const result = await this.usersService.deleteOne(Number(id));
-      if (result.deletedCount === 0) {
+      const result = await this.usersService.deleteOne(Number(idRestaurant), Number(id));
+      if (result.modifiedCount === 0) {
         throw new NotFoundException(`User with id ${id} not found`);
       }
       return { message: `User with id ${id} deleted successfully` };

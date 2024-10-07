@@ -1,221 +1,237 @@
 import { Injectable } from '@nestjs/common';
 import mongoose from 'mongoose';
-import { UpdateResult } from 'mongodb';
+import { UpdateResult, ReturnDocument } from 'mongodb';
 import { DB } from 'src/db/db';
+import { equal } from 'assert';
+import { Counter } from 'src/shared/interfaces/counter.interface';
+import { Restaurant } from 'src/shared/interfaces/restaurant.interface';
+
 
 @Injectable()
 export class OrdersService extends DB {
-  async findAll(): Promise<mongoose.mongo.WithId<mongoose.AnyObject>[]> {
+  async findAll(idRestaurant: number): Promise<mongoose.mongo.BSON.Document[]> {
     const db = this.getDbConnection();
 
-    return db.collection('order').find({}).toArray();
+    return await db.collection('restaurant').aggregate([
+      { $match: { id: idRestaurant } },
+      { $project: { orders: 1 } },
+      { $unwind: "$orders" },
+      { $group: { _id: "$_id", orders: { $push: "$orders" } } }
+    ]).toArray();
   }
 
-  async findAllSortedByDate() {
+  async findAllSortedByDate(idRestaurant: number): Promise<mongoose.mongo.BSON.Document[]> {
     const db = this.getDbConnection();
 
-    return await db.collection('order').find({}).sort({ date: 1 }).toArray();
+    return await db.collection('restaurant').aggregate([
+      { $match: { id: idRestaurant } },
+      { $project: { orders: 1 } },
+      { $unwind: "$orders" },
+      { $sort: { "orders.date": -1 } },
+      { $group: { _id: "$_id", orders: { $push: "$orders" } } }
+    ]).toArray();
   }
 
-  async findByPart() {
+  async findReady(idRestaurant: number) {
     const db = this.getDbConnection();
+    let result = await db.collection('restaurant').aggregate([
+      { $match: { id: idRestaurant } },
+      { $project: { orders: 1 } },
+      { $unwind: "$orders" },
+      { $group: { _id: "$_id", orders: { $push: "$orders" } } }
+    ]).toArray();
+    const filteredOrders = result[0].orders.filter(order => {
+      const orderPart = order.part;
+      const allReady = order.food_ordered
+        .filter(food => food.part === orderPart)
+        .every(food => food.is_ready === true);
 
-    return await db
-      .collection('order')
-      .aggregate([
-        {
-          $project: {
-            food_ordered: {
-              $filter: {
-                input: '$food_ordered',
-                as: 'item',
-                cond: { $eq: ['$$item.part', '$part'] },
-              },
-            },
-            part: 1,
-            channel: 1,
-            number: 1,
-            id_restaurant: 1,
-            date: 1,
-            _id: 0,
-            id: 1,
-          },
-        },
-      ])
-      .toArray();
+      return allReady;
+    });
+    return filteredOrders;
   }
 
-  async findReady() {
+  async findReadySortedByDate(idRestaurant: number) {
     const db = this.getDbConnection();
+    let result = await db.collection('restaurant').aggregate([
+      { $match: { id: idRestaurant } },
+      { $project: { orders: 1 } },
+      { $unwind: "$orders" },
+      { $sort: { "orders.date": -1 } },
+      { $group: { _id: "$_id", orders: { $push: "$orders" } } }
+    ]).toArray();
+    const filteredOrders = result[0].orders.filter(order => {
+      const orderPart = order.part;
+      const allReady = order.food_ordered
+        .filter(food => food.part === orderPart)
+        .every(food => food.is_ready === true);
 
-    return await db
-      .collection('order')
-      .aggregate([
-        {
-          $project: {
-            food_ordered: {
-              $filter: {
-                input: '$food_ordered',
-                as: 'item',
-                cond: { $eq: ['$$item.part', '$part'] },
-              },
-            },
-            part: 1,
-            channel: 1,
-            number: 1,
-            id_restaurant: 1,
-            date: 1,
-            _id: 0,
-            id: 1,
-          },
-        },
-        {
-          $match: {
-            food_ordered: { $not: { $elemMatch: { is_ready: false } } },
-          },
-        },
-      ])
-      .toArray();
+      return allReady;
+    });
+    return filteredOrders;
   }
 
-  async findReadySortedByDate() {
+  async findPending(idRestaurant: number) {
     const db = this.getDbConnection();
+    let result = await db.collection('restaurant').aggregate([
+      { $match: { id: idRestaurant } },
+      { $project: { orders: 1 } },
+      { $unwind: "$orders" },
+      { $group: { _id: "$_id", orders: { $push: "$orders" } } }
+    ]).toArray();
+    const filteredOrders = result[0].orders.filter(order => {
+      const orderPart = order.part;
+      const relevantFoods = order.food_ordered.filter(food => food.part === orderPart);
+      const readyCount = relevantFoods.filter(food => food.is_ready).length;
 
-    return await db
-      .collection('order')
-      .aggregate([
-        {
-          $project: {
-            food_ordered: {
-              $filter: {
-                input: '$food_ordered',
-                as: 'item',
-                cond: { $eq: ['$$item.part', '$part'] },
-              },
-            },
-            part: 1,
-            channel: 1,
-            number: 1,
-            id_restaurant: 1,
-            date: 1,
-            _id: 0,
-            id: 1,
-          },
-        },
-        {
-          $match: {
-            food_ordered: { $not: { $elemMatch: { is_ready: false } } },
-          },
-        },
-      ])
-      .sort({ date: 1 })
-      .toArray();
+      return readyCount > 0 && readyCount < relevantFoods.length;
+    });
+    return filteredOrders;
   }
 
-  async findPending() {
+  async findPendingSortedByDate(idRestaurant: number) {
     const db = this.getDbConnection();
+    let result = await db.collection('restaurant').aggregate([
+      { $match: { id: idRestaurant } },
+      { $project: { orders: 1 } },
+      { $unwind: "$orders" },
+      { $sort: { "orders.date": -1 } },
+      { $group: { _id: "$_id", orders: { $push: "$orders" } } }
+    ]).toArray();
+    const filteredOrders = result[0].orders.filter(order => {
+      const orderPart = order.part;
+      const relevantFoods = order.food_ordered.filter(food => food.part === orderPart);
+      const readyCount = relevantFoods.filter(food => food.is_ready).length;
 
-    return await db
-      .collection('order')
-      .aggregate([
-        {
-          $project: {
-            food_ordered: {
-              $filter: {
-                input: '$food_ordered',
-                as: 'item',
-                cond: { $eq: ['$$item.part', '$part'] },
-              },
-            },
-            part: 1,
-            channel: 1,
-            number: 1,
-            id_restaurant: 1,
-            date: 1,
-            _id: 0,
-            id: 1,
-          },
-        },
-        { $match: { food_ordered: { $elemMatch: { is_ready: true } } } },
-        { $match: { food_ordered: { $elemMatch: { is_ready: false } } } },
-      ])
-      .toArray();
-  }
+      return readyCount > 0 && readyCount < relevantFoods.length;
+    });
 
-  async findPendingSortedByDate() {
-    const db = this.getDbConnection();
-
-    return await db
-      .collection('order')
-      .aggregate([
-        {
-          $project: {
-            food_ordered: {
-              $filter: {
-                input: '$food_ordered',
-                as: 'item',
-                cond: { $eq: ['$$item.part', '$part'] },
-              },
-            },
-            part: 1,
-            channel: 1,
-            number: 1,
-            id_restaurant: 1,
-            date: 1,
-            _id: 0,
-            id: 1,
-          },
-        },
-        { $match: { food_ordered: { $elemMatch: { is_ready: true } } } },
-        { $match: { food_ordered: { $elemMatch: { is_ready: false } } } },
-      ])
-      .sort({ date: 1 })
-      .toArray();
+    return filteredOrders;
   }
 
   async findById(
+    idRestaurant: number,
     id: number,
   ): Promise<mongoose.mongo.WithId<mongoose.AnyObject>> {
     const db = this.getDbConnection();
 
-    return db.collection('order').findOne({ id: id });
+    return db
+      .collection('restaurant')
+      .findOne(
+        { id: idRestaurant },
+        { projection: { _id: 0, orders: { $elemMatch: { id: id } } } },
+      );
   }
 
   async findByIdWithParam(
+    idRestaurant: number,
     id: number,
-    param: Record<string, any>,
-  ): Promise<mongoose.mongo.WithId<mongoose.AnyObject>> {
+  ): Promise<mongoose.mongo.BSON.Document[]> {
     const db = this.getDbConnection();
 
-    return db.collection('order').findOne({ id: id }, param);
+    return db.collection('restaurant').aggregate([
+      {
+        $match: { id: idRestaurant }
+      },
+      {
+        $match: { "orders.id": id }
+      },
+      {
+        $unwind: "$orders"
+      },
+      {
+        $match: { "orders.id": id }
+      },
+      {
+        $unwind: "$orders.food_ordered"
+      },
+      {
+        $match: {
+          $expr: {
+            $eq: ["$orders.food_ordered.part", "$orders.part"]
+          }
+        }
+      },
+      {
+        $group: {
+          _id: "$_id",
+          orders: {
+            $push: {
+              food: "$orders.food_ordered.food",
+              details: "$orders.food_ordered.details",
+              mods_ingredients: "$orders.food_ordered.mods_ingredients",
+              is_ready: "$orders.food_ordered.is_ready",
+              note: "$orders.food_ordered.note"
+            }
+          }
+        }
+      }
+    ]).toArray()
   }
 
-  async findFoodByIdsWithParam(id: number[], param: Record<string, any>) {
+  async findFoodByIdsWithParam(idRestaurant: number, id: number[]) {
     const db = this.getDbConnection();
 
-    return await db.collection('food').findOne({ id: id }, param);
+    return db
+      .collection('restaurant')
+      .findOne(
+        { id: idRestaurant },
+        {
+          projection: {
+            _id: 0,
+            foods: {
+              $elemMatch: { id: id }
+            }
+          }
+        }
+      );
   }
 
   async createOne(
+    idRestaurant: number,
     body: ReadableStream<Uint8Array>,
-  ): Promise<mongoose.mongo.InsertOneResult<mongoose.AnyObject>> {
+  ): Promise<UpdateResult> {
     const db = this.getDbConnection();
+    const id = await db
+      .collection<Counter>('counter')
+      .findOneAndUpdate(
+        { _id: 'orderId' },
+        { $inc: { sequence_value: 1 } },
+        { returnDocument: ReturnDocument.AFTER },
+      );
 
-    return db.collection('order').insertOne(body);
+    body['id'] = id.sequence_value;
+    return db
+      .collection('restaurant')
+      .updateOne({ id: idRestaurant }, { $addToSet: { orders: body } });
   }
 
   async updateOne(
+    idRestaurant: number,
     id: number,
     body: ReadableStream<Uint8Array>,
   ): Promise<UpdateResult> {
     const db = this.getDbConnection();
 
-    return db.collection('order').updateOne({ id: id }, { $set: body });
+    return db.collection('restaurant').updateOne(
+      { id: idRestaurant, 'orders.id': id },
+      {
+        $set: {
+          'orders.$.channel': body['channel'],
+          'orders.$.number': body['number'],
+          'orders.$.food_ordered': body['food_ordered'],
+          'orders.$.part': body['part'],
+          'orders.$.date': body['date'],
+        },
+      },
+    );
   }
 
-  async deleteOne(id: number): Promise<mongoose.mongo.DeleteResult> {
+  async deleteOne(idRestaurant: number, id: number): Promise<UpdateResult> {
     const db = this.getDbConnection();
 
-    return db.collection('order').deleteOne({ id: id });
+    return db
+      .collection<Restaurant>('restaurant')
+      .updateOne({ id: idRestaurant }, { $pull: { orders: { id: id } } });
   }
 }

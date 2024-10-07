@@ -13,18 +13,18 @@ import {
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 
-@Controller('api/orders')
+@Controller('api/:idRestaurant/orders')
 export class OrdersController {
-  private queryMapping: { [key: string]: () => Promise<any> };
+  private queryMapping: { [key: string]: (idRestaurant: number) => Promise<any> };
 
   constructor(private readonly ordersService: OrdersService) {
     this.queryMapping = {
-      pendingtime: () => this.ordersService.findPendingSortedByDate(),
-      readytime: () => this.ordersService.findReadySortedByDate(),
-      pending: () => this.ordersService.findPending(),
-      ready: () => this.ordersService.findReady(),
-      time: () => this.ordersService.findAllSortedByDate(),
-      default: () => this.ordersService.findAll(),
+      pendingtime: (idRestaurant: number) => this.ordersService.findPendingSortedByDate(idRestaurant),
+      readytime: (idRestaurant: number) => this.ordersService.findReadySortedByDate(idRestaurant),
+      pending: (idRestaurant: number) => this.ordersService.findPending(idRestaurant),
+      ready: (idRestaurant: number) => this.ordersService.findReady(idRestaurant),
+      time: (idRestaurant: number) => this.ordersService.findAllSortedByDate(idRestaurant),
+      default: (idRestaurant: number) => this.ordersService.findAll(idRestaurant),
     };
   }
 
@@ -32,61 +32,49 @@ export class OrdersController {
   async getOrders(
     @Query('status') status: string,
     @Query('sort') sort: string,
+    @Param('idRestaurant') idRestaurant: number
   ) {
     try {
       const queryKey = `${status || ''}${sort || ''}`.trim() || 'default';
       const queryFunc = this.queryMapping[queryKey] || this.queryMapping['default'];
+      const result = await queryFunc(Number(idRestaurant))
+      const updatedOrders = result.map(order => {
+        const filteredFoodOrdered = order.food_ordered.filter(food => food.part === order.part);
 
-      return await queryFunc();
+        return {
+          ...order,
+          food_ordered: filteredFoodOrdered
+        };
+      });
+
+      return updatedOrders;
     } catch (err) {
       throw new InternalServerErrorException(`Error fetching orders: ${err}`);
     }
   }
 
   @Get(':id')
-  async getOneOrder(@Query('forKDS') forKDS: string, @Param('id') id: number) {
+  async getOneOrder(@Query('forKDS') forKDS: string, @Param('id') id: number, @Param('idRestaurant') idRestaurant: number) {
     try {
       if (forKDS === 'true') {
         const foodOrdered = await this.ordersService.findByIdWithParam(
+          Number(idRestaurant),
           Number(id),
-          {
-            projection: {
-              food_ordered: {
-                $map: {
-                  input: {
-                    $filter: {
-                      input: '$food_ordered',
-                      as: 'item',
-                      cond: { $eq: ['$$item.part', '$part'] },
-                    },
-                  },
-                  as: 'item',
-                  in: {
-                    food: '$$item.food',
-                    mods_ingredients: '$$item.mods_ingredients',
-                    note: '$$item.note',
-                    is_ready: '$$item.is_ready',
-                  },
-                },
-              },
-              _id: 0,
-            },
-          },
         );
-        const groupedFoodOrdered = foodOrdered.food_ordered.reduce(
+        const groupedFoodOrdered = foodOrdered[0].orders.reduce(
           async (accPromise, itemPromise) => {
             const acc = await accPromise;
             const item = await itemPromise;
             const name = await this.ordersService.findFoodByIdsWithParam(
-              item.food,
-              { projection: { name: 1, _id: 0 } },
+              Number(idRestaurant),
+              item.food
             );
 
             const foundItem = acc.find(
               (el) =>
                 JSON.stringify(el.food) === JSON.stringify(item.food) &&
                 JSON.stringify(el.mods_ingredients) ===
-                  JSON.stringify(item.mods_ingredients) &&
+                JSON.stringify(item.mods_ingredients) &&
                 JSON.stringify(el.is_ready) === JSON.stringify(item.is_ready) &&
                 JSON.stringify(el.note) === JSON.stringify(item.note),
             );
@@ -98,11 +86,12 @@ export class OrdersController {
         );
         return groupedFoodOrdered;
       }
-      const order = await this.ordersService.findById(Number(id));
+      const order = await this.ordersService.findById(Number(idRestaurant), Number(id));
       if (!order) {
         throw new NotFoundException(`Order with id ${id} not found`);
       }
-      return order;
+      console.log('here')
+      return order.orders[0];
     } catch (error) {
       throw new InternalServerErrorException(
         `Error fetching order with id ${id}: ${error}`,
@@ -111,9 +100,9 @@ export class OrdersController {
   }
 
   @Post()
-  async createOrder(@Req() request: Request) {
+  async createOrder(@Req() request: Request, @Param('idRestaurant') idRestaurant: number) {
     try {
-      const createdOrder = await this.ordersService.createOne(request.body);
+      const createdOrder = await this.ordersService.createOne(Number(idRestaurant), request.body);
       if (!createdOrder) {
         throw new BadRequestException('Error creating order');
       }
@@ -124,9 +113,10 @@ export class OrdersController {
   }
 
   @Put(':id')
-  async updateOneOrder(@Param('id') id: number, @Req() request: Request) {
+  async updateOneOrder(@Param('id') id: number, @Req() request: Request, @Param('idRestaurant') idRestaurant: number) {
     try {
       const result = await this.ordersService.updateOne(
+        Number(idRestaurant),
         Number(id),
         request.body,
       );
@@ -147,10 +137,10 @@ export class OrdersController {
   }
 
   @Delete(':id')
-  async deleteOneOrder(@Param('id') id: number) {
+  async deleteOneOrder(@Param('id') id: number, @Param('idRestaurant') idRestaurant: number) {
     try {
-      const result = await this.ordersService.deleteOne(Number(id));
-      if (result.deletedCount === 0) {
+      const result = await this.ordersService.deleteOne(Number(idRestaurant), Number(id));
+      if (result.modifiedCount === 0) {
         throw new NotFoundException(`Order with id ${id} not found`);
       }
       return { message: `Order with id ${id} deleted successfully` };
