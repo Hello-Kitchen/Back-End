@@ -141,4 +141,19 @@ export class OrdersController {
       );
     }
   }
+
+  @Put('status/:id')
+  async ChangeStatusFoodOrdered(@Param('idRestaurant') idRestaurant: number, @Param('id') id: number) {
+    try {
+      const result = await this.ordersService.markFoodOrderedReady(Number(idRestaurant), Number(id));
+      if (result.modifiedCount === 0) {
+        throw new NotFoundException(`Order with id ${id} not found`);
+      }
+      return { message: `FoodOrder with id ${id} updated successfully` };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Error updating food_ordered with id ${id}: ${error}`,
+      );
+    }
+  }
 }

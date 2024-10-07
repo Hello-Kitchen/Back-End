@@ -203,6 +203,15 @@ export class OrdersService extends DB {
       );
 
     body['id'] = id.sequence_value;
+    for (const food of body['food_ordered']) {
+      const id = await db.collection<Counter>('counter').findOneAndUpdate(
+        { _id: 'foodOrderId' }, 
+        { $inc: { sequence_value: 1 } }, 
+        { returnDocument: ReturnDocument.AFTER }
+      );
+    
+      food.id = id.sequence_value;
+    }
     return db
       .collection('restaurant')
       .updateOne({ id: idRestaurant }, { $addToSet: { orders: body } });
@@ -235,5 +244,22 @@ export class OrdersService extends DB {
     return db
       .collection<Restaurant>('restaurant')
       .updateOne({ id: idRestaurant }, { $pull: { orders: { id: id } } });
+  }
+
+  async markFoodOrderedReady(idRestaurant: number, idFoodOrdered: number) {
+    const db = this.getDbConnection();
+    
+    return await db.collection('restaurant').findOneAndUpdate(
+      {
+        id: idRestaurant,
+        'orders.food_ordered.id': idFoodOrdered
+      },
+      {
+        $set: { 'orders.$[].food_ordered.$[food].is_ready': true }
+      },
+      {
+        arrayFilters: [{ 'food.id': idFoodOrdered }],
+      }
+    );
   }
 }
