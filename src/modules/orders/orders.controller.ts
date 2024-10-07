@@ -38,16 +38,8 @@ export class OrdersController {
       const queryKey = `${status || ''}${sort || ''}`.trim() || 'default';
       const queryFunc = this.queryMapping[queryKey] || this.queryMapping['default'];
       const result = await queryFunc(Number(idRestaurant))
-      const updatedOrders = result.map(order => {
-        const filteredFoodOrdered = order.food_ordered.filter(food => food.part === order.part);
 
-        return {
-          ...order,
-          food_ordered: filteredFoodOrdered
-        };
-      });
-
-      return updatedOrders;
+      return result;
     } catch (err) {
       throw new InternalServerErrorException(`Error fetching orders: ${err}`);
     }
@@ -90,7 +82,6 @@ export class OrdersController {
       if (!order) {
         throw new NotFoundException(`Order with id ${id} not found`);
       }
-      console.log('here')
       return order.orders[0];
     } catch (error) {
       throw new InternalServerErrorException(

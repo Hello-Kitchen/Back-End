@@ -9,27 +9,29 @@ import { Restaurant } from 'src/shared/interfaces/restaurant.interface';
 
 @Injectable()
 export class OrdersService extends DB {
-  async findAll(idRestaurant: number): Promise<mongoose.mongo.BSON.Document[]> {
+  async findAll(idRestaurant: number): Promise<mongoose.mongo.BSON.Document> {
     const db = this.getDbConnection();
 
-    return await db.collection('restaurant').aggregate([
+    let result = await db.collection('restaurant').aggregate([
       { $match: { id: idRestaurant } },
       { $project: { orders: 1 } },
       { $unwind: "$orders" },
       { $group: { _id: "$_id", orders: { $push: "$orders" } } }
     ]).toArray();
+    return result[0].orders;
   }
 
-  async findAllSortedByDate(idRestaurant: number): Promise<mongoose.mongo.BSON.Document[]> {
+  async findAllSortedByDate(idRestaurant: number): Promise<mongoose.mongo.BSON.Document> {
     const db = this.getDbConnection();
 
-    return await db.collection('restaurant').aggregate([
+    let result = await db.collection('restaurant').aggregate([
       { $match: { id: idRestaurant } },
       { $project: { orders: 1 } },
       { $unwind: "$orders" },
       { $sort: { "orders.date": -1 } },
       { $group: { _id: "$_id", orders: { $push: "$orders" } } }
     ]).toArray();
+    return result[0].orders;
   }
 
   async findReady(idRestaurant: number) {
