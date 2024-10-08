@@ -248,17 +248,26 @@ export class OrdersService extends DB {
 
   async markFoodOrderedReady(idRestaurant: number, idFoodOrdered: number) {
     const db = this.getDbConnection();
-    
+    const res = await db.collection('restaurant').findOne({ id: idRestaurant }, { projection: { _id: 0, orders: 1 } });
+    let value: boolean;
+
+    for(const order of res.orders) {
+      for(const food of order.food_ordered) {
+        if (food.id === idFoodOrdered)
+          value = !food.is_ready;
+      }
+    }
+
     return await db.collection('restaurant').findOneAndUpdate(
       {
         id: idRestaurant,
         'orders.food_ordered.id': idFoodOrdered
       },
       {
-        $set: { 'orders.$[].food_ordered.$[food].is_ready': true }
+        $set: { 'orders.$[].food_ordered.$[food].is_ready': value }
       },
       {
-        arrayFilters: [{ 'food.id': idFoodOrdered }],
+        arrayFilters: [{ 'food.id': idFoodOrdered }]
       }
     );
   }
