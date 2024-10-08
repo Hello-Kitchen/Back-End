@@ -74,10 +74,10 @@ export class OrdersController {
           const foundItem = acc.find(
             (el) =>
               JSON.stringify(el.food) === JSON.stringify(item.food) &&
-              JSON.stringify(el.mods_ingredients) ===
-              JSON.stringify(item.mods_ingredients) &&
+              JSON.stringify(el.mods_ingredients) === JSON.stringify(item.mods_ingredients) &&
               JSON.stringify(el.is_ready) === JSON.stringify(item.is_ready) &&
-              JSON.stringify(el.note) === JSON.stringify(item.note),
+              JSON.stringify(el.note) === JSON.stringify(item.note) &&
+              JSON.stringify(el.details) === JSON.stringify(item.details),
           );
           if (foundItem) foundItem.quantity += 1;
           else acc.push({ ...item, quantity: 1, name: name.foods[0].name });
