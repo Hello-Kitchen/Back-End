@@ -163,7 +163,8 @@ export class OrdersService extends DB {
               details: "$orders.food_ordered.details",
               mods_ingredients: "$orders.food_ordered.mods_ingredients",
               is_ready: "$orders.food_ordered.is_ready",
-              note: "$orders.food_ordered.note"
+              note: "$orders.food_ordered.note",
+              id: "$orders.food_ordered.id"
             }
           }
         }
