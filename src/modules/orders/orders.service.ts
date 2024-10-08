@@ -157,7 +157,7 @@ export class OrdersService extends DB {
       {
         $group: {
           _id: "$_id",
-          orders: {
+          food_ordered: {
             $push: {
               food: "$orders.food_ordered.food",
               details: "$orders.food_ordered.details",
