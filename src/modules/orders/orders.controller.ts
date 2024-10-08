@@ -48,41 +48,45 @@ export class OrdersController {
   @Get(':id')
   async getOneOrder(@Query('forKDS') forKDS: string, @Param('id') id: number, @Param('idRestaurant') idRestaurant: number) {
     try {
+      let foodOrdered;
       if (forKDS === 'true') {
-        const foodOrdered = await this.ordersService.findByIdWithParam(
+        foodOrdered = await this.ordersService.findByIdWithParam(
           Number(idRestaurant),
           Number(id),
         );
-        const groupedFoodOrdered = foodOrdered[0].orders.reduce(
-          async (accPromise, itemPromise) => {
-            const acc = await accPromise;
-            const item = await itemPromise;
-            const name = await this.ordersService.findFoodByIdsWithParam(
-              Number(idRestaurant),
-              item.food
-            );
-
-            const foundItem = acc.find(
-              (el) =>
-                JSON.stringify(el.food) === JSON.stringify(item.food) &&
-                JSON.stringify(el.mods_ingredients) ===
-                JSON.stringify(item.mods_ingredients) &&
-                JSON.stringify(el.is_ready) === JSON.stringify(item.is_ready) &&
-                JSON.stringify(el.note) === JSON.stringify(item.note),
-            );
-            if (foundItem) foundItem.quantity += 1;
-            else acc.push({ ...item, quantity: 1, name: name.name });
-            return await acc;
-          },
-          Promise.resolve([]),
-        );
-        return groupedFoodOrdered;
+        foodOrdered = foodOrdered[0]
+      } else {
+        foodOrdered = await this.ordersService.findById(Number(idRestaurant), Number(id));
+        foodOrdered = foodOrdered.orders[0];
       }
-      const order = await this.ordersService.findById(Number(idRestaurant), Number(id));
-      if (!order) {
+      if (!foodOrdered) {
         throw new NotFoundException(`Order with id ${id} not found`);
       }
-      return order.orders[0];
+      const groupedFoodOrdered = foodOrdered.food_ordered.reduce(
+        async (accPromise, itemPromise) => {
+          const acc = await accPromise;
+          const item = await itemPromise;
+          const name = await this.ordersService.findFoodByIdsWithParam(
+            Number(idRestaurant),
+            item.food
+          );
+
+          const foundItem = acc.find(
+            (el) =>
+              JSON.stringify(el.food) === JSON.stringify(item.food) &&
+              JSON.stringify(el.mods_ingredients) ===
+              JSON.stringify(item.mods_ingredients) &&
+              JSON.stringify(el.is_ready) === JSON.stringify(item.is_ready) &&
+              JSON.stringify(el.note) === JSON.stringify(item.note),
+          );
+          if (foundItem) foundItem.quantity += 1;
+          else acc.push({ ...item, quantity: 1, name: name.foods[0].name });
+          return await acc;
+        },
+        Promise.resolve([]),
+      );
+      foodOrdered.food_ordered = await groupedFoodOrdered
+      return foodOrdered;
     } catch (error) {
       throw new InternalServerErrorException(
         `Error fetching order with id ${id}: ${error}`,
