@@ -11,11 +11,24 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { IngredientService } from './ingredient.service';
+import { Request } from 'express';
 
+/**
+ * Controller for managing ingredients within a restaurant.
+ *
+ * The `IngredientController` class provides endpoints for CRUD operations
+ * related to ingredients in the restaurant database.
+ */
 @Controller('api/:idRestaurant/ingredient')
 export class IngredientController {
   constructor(private readonly ingredientService: IngredientService) {}
 
+  /**
+   * Retrieves all ingredients for a specific restaurant.
+   * 
+   * @param {number} idRestaurant - The ID of the restaurant.
+   * @returns {Promise<any>} The list of ingredients.
+   */
   @Get()
   async getAllIngredient(@Param('idRestaurant') idRestaurant: number) {
     try {
@@ -23,16 +36,23 @@ export class IngredientController {
         Number(idRestaurant),
       );
       if (!ingredient || ingredient.length === 0) {
-        throw new NotFoundException('No ingredient found');
+        throw new NotFoundException('No ingredients found');
       }
-      return ingredient.ingredients;
+      return ingredient.ingredients; // Ensure `ingredients` is properly defined in your service's return type
     } catch (error) {
       throw new InternalServerErrorException(
-        `Error fetching ingredient: ${error}`,
+        `Error fetching ingredients: ${error}`,
       );
     }
   }
 
+  /**
+   * Retrieves a specific ingredient by its ID for a given restaurant.
+   * 
+   * @param {number} idRestaurant - The ID of the restaurant.
+   * @param {number} id - The ID of the ingredient.
+   * @returns {Promise<any>} The ingredient.
+   */
   @Get(':id')
   async getOneIngredient(
     @Param('idRestaurant') idRestaurant: number,
@@ -46,7 +66,7 @@ export class IngredientController {
       if (!ingredient) {
         throw new NotFoundException(`Ingredient with id ${id} not found`);
       }
-      return ingredient.ingredients[0];
+      return ingredient.ingredients[0]; // Ensure `ingredients` is properly defined in your service's return type
     } catch (error) {
       throw new InternalServerErrorException(
         `Error fetching ingredient with id ${id}: ${error}`,
@@ -54,6 +74,13 @@ export class IngredientController {
     }
   }
 
+  /**
+   * Creates a new ingredient for a specific restaurant.
+   * 
+   * @param {number} idRestaurant - The ID of the restaurant.
+   * @param {Request} request - The request containing ingredient data.
+   * @returns {Promise<any>} The created ingredient.
+   */
   @Post()
   async createIngredient(
     @Param('idRestaurant') idRestaurant: number,
@@ -65,7 +92,7 @@ export class IngredientController {
         request.body,
       );
       if (!createdIngredient) {
-        throw new BadRequestException('Error creating igredient');
+        throw new BadRequestException('Error creating ingredient');
       }
       return createdIngredient;
     } catch (error) {
@@ -75,6 +102,14 @@ export class IngredientController {
     }
   }
 
+  /**
+   * Updates an existing ingredient for a specific restaurant.
+   * 
+   * @param {number} idRestaurant - The ID of the restaurant.
+   * @param {number} id - The ID of the ingredient to update.
+   * @param {Request} request - The request containing updated ingredient data.
+   * @returns {Promise<any>} The update result message.
+   */
   @Put(':id')
   async updateOneIngredient(
     @Param('idRestaurant') idRestaurant: number,
@@ -103,6 +138,13 @@ export class IngredientController {
     }
   }
 
+  /**
+   * Deletes a specific ingredient for a restaurant.
+   * 
+   * @param {number} idRestaurant - The ID of the restaurant.
+   * @param {number} id - The ID of the ingredient to delete.
+   * @returns {Promise<any>} The delete result message.
+   */
   @Delete(':id')
   async deleteOneIngredient(
     @Param('idRestaurant') idRestaurant: number,

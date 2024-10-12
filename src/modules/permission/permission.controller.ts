@@ -12,10 +12,21 @@ import {
 } from '@nestjs/common';
 import { PermissionService } from './permission.service';
 
+/**
+ * Controller for managing permissions.
+ *
+ * The `PermissionController` class handles incoming requests
+ * related to permissions, delegating the logic to the `PermissionService`.
+ */
 @Controller('api/permission')
 export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
 
+  /**
+   * Retrieves all permissions.
+   *
+   * @returns {Promise<any>} List of permissions.
+   */
   @Get()
   async getAllPermission() {
     try {
@@ -31,6 +42,12 @@ export class PermissionController {
     }
   }
 
+  /**
+   * Retrieves a specific permission by its ID.
+   *
+   * @param {number} id - The ID of the permission.
+   * @returns {Promise<any>} The requested permission.
+   */
   @Get(':id')
   async getOnePermission(@Param('id') id: number) {
     try {
@@ -46,6 +63,12 @@ export class PermissionController {
     }
   }
 
+  /**
+   * Creates a new permission.
+   *
+   * @param {Request} request - The incoming request containing the permission data.
+   * @returns {Promise<any>} The created permission.
+   */
   @Post()
   async createPermission(@Req() request: Request) {
     try {
@@ -63,6 +86,13 @@ export class PermissionController {
     }
   }
 
+  /**
+   * Updates an existing permission by its ID.
+   *
+   * @param {number} id - The ID of the permission to update.
+   * @param {Request} request - The incoming request containing the updated data.
+   * @returns {Promise<any>} Success message.
+   */
   @Put(':id')
   async updateOnePermission(@Param('id') id: number, @Req() request: Request) {
     try {
@@ -86,6 +116,12 @@ export class PermissionController {
     }
   }
 
+  /**
+   * Deletes a permission by its ID.
+   *
+   * @param {number} id - The ID of the permission to delete.
+   * @returns {Promise<any>} Success message.
+   */
   @Delete(':id')
   async deleteOnePermission(@Param('id') id: number) {
     try {
