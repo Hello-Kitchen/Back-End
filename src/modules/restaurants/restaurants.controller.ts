@@ -11,13 +11,19 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { RestaurantsService } from './restaurants.service';
+import { Request } from 'express'; // Ensure to import Request from express
 
 @Controller('api/restaurants')
 export class RestaurantsController {
   constructor(private readonly restaurantsService: RestaurantsService) {}
 
+  /**
+   * Fetches all restaurants from the service.
+   *
+   * @returns {Promise<any>} An array of restaurants.
+   */
   @Get()
-  async getAllRestaurant() {
+  async getAllRestaurants() {
     try {
       const restaurants = await this.restaurantsService.findAll();
       if (!restaurants || restaurants.length === 0) {
@@ -26,11 +32,17 @@ export class RestaurantsController {
       return restaurants;
     } catch (error) {
       throw new InternalServerErrorException(
-        `Error fetching restaurants: ${error}`,
+        `Error fetching restaurants: ${error.message}`, // Use error.message for clearer output
       );
     }
   }
 
+  /**
+   * Fetches a specific restaurant by its ID.
+   *
+   * @param {number} id - The ID of the restaurant.
+   * @returns {Promise<any>} The restaurant if found.
+   */
   @Get(':id')
   async getOneRestaurant(@Param('id') id: number) {
     try {
@@ -41,11 +53,17 @@ export class RestaurantsController {
       return restaurant;
     } catch (error) {
       throw new InternalServerErrorException(
-        `Error fetching restaurant with id ${id}: ${error}`,
+        `Error fetching restaurant with id ${id}: ${error.message}`, // Use error.message for clarity
       );
     }
   }
 
+  /**
+   * Creates a new restaurant.
+   *
+   * @param {Request} request - The incoming request containing the restaurant data.
+   * @returns {Promise<any>} The created restaurant.
+   */
   @Post()
   async createRestaurant(@Req() request: Request) {
     try {
@@ -58,11 +76,18 @@ export class RestaurantsController {
       return createdRestaurant;
     } catch (error) {
       throw new InternalServerErrorException(
-        `Error creating restaurant: ${error}`,
+        `Error creating restaurant: ${error.message}`,
       );
     }
   }
 
+  /**
+   * Updates an existing restaurant by its ID.
+   *
+   * @param {number} id - The ID of the restaurant to update.
+   * @param {Request} request - The incoming request containing the updated restaurant data.
+   * @returns {Promise<any>} A success message.
+   */
   @Put(':id')
   async updateOneRestaurant(@Param('id') id: number, @Req() request: Request) {
     try {
@@ -81,11 +106,17 @@ export class RestaurantsController {
       return { message: `Restaurant with id ${id} updated successfully` };
     } catch (error) {
       throw new InternalServerErrorException(
-        `Error updating restaurant with id ${id}: ${error}`,
+        `Error updating restaurant with id ${id}: ${error.message}`,
       );
     }
   }
 
+  /**
+   * Deletes a restaurant by its ID.
+   *
+   * @param {number} id - The ID of the restaurant to delete.
+   * @returns {Promise<any>} A success message.
+   */
   @Delete(':id')
   async deleteOneRestaurant(@Param('id') id: number) {
     try {
@@ -96,7 +127,7 @@ export class RestaurantsController {
       return { message: `Restaurant with id ${id} deleted successfully` };
     } catch (error) {
       throw new InternalServerErrorException(
-        `Error deleting restaurant with id ${id}: ${error}`,
+        `Error deleting restaurant with id ${id}: ${error.message}`,
       );
     }
   }

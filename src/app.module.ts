@@ -1,3 +1,10 @@
+/**
+ * The AppModule class is the root module of the application.
+ * It imports all the necessary modules and provides the application's controllers and services.
+ * 
+ * @module AppModule
+ */
+
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
@@ -16,19 +23,20 @@ import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
-    DetailsModule,
-    FoodModule,
-    FoodCategoryModule,
-    IngredientModule,
-    LoginModule,
-    OrdersModule,
-    PermissionModule,
-    PosModule,
-    RestaurantsModule,
-    UsersModule,
+    ConfigModule.forRoot(), /**< Loads environment configuration */
+    DetailsModule,          /**< Manages restaurant details */
+    FoodModule,             /**< Handles food-related functionality */
+    FoodCategoryModule,     /**< Manages categories of food */
+    IngredientModule,       /**< Handles ingredients for the food */
+    LoginModule,            /**< Manages user authentication */
+    OrdersModule,           /**< Handles orders and order-related functionality */
+    PermissionModule,       /**< Manages permissions in the system */
+    PosModule,              /**< Handles point-of-sale functionality */
+    RestaurantsModule,      /**< Manages restaurant information */
+    UsersModule,            /**< Manages users and their information */
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController],  /**< Application controller */
+  providers: [AppService],       /**< Core application service */
 })
 export class AppModule {}
+

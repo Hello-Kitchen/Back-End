@@ -7,59 +7,80 @@ import { Counter } from 'src/shared/interfaces/counter.interface';
 
 @Injectable()
 export class UsersService extends DB {
+  /**
+   * Retrieves all users for a specific restaurant.
+   *
+   * @param {number} idRestaurant - The ID of the restaurant.
+   * @returns {Promise<mongoose.mongo.WithId<mongoose.AnyObject>>} The restaurant document with users.
+   */
   async findAll(idRestaurant: number): Promise<mongoose.mongo.WithId<mongoose.AnyObject>> {
     const db = this.getDbConnection();
 
-    return db
-    .collection('restaurant')
-    .findOne(
+    return db.collection('restaurant').findOne(
       { id: idRestaurant },
       { projection: { _id: 0, users: 1 } },
     );
   }
 
-  async findById(
-    idRestaurant: number,
-    id: number,
-  ): Promise<mongoose.mongo.WithId<mongoose.AnyObject>> {
+  /**
+   * Retrieves a single user by their ID.
+   *
+   * @param {number} idRestaurant - The ID of the restaurant.
+   * @param {number} id - The ID of the user.
+   * @returns {Promise<mongoose.mongo.WithId<mongoose.AnyObject>>} The user object if found.
+   */
+  async findById(idRestaurant: number, id: number): Promise<mongoose.mongo.WithId<mongoose.AnyObject>> {
     const db = this.getDbConnection();
 
-    return db
-      .collection('restaurant')
-      .findOne(
-        { id: idRestaurant },
-        { projection: { _id: 0, users: { $elemMatch: { id: id } } } },
-      );
+    const restaurant = await db.collection('restaurant').findOne(
+      { id: idRestaurant },
+      { projection: { _id: 0, users: { $elemMatch: { id: id } } } },
+    );
+
+    return restaurant?.users[0]; // Return the matched user object or undefined
   }
 
-  async createOne(
-    idRestaurant: number,
-    body: ReadableStream<Uint8Array>,
-  ): Promise<UpdateResult> {
+  /**
+   * Creates a new user for a specific restaurant.
+   *
+   * @param {number} idRestaurant - The ID of the restaurant.
+   * @param {ReadableStream<Uint8Array>} body - The user data.
+   * @returns {Promise<UpdateResult>} The update result.
+   */
+  async createOne(idRestaurant: number, body: Record<string, any>): Promise<UpdateResult> {
     const db = this.getDbConnection();
-    const id = await db
-      .collection<Counter>('counter')
-      .findOneAndUpdate(
-        { _id: 'userId' },
-        { $inc: { sequence_value: 1 } },
-        { returnDocument: ReturnDocument.AFTER },
-      );
 
-    body['id'] = id.sequence_value;
-    return db
-      .collection('restaurant')
-      .updateOne({ id: idRestaurant }, { $addToSet: { users: body } });
+    const counterDoc = await db.collection<Counter>('counter').findOneAndUpdate(
+      { _id: 'userId' },
+      { $inc: { sequence_value: 1 } },
+      { returnDocument: ReturnDocument.AFTER },
+    );
+
+    if (!counterDoc) {
+      throw new Error('Counter not found or updated');
+    }
+
+    body['id'] = counterDoc.sequence_value;
+
+    return db.collection('restaurant').updateOne(
+      { id: idRestaurant },
+      { $addToSet: { users: body } },
+    );
   }
 
-  async updateOne(
-    idRestaurant: number,
-    id: number,
-    body: ReadableStream<Uint8Array>,
-  ): Promise<UpdateResult> {
+  /**
+   * Updates an existing user for a specific restaurant.
+   *
+   * @param {number} idRestaurant - The ID of the restaurant.
+   * @param {number} id - The ID of the user.
+   * @param {ReadableStream<Uint8Array>} body - The updated user data.
+   * @returns {Promise<UpdateResult>} The update result.
+   */
+  async updateOne(idRestaurant: number, id: number, body: Record<string, any>): Promise<UpdateResult> {
     const db = this.getDbConnection();
 
     return db.collection('restaurant').updateOne(
-      { id: idRestaurant, 'ingredients.id': id },
+      { id: idRestaurant, 'users.id': id }, // Corrected the filter field
       {
         $set: {
           'users.$.username': body['username'],
@@ -69,11 +90,19 @@ export class UsersService extends DB {
     );
   }
 
+  /**
+   * Deletes a user for a specific restaurant.
+   *
+   * @param {number} idRestaurant - The ID of the restaurant.
+   * @param {number} id - The ID of the user.
+   * @returns {Promise<UpdateResult>} The update result.
+   */
   async deleteOne(idRestaurant: number, id: number): Promise<UpdateResult> {
     const db = this.getDbConnection();
 
-    return db
-      .collection<Restaurant>('restaurant')
-      .updateOne({ id: idRestaurant }, { $pull: { users: { id: id } } });
+    return db.collection<Restaurant>('restaurant').updateOne(
+      { id: idRestaurant },
+      { $pull: { users: { id: id } } },
+    );
   }
 }

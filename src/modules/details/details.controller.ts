@@ -1,3 +1,12 @@
+/**
+ * Controller for managing details associated with a restaurant.
+ * 
+ * The `DetailsController` provides endpoints for retrieving, creating,
+ * updating, and deleting detail objects for a specific restaurant.
+ * 
+ * @controller DetailsController
+ */
+
 import {
   Controller,
   Get,
@@ -16,6 +25,15 @@ import { DetailsService } from './details.service';
 export class DetailsController {
   constructor(private readonly detailsService: DetailsService) {}
 
+  /**
+   * Retrieves all details for a specific restaurant.
+   * 
+   * @param {number} idRestaurant - The unique identifier of the restaurant.
+   * @returns {Promise<any>} - A promise that resolves to an array of details.
+   * @throws {NotFoundException} - Throws if no details are found for the restaurant.
+   * @throws {InternalServerErrorException} - Throws if there is an error during retrieval.
+   * @async
+   */
   @Get()
   async getAllDetail(@Param('idRestaurant') idRestaurant: number) {
     try {
@@ -31,6 +49,16 @@ export class DetailsController {
     }
   }
 
+  /**
+   * Retrieves a specific detail by its ID for a specific restaurant.
+   * 
+   * @param {number} idRestaurant - The unique identifier of the restaurant.
+   * @param {number} id - The unique identifier of the detail.
+   * @returns {Promise<any>} - A promise that resolves to the requested detail.
+   * @throws {NotFoundException} - Throws if the detail is not found.
+   * @throws {InternalServerErrorException} - Throws if there is an error during retrieval.
+   * @async
+   */
   @Get(':id')
   async getOneDetail(
     @Param('idRestaurant') idRestaurant: number,
@@ -52,6 +80,16 @@ export class DetailsController {
     }
   }
 
+  /**
+   * Creates a new detail for a specific restaurant.
+   * 
+   * @param {number} idRestaurant - The unique identifier of the restaurant.
+   * @param {Request} request - The request object containing detail data.
+   * @returns {Promise<any>} - A promise that resolves to the created detail.
+   * @throws {BadRequestException} - Throws if there is an error during creation.
+   * @throws {InternalServerErrorException} - Throws if there is an error during creation.
+   * @async
+   */
   @Post()
   async createDetail(
     @Param('idRestaurant') idRestaurant: number,
@@ -71,6 +109,18 @@ export class DetailsController {
     }
   }
 
+  /**
+   * Updates an existing detail for a specific restaurant.
+   * 
+   * @param {number} idRestaurant - The unique identifier of the restaurant.
+   * @param {number} id - The unique identifier of the detail to be updated.
+   * @param {Request} request - The request object containing updated detail data.
+   * @returns {Promise<any>} - A promise that resolves to a success message.
+   * @throws {NotFoundException} - Throws if the detail is not found.
+   * @throws {BadRequestException} - Throws if no changes are made.
+   * @throws {InternalServerErrorException} - Throws if there is an error during the update.
+   * @async
+   */
   @Put(':id')
   async updateOneDetail(
     @Param('idRestaurant') idRestaurant: number,
@@ -99,6 +149,16 @@ export class DetailsController {
     }
   }
 
+  /**
+   * Deletes a specific detail for a restaurant.
+   * 
+   * @param {number} idRestaurant - The unique identifier of the restaurant.
+   * @param {number} id - The unique identifier of the detail to be deleted.
+   * @returns {Promise<any>} - A promise that resolves to a success message.
+   * @throws {NotFoundException} - Throws if the detail is not found.
+   * @throws {InternalServerErrorException} - Throws if there is an error during deletion.
+   * @async
+   */
   @Delete(':id')
   async deleteOneDetail(
     @Param('idRestaurant') idRestaurant: number,
