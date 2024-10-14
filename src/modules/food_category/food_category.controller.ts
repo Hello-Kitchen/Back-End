@@ -8,7 +8,8 @@ import {
   Delete,
   NotFoundException,
   BadRequestException,
-  InternalServerErrorException,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { FoodCategoryService } from './food_category.service';
 
@@ -29,7 +30,7 @@ export class FoodCategoryController {
    * @param {number} idRestaurant - The ID of the restaurant.
    * @returns {Promise<any>} The list of food categories.
    * @throws {NotFoundException} If no food categories are found.
-   * @throws {InternalServerErrorException} If there's an error fetching the categories.
+   * @throws {HttpException} If there's an error fetching the categories.
    */
   @Get()
   async getAllFoodCategory(@Param('idRestaurant') idRestaurant: number) {
@@ -38,13 +39,14 @@ export class FoodCategoryController {
         Number(idRestaurant),
       );
       if (!foodCategory || foodCategory.length === 0) {
-        throw new NotFoundException('No foodCategory found');
+        throw new NotFoundException();
       }
       return foodCategory.food_category;  // Return the list of food categories
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error fetching foodCategory: ${error}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -55,7 +57,7 @@ export class FoodCategoryController {
    * @param {number} id - The ID of the food category.
    * @returns {Promise<any>} The food category details.
    * @throws {NotFoundException} If the food category with the specified ID is not found.
-   * @throws {InternalServerErrorException} If there's an error fetching the category.
+   * @throws {HttpException} If there's an error fetching the category.
    */
   @Get(':id')
   async getOneFoodCategory(
@@ -68,13 +70,14 @@ export class FoodCategoryController {
         Number(id),
       );
       if (!foodCategory) {
-        throw new NotFoundException(`FoodCategory with id ${id} not found`);
+        throw new NotFoundException();
       }
       return foodCategory.food_category[0];  // Return the specific food category
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error fetching foodCategory with id ${id}: ${error}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -85,7 +88,7 @@ export class FoodCategoryController {
    * @param {Request} request - The HTTP request containing the food category details.
    * @returns {Promise<any>} The created food category details.
    * @throws {BadRequestException} If there's an error creating the food category.
-   * @throws {InternalServerErrorException} If there's an error during the creation process.
+   * @throws {HttpException} If there's an error during the creation process.
    */
   @Post()
   async createFoodCategory(
@@ -97,14 +100,18 @@ export class FoodCategoryController {
         Number(idRestaurant),
         request.body,
       );
-      if (!createdFoodCategory) {
-        throw new BadRequestException('Error creating foodCategory');
+      if (createdFoodCategory.modifiedCount === 0) {
+        throw new NotFoundException();
+      }
+      if (createdFoodCategory.matchedCount === 0) {
+        throw new NotFoundException();
       }
       return createdFoodCategory;  // Return the created food category
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error creating foodCategory: ${error}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -117,7 +124,7 @@ export class FoodCategoryController {
    * @returns {Promise<any>} A success message.
    * @throws {NotFoundException} If the food category with the specified ID is not found.
    * @throws {BadRequestException} If no changes were made to the food category.
-   * @throws {InternalServerErrorException} If there's an error updating the category.
+   * @throws {HttpException} If there's an error updating the category.
    */
   @Put(':id')
   async updateOneFoodCategory(
@@ -132,18 +139,17 @@ export class FoodCategoryController {
         request.body,
       );
       if (result.matchedCount === 0) {
-        throw new NotFoundException(`FoodCategory with id ${id} not found`);
+        throw new NotFoundException();
       }
       if (result.modifiedCount === 0) {
-        throw new BadRequestException(
-          `No changes made to the foodCategory with id ${id}`,
-        );
+        throw new BadRequestException();
       }
-      return { message: `FoodCategory with id ${id} updated successfully` };  // Return success message
+      return;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error updating foodCategory with id ${id}: ${error}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -154,7 +160,7 @@ export class FoodCategoryController {
    * @param {number} id - The ID of the food category to delete.
    * @returns {Promise<any>} A success message.
    * @throws {NotFoundException} If the food category with the specified ID is not found.
-   * @throws {InternalServerErrorException} If there's an error deleting the category.
+   * @throws {HttpException} If there's an error deleting the category.
    */
   @Delete(':id')
   async deleteOneFoodCategory(
@@ -167,13 +173,14 @@ export class FoodCategoryController {
         Number(id),
       );
       if (result.modifiedCount === 0) {
-        throw new NotFoundException(`FoodCategory with id ${id} not found`);
+        throw new NotFoundException();
       }
-      return { message: `FoodCategory with id ${id} deleted successfully` };  // Return success message
+      return;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error deleting foodCategory with id ${id}: ${error}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

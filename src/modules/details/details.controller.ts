@@ -17,7 +17,8 @@ import {
   Delete,
   NotFoundException,
   BadRequestException,
-  InternalServerErrorException,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { DetailsService } from './details.service';
 
@@ -31,7 +32,7 @@ export class DetailsController {
    * @param {number} idRestaurant - The unique identifier of the restaurant.
    * @returns {Promise<any>} - A promise that resolves to an array of details.
    * @throws {NotFoundException} - Throws if no details are found for the restaurant.
-   * @throws {InternalServerErrorException} - Throws if there is an error during retrieval.
+   * @throws {HttpException} - Throws if there is an error during retrieval.
    * @async
    */
   @Get()
@@ -39,13 +40,14 @@ export class DetailsController {
     try {
       const details = await this.detailsService.findAll(Number(idRestaurant));
       if (!details || details.length === 0) {
-        throw new NotFoundException('No details found');
+        throw new NotFoundException();
       }
       return details.details;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error fetching details: ${error}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -56,7 +58,7 @@ export class DetailsController {
    * @param {number} id - The unique identifier of the detail.
    * @returns {Promise<any>} - A promise that resolves to the requested detail.
    * @throws {NotFoundException} - Throws if the detail is not found.
-   * @throws {InternalServerErrorException} - Throws if there is an error during retrieval.
+   * @throws {HttpException} - Throws if there is an error during retrieval.
    * @async
    */
   @Get(':id')
@@ -70,13 +72,14 @@ export class DetailsController {
         Number(id),
       );
       if (!detail) {
-        throw new NotFoundException(`Detail with id ${id} not found`);
+        throw new NotFoundException();
       }
       return detail.details[0];
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error fetching detail with id ${id}: ${error}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -87,7 +90,7 @@ export class DetailsController {
    * @param {Request} request - The request object containing detail data.
    * @returns {Promise<any>} - A promise that resolves to the created detail.
    * @throws {BadRequestException} - Throws if there is an error during creation.
-   * @throws {InternalServerErrorException} - Throws if there is an error during creation.
+   * @throws {HttpException} - Throws if there is an error during creation.
    * @async
    */
   @Post()
@@ -100,12 +103,18 @@ export class DetailsController {
         Number(idRestaurant),
         request.body,
       );
-      if (!createdDetail) {
-        throw new BadRequestException('Error creating detail');
+      if (createdDetail.modifiedCount === 0) {
+        throw new NotFoundException();
+      }
+      if (createdDetail.matchedCount === 0) {
+        throw new NotFoundException();
       }
       return createdDetail;
     } catch (error) {
-      throw new InternalServerErrorException(`Error creating detail: ${error}`);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -118,7 +127,7 @@ export class DetailsController {
    * @returns {Promise<any>} - A promise that resolves to a success message.
    * @throws {NotFoundException} - Throws if the detail is not found.
    * @throws {BadRequestException} - Throws if no changes are made.
-   * @throws {InternalServerErrorException} - Throws if there is an error during the update.
+   * @throws {HttpException} - Throws if there is an error during the update.
    * @async
    */
   @Put(':id')
@@ -134,18 +143,17 @@ export class DetailsController {
         request.body,
       );
       if (result.matchedCount === 0) {
-        throw new NotFoundException(`Detail with id ${id} not found`);
+        throw new NotFoundException();
       }
       if (result.modifiedCount === 0) {
-        throw new BadRequestException(
-          `No changes made to the detail with id ${id}`,
-        );
+        throw new BadRequestException();
       }
-      return { message: `Detail with id ${id} updated successfully` };
+      return;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error updating detail with id ${id}: ${error}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -156,7 +164,7 @@ export class DetailsController {
    * @param {number} id - The unique identifier of the detail to be deleted.
    * @returns {Promise<any>} - A promise that resolves to a success message.
    * @throws {NotFoundException} - Throws if the detail is not found.
-   * @throws {InternalServerErrorException} - Throws if there is an error during deletion.
+   * @throws {HttpException} - Throws if there is an error during deletion.
    * @async
    */
   @Delete(':id')
@@ -170,13 +178,14 @@ export class DetailsController {
         Number(id),
       );
       if (result.modifiedCount === 0) {
-        throw new NotFoundException(`Detail with id ${id} not found`);
+        throw new NotFoundException();
       }
-      return { message: `Detail with id ${id} deleted successfully` };
+      return;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error deleting detail with id ${id}: ${error}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

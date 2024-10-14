@@ -10,6 +10,8 @@ import {
   NotFoundException,
   BadRequestException,
   InternalServerErrorException,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 
@@ -50,8 +52,11 @@ export class OrdersController {
       const result = await queryFunc(Number(idRestaurant))
 
       return result;
-    } catch (err) {
-      throw new InternalServerErrorException(`Error fetching orders: ${err}`);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -81,7 +86,7 @@ export class OrdersController {
         foodOrdered = foodOrdered.orders[0];
       }
       if (!foodOrdered) {
-        throw new NotFoundException(`Order with id ${id} not found`);
+        throw new NotFoundException();
       }
 
       // Grouping food ordered items based on specific attributes
@@ -113,9 +118,10 @@ export class OrdersController {
       foodOrdered.food_ordered = await groupedFoodOrdered;
       return foodOrdered;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error fetching order with id ${id}: ${error}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -132,12 +138,18 @@ export class OrdersController {
   async createOrder(@Req() request: Request, @Param('idRestaurant') idRestaurant: number) {
     try {
       const createdOrder = await this.ordersService.createOne(Number(idRestaurant), request.body);
-      if (!createdOrder) {
-        throw new BadRequestException('Error creating order');
+      if (createdOrder.modifiedCount === 0) {
+        throw new NotFoundException();
+      }
+      if (createdOrder.matchedCount === 0) {
+        throw new NotFoundException();
       }
       return createdOrder;
     } catch (error) {
-      throw new InternalServerErrorException(`Error creating order: ${error}`);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -161,18 +173,17 @@ export class OrdersController {
         request.body,
       );
       if (result.matchedCount === 0) {
-        throw new NotFoundException(`Order with id ${id} not found`);
+        throw new NotFoundException();
       }
       if (result.modifiedCount === 0) {
-        throw new BadRequestException(
-          `No changes made to the order with id ${id}`,
-        );
+        throw new BadRequestException();
       }
-      return { message: `Order with id ${id} updated successfully` };
+      return;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error updating order with id ${id}: ${error}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -190,13 +201,14 @@ export class OrdersController {
     try {
       const result = await this.ordersService.deleteOne(Number(idRestaurant), Number(id));
       if (result.modifiedCount === 0) {
-        throw new NotFoundException(`Order with id ${id} not found`);
+        throw new NotFoundException();
       }
-      return { message: `Order with id ${id} deleted successfully` };
+      return;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error deleting order with id ${id}: ${error}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -214,13 +226,14 @@ export class OrdersController {
     try {
       const result = await this.ordersService.markFoodOrderedReady(Number(idRestaurant), Number(id));
       if (result.modifiedCount === 0) {
-        throw new NotFoundException(`Order with id ${id} not found`);
+        throw new NotFoundException();
       }
-      return { message: `FoodOrder with id ${id} updated successfully` };
+      return;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error updating food_ordered with id ${id}: ${error}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

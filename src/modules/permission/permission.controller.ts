@@ -9,6 +9,8 @@ import {
   NotFoundException,
   BadRequestException,
   InternalServerErrorException,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { PermissionService } from './permission.service';
 
@@ -23,117 +25,165 @@ export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
 
   /**
-   * Retrieves all permissions.
-   *
-   * @returns {Promise<any>} List of permissions.
+   * Retrieves all permissions for a specific restaurant.
+   * 
+   * @param {number} idRestaurant - The unique identifier of the restaurant.
+   * @returns {Promise<any>} - A promise that resolves to an array of permissions.
+   * @throws {NotFoundException} - Throws if no permissions are found for the restaurant.
+   * @throws {HttpException} - Throws if there is an error during retrieval.
+   * @async
    */
   @Get()
-  async getAllPermission() {
+  async getAllPermission(@Param('idRestaurant') idRestaurant: number) {
     try {
-      const permissions = await this.permissionService.findAll();
+      const permissions = await this.permissionService.findAll(Number(idRestaurant));
       if (!permissions || permissions.length === 0) {
-        throw new NotFoundException('No permissions found');
+        throw new NotFoundException();
       }
-      return permissions;
+      return permissions.permissions;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error fetching permissions: ${error}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   /**
-   * Retrieves a specific permission by its ID.
-   *
-   * @param {number} id - The ID of the permission.
-   * @returns {Promise<any>} The requested permission.
+   * Retrieves a specific permission by its ID for a specific restaurant.
+   * 
+   * @param {number} idRestaurant - The unique identifier of the restaurant.
+   * @param {number} id - The unique identifier of the permission.
+   * @returns {Promise<any>} - A promise that resolves to the requested permission.
+   * @throws {NotFoundException} - Throws if the permission is not found.
+   * @throws {HttpException} - Throws if there is an error during retrieval.
+   * @async
    */
   @Get(':id')
-  async getOnePermission(@Param('id') id: number) {
+  async getOnePermission(
+    @Param('idRestaurant') idRestaurant: number,
+    @Param('id') id: number,
+  ) {
     try {
-      const permission = await this.permissionService.findById(Number(id));
-      if (!permission) {
-        throw new NotFoundException(`Permission with id ${id} not found`);
-      }
-      return permission;
-    } catch (error) {
-      throw new InternalServerErrorException(
-        `Error fetching permission with id ${id}: ${error}`,
+      const permission = await this.permissionService.findById(
+        Number(idRestaurant),
+        Number(id),
       );
+      if (!permission) {
+        throw new NotFoundException();
+      }
+      return permission.permissions[0];
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   /**
-   * Creates a new permission.
-   *
-   * @param {Request} request - The incoming request containing the permission data.
-   * @returns {Promise<any>} The created permission.
+   * Creates a new permission for a specific restaurant.
+   * 
+   * @param {number} idRestaurant - The unique identifier of the restaurant.
+   * @param {Request} request - The request object containing permission data.
+   * @returns {Promise<any>} - A promise that resolves to the created permission.
+   * @throws {BadRequestException} - Throws if there is an error during creation.
+   * @throws {HttpException} - Throws if there is an error during creation.
+   * @async
    */
   @Post()
-  async createPermission(@Req() request: Request) {
+  async createPermission(
+    @Param('idRestaurant') idRestaurant: number,
+    @Req() request: Request,
+  ) {
     try {
       const createdPermission = await this.permissionService.createOne(
+        Number(idRestaurant),
         request.body,
       );
-      if (!createdPermission) {
-        throw new BadRequestException('Error creating permission');
+      if (createdPermission.modifiedCount === 0) {
+        throw new NotFoundException();
+      }
+      if (createdPermission.matchedCount === 0) {
+        throw new NotFoundException();
       }
       return createdPermission;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error creating permission: ${error}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   /**
-   * Updates an existing permission by its ID.
-   *
-   * @param {number} id - The ID of the permission to update.
-   * @param {Request} request - The incoming request containing the updated data.
-   * @returns {Promise<any>} Success message.
+   * Updates an existing permission for a specific restaurant.
+   * 
+   * @param {number} idRestaurant - The unique identifier of the restaurant.
+   * @param {number} id - The unique identifier of the permission to be updated.
+   * @param {Request} request - The request object containing updated permission data.
+   * @returns {Promise<any>} - A promise that resolves to a success message.
+   * @throws {NotFoundException} - Throws if the permission is not found.
+   * @throws {BadRequestException} - Throws if no changes are made.
+   * @throws {HttpException} - Throws if there is an error during the update.
+   * @async
    */
   @Put(':id')
-  async updateOnePermission(@Param('id') id: number, @Req() request: Request) {
+  async updateOnePermission(
+    @Param('idRestaurant') idRestaurant: number,
+    @Param('id') id: number,
+    @Req() request: Request,
+  ) {
     try {
       const result = await this.permissionService.updateOne(
+        Number(idRestaurant),
         Number(id),
         request.body,
       );
       if (result.matchedCount === 0) {
-        throw new NotFoundException(`Permission with id ${id} not found`);
+        throw new NotFoundException();
       }
       if (result.modifiedCount === 0) {
-        throw new BadRequestException(
-          `No changes made to the permission with id ${id}`,
-        );
+        throw new BadRequestException();
       }
-      return { message: `Permission with id ${id} updated successfully` };
+      return;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error updating permission with id ${id}: ${error}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   /**
-   * Deletes a permission by its ID.
-   *
-   * @param {number} id - The ID of the permission to delete.
-   * @returns {Promise<any>} Success message.
+   * Deletes a specific permission for a restaurant.
+   * 
+   * @param {number} idRestaurant - The unique identifier of the restaurant.
+   * @param {number} id - The unique identifier of the permission to be deleted.
+   * @returns {Promise<any>} - A promise that resolves to a success message.
+   * @throws {NotFoundException} - Throws if the permission is not found.
+   * @throws {HttpException} - Throws if there is an error during deletion.
+   * @async
    */
   @Delete(':id')
-  async deleteOnePermission(@Param('id') id: number) {
+  async deleteOnePermission(
+    @Param('idRestaurant') idRestaurant: number,
+    @Param('id') id: number,
+  ) {
     try {
-      const result = await this.permissionService.deleteOne(Number(id));
-      if (result.deletedCount === 0) {
-        throw new NotFoundException(`Permission with id ${id} not found`);
-      }
-      return { message: `Permission with id ${id} deleted successfully` };
-    } catch (error) {
-      throw new InternalServerErrorException(
-        `Error deleting permission with id ${id}: ${error}`,
+      const result = await this.permissionService.deleteOne(
+        Number(idRestaurant),
+        Number(id),
       );
+      if (result.modifiedCount === 0) {
+        throw new NotFoundException();
+      }
+      return;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

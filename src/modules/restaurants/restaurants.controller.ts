@@ -9,6 +9,8 @@ import {
   NotFoundException,
   BadRequestException,
   InternalServerErrorException,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { RestaurantsService } from './restaurants.service';
 import { Request } from 'express'; // Ensure to import Request from express
@@ -27,13 +29,14 @@ export class RestaurantsController {
     try {
       const restaurants = await this.restaurantsService.findAll();
       if (!restaurants || restaurants.length === 0) {
-        throw new NotFoundException('No restaurants found');
+        throw new NotFoundException();
       }
       return restaurants;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error fetching restaurants: ${error.message}`, // Use error.message for clearer output
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -48,13 +51,14 @@ export class RestaurantsController {
     try {
       const restaurant = await this.restaurantsService.findById(Number(id));
       if (!restaurant) {
-        throw new NotFoundException(`Restaurant with id ${id} not found`);
+        throw new NotFoundException();
       }
       return restaurant;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error fetching restaurant with id ${id}: ${error.message}`, // Use error.message for clarity
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -71,13 +75,14 @@ export class RestaurantsController {
         request.body,
       );
       if (!createdRestaurant) {
-        throw new BadRequestException('Error creating restaurant');
+        throw new BadRequestException();
       }
       return createdRestaurant;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error creating restaurant: ${error.message}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -96,18 +101,17 @@ export class RestaurantsController {
         request.body,
       );
       if (result.matchedCount === 0) {
-        throw new NotFoundException(`Restaurant with id ${id} not found`);
+        throw new NotFoundException();
       }
       if (result.modifiedCount === 0) {
-        throw new BadRequestException(
-          `No changes made to the restaurant with id ${id}`,
-        );
+        throw new BadRequestException();
       }
-      return { message: `Restaurant with id ${id} updated successfully` };
+      return;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error updating restaurant with id ${id}: ${error.message}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -122,13 +126,14 @@ export class RestaurantsController {
     try {
       const result = await this.restaurantsService.deleteOne(Number(id));
       if (result.deletedCount === 0) {
-        throw new NotFoundException(`Restaurant with id ${id} not found`);
+        throw new NotFoundException();
       }
-      return { message: `Restaurant with id ${id} deleted successfully` };
+      return;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error deleting restaurant with id ${id}: ${error.message}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

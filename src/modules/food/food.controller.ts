@@ -17,7 +17,8 @@ import {
   Delete,
   NotFoundException,
   BadRequestException,
-  InternalServerErrorException,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { FoodService } from './food.service';
 
@@ -31,7 +32,7 @@ export class FoodController {
    * @param {number} idRestaurant - The unique identifier for the restaurant.
    * @returns {Promise<any>} An array of food items.
    * @throws {NotFoundException} if no food items are found.
-   * @throws {InternalServerErrorException} if there is an error during the operation.
+   * @throws {HttpException} if there is an error during the operation.
    * @async
    */
   @Get()
@@ -39,11 +40,14 @@ export class FoodController {
     try {
       const food = await this.foodService.findAll(Number(idRestaurant));
       if (!food || food.length === 0) {
-        throw new NotFoundException('No food found');
+        throw new NotFoundException();
       }
       return food.foods; // Assuming food.foods is of type any[]
     } catch (error) {
-      throw new InternalServerErrorException(`Error fetching food: ${error}`);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -54,7 +58,7 @@ export class FoodController {
    * @param {number} id - The unique identifier for the food item.
    * @returns {Promise<any>} The food item if found.
    * @throws {NotFoundException} if the food item is not found.
-   * @throws {InternalServerErrorException} if there is an error during the operation.
+   * @throws {HttpException} if there is an error during the operation.
    * @async
    */
   @Get(':id')
@@ -68,13 +72,14 @@ export class FoodController {
         Number(id),
       );
       if (!food) {
-        throw new NotFoundException(`Food with id ${id} not found`);
+        throw new NotFoundException();
       }
       return food.foods[0]; // Assuming food.foods is of type any[]
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error fetching food with id ${id}: ${error}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -85,7 +90,7 @@ export class FoodController {
    * @param {Request} request - The request object containing the food item data.
    * @returns {Promise<any>} The created food item.
    * @throws {BadRequestException} if there is an error during creation.
-   * @throws {InternalServerErrorException} if there is an error during the operation.
+   * @throws {HttpException} if there is an error during the operation.
    * @async
    */
   @Post()
@@ -98,12 +103,18 @@ export class FoodController {
         Number(idRestaurant),
         request.body,
       );
-      if (!createdFood) {
-        throw new BadRequestException('Error creating food');
+      if (createdFood.modifiedCount === 0) {
+        throw new NotFoundException();
+      }
+      if (createdFood.matchedCount === 0) {
+        throw new NotFoundException();
       }
       return createdFood; // Assuming createdFood is of type any
     } catch (error) {
-      throw new InternalServerErrorException(`Error creating food: ${error}`);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -116,7 +127,7 @@ export class FoodController {
    * @returns {Promise<any>} A success message if the food item is updated successfully.
    * @throws {NotFoundException} if the food item is not found.
    * @throws {BadRequestException} if no changes are made.
-   * @throws {InternalServerErrorException} if there is an error during the operation.
+   * @throws {HttpException} if there is an error during the operation.
    * @async
    */
   @Put(':id')
@@ -132,18 +143,17 @@ export class FoodController {
         request.body,
       );
       if (result.matchedCount === 0) {
-        throw new NotFoundException(`Food with id ${id} not found`);
+        throw new NotFoundException();
       }
       if (result.modifiedCount === 0) {
-        throw new BadRequestException(
-          `No changes made to the food with id ${id}`,
-        );
+        throw new NotFoundException();
       }
-      return { message: `Food with id ${id} updated successfully` };
+      return;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error updating food with id ${id}: ${error}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -154,7 +164,7 @@ export class FoodController {
    * @param {number} id - The unique identifier for the food item.
    * @returns {Promise<any>} A success message if the food item is deleted successfully.
    * @throws {NotFoundException} if the food item is not found.
-   * @throws {InternalServerErrorException} if there is an error during the operation.
+   * @throws {HttpException} if there is an error during the operation.
    * @async
    */
   @Delete(':id')
@@ -168,13 +178,14 @@ export class FoodController {
         Number(id),
       );
       if (result.modifiedCount === 0) {
-        throw new NotFoundException(`Food with id ${id} not found`);
+        throw new NotFoundException();
       }
-      return { message: `Food with id ${id} deleted successfully` };
+      return;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error deleting food with id ${id}: ${error}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }
