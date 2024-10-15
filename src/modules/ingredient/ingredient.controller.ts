@@ -9,6 +9,8 @@ import {
   NotFoundException,
   BadRequestException,
   InternalServerErrorException,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { IngredientService } from './ingredient.service';
 import { Request } from 'express';
@@ -28,6 +30,9 @@ export class IngredientController {
    * 
    * @param {number} idRestaurant - The ID of the restaurant.
    * @returns {Promise<any>} The list of ingredients.
+   * @throws {NotFoundException} - Throws if no ingredients are found for the restaurant.
+   * @throws {HttpException} - Throws if there is an error during retrieval.
+   * @async
    */
   @Get()
   async getAllIngredient(@Param('idRestaurant') idRestaurant: number) {
@@ -36,13 +41,14 @@ export class IngredientController {
         Number(idRestaurant),
       );
       if (!ingredient || ingredient.length === 0) {
-        throw new NotFoundException('No ingredients found');
+        throw new NotFoundException();
       }
       return ingredient.ingredients; // Ensure `ingredients` is properly defined in your service's return type
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error fetching ingredients: ${error}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -52,6 +58,9 @@ export class IngredientController {
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the ingredient.
    * @returns {Promise<any>} The ingredient.
+   * @throws {NotFoundException} - Throws if the detail is not found.
+   * @throws {HttpException} - Throws if there is an error during retrieval.
+   * @async
    */
   @Get(':id')
   async getOneIngredient(
@@ -64,13 +73,14 @@ export class IngredientController {
         Number(id),
       );
       if (!ingredient) {
-        throw new NotFoundException(`Ingredient with id ${id} not found`);
+        throw new NotFoundException();
       }
       return ingredient.ingredients[0]; // Ensure `ingredients` is properly defined in your service's return type
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error fetching ingredient with id ${id}: ${error}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -80,6 +90,9 @@ export class IngredientController {
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {Request} request - The request containing ingredient data.
    * @returns {Promise<any>} The created ingredient.
+   * @throws {BadRequestException} - Throws if there is an error during creation.
+   * @throws {HttpException} - Throws if there is an error during creation.
+   * @async
    */
   @Post()
   async createIngredient(
@@ -91,14 +104,18 @@ export class IngredientController {
         Number(idRestaurant),
         request.body,
       );
-      if (!createdIngredient) {
-        throw new BadRequestException('Error creating ingredient');
+      if (createdIngredient.modifiedCount === 0) {
+        throw new NotFoundException();
+      }
+      if (createdIngredient.matchedCount === 0) {
+        throw new NotFoundException();
       }
       return createdIngredient;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error creating ingredient: ${error}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -109,6 +126,10 @@ export class IngredientController {
    * @param {number} id - The ID of the ingredient to update.
    * @param {Request} request - The request containing updated ingredient data.
    * @returns {Promise<any>} The update result message.
+   * @throws {NotFoundException} - Throws if the detail is not found.
+   * @throws {BadRequestException} - Throws if no changes are made.
+   * @throws {HttpException} - Throws if there is an error during the update.
+   * @async
    */
   @Put(':id')
   async updateOneIngredient(
@@ -123,18 +144,17 @@ export class IngredientController {
         request.body,
       );
       if (result.matchedCount === 0) {
-        throw new NotFoundException(`Ingredient with id ${id} not found`);
+        throw new NotFoundException();
       }
       if (result.modifiedCount === 0) {
-        throw new BadRequestException(
-          `No changes made to the ingredient with id ${id}`,
-        );
+        throw new BadRequestException();
       }
-      return { message: `Ingredient with id ${id} updated successfully` };
+      return;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error updating ingredient with id ${id}: ${error}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -144,6 +164,9 @@ export class IngredientController {
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the ingredient to delete.
    * @returns {Promise<any>} The delete result message.
+   * @throws {NotFoundException} - Throws if the detail is not found.
+   * @throws {HttpException} - Throws if there is an error during deletion.
+   * @async
    */
   @Delete(':id')
   async deleteOneIngredient(
@@ -156,13 +179,14 @@ export class IngredientController {
         Number(id),
       );
       if (result.modifiedCount === 0) {
-        throw new NotFoundException(`Ingredient with id ${id} not found`);
+        throw new NotFoundException();
       }
-      return { message: `Ingredient with id ${id} deleted successfully` };
+      return;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error deleting ingredient with id ${id}: ${error}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

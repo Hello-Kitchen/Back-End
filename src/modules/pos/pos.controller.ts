@@ -1,4 +1,4 @@
-import { Controller, Get, Param, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import { Controller, Get, Param, NotFoundException, InternalServerErrorException, HttpException, HttpStatus } from '@nestjs/common';
 import { PosService } from './pos.service';
 
 @Controller('api/pos')
@@ -10,6 +10,9 @@ export class PosController {
    *
    * @param {number} id - The ID of the permission to delete.
    * @returns {Promise<any>} Success message.
+   * @throws {NotFoundException} - Throws if the restaurant is not found.
+   * @throws {HttpException} - Throws if there is an error during deletion.
+   * @async
    */
   @Get(':id')
   async getAllDataPOS(@Param('id') id: number) {
@@ -53,10 +56,10 @@ export class PosController {
 
       return resultFood; // Returns the structured food categories and their respective foods
     } catch (error) {
-      // Throws an InternalServerErrorException if an error occurs while fetching data
-      throw new InternalServerErrorException(
-        `Error fetching data for restaurant with id ${id}: ${error.message}`,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }
