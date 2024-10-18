@@ -70,7 +70,7 @@ $ npm run test:cov
 
 ## 📄 Documentation
 
-Comprehensive documentation for the project can be found in the [Wiki section of the GitHub repository](https://github.com/Hello-Kitchen/Back-End/wiki). It includes all relevant technical details, API specifications, and developer guidelines.
+Comprehensive documentation for the project can be found in the [Wiki section of the GitHub repository](https://github.com/Hello-Kitchen/Back-End/wiki).
 
 ## 🤝 Contribution Guidelines
 
