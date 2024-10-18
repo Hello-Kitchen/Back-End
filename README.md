@@ -1,49 +1,77 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+![HelloKitchen banner](./docs/images/banner.png)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# HelloKitchen - Back-End
 
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Welcome to the **HelloKitchen** Back-End repository! This project powers the server-side functionality of the HelloKitchen platform.
 
-## Project setup
+---
+
+## 🛠️ Project Setup
+
+To get started, install the required dependencies:
 
 ```bash
 $ npm install
 ```
 
-## Setup .env
+## ⚙️ Environment Configuration
+
+Create a `.env` file at the root of the project with the following variables:
 
 ```
-SALT_HASH = "encryption salt for login"
-DB_URL_LOCAL = "mongodb://URL_LOCAL:PORT"
-DB_URL = "mongodb+srv://USER:PASSWORD@URL/admin?replicaSet=replicaset&tls=true"
+SALT_HASH = [Salt hash used for login]
+DB_URL_LOCAL = [Database URL for local development]
+DB_URL = [Database URL for production]
 ```
 
-## Compile and run the project
+## 🚀 Running the Project
+
+You can compile and run the project using the following commands:
+
+### Development Mode
 
 ```bash
-# development
 $ npm run start
+```
 
-# watch mode
+### Watch Mode (Auto-reload)
+
+```bash
 $ npm run start:dev
+```
 
-# production mode
+### Production Mode
+
+```bash
 $ npm run start:prod
 ```
 
-## Run tests
+## 🧪 Running Tests
+
+Ensure code quality with the available tests:
+
+### Unit Tests
 
 ```bash
-# unit tests
 $ npm run test
+```
 
-# e2e tests
+### End-to-End (E2E) Tests
+
+```bash
 $ npm run test:e2e
+```
 
-# test coverage
+### Test Coverage
+
+```bash
 $ npm run test:cov
 ```
+
+## 📄 Documentation
+
+Comprehensive documentation for the project can be found in the [Wiki section of the GitHub repository](https://github.com/Hello-Kitchen/Back-End/wiki). It includes all relevant technical details, API specifications, and developer guidelines.
+
+## 🤝 Contribution Guidelines
+
+Currently, this project does **not accept external contributions**. Feel free to explore the codebase, but contribution via pull requests is restricted.
