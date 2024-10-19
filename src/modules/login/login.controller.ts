@@ -1,4 +1,4 @@
-import { Controller, Req, Post, UnauthorizedException, Body, Get } from '@nestjs/common';
+import { Controller, Req, Get, BadRequestException } from '@nestjs/common';
 import { LoginService } from './login.service';
 
 // Controller for handling login requests
@@ -27,7 +27,7 @@ export class LoginController {
       return token; // Return the authentication result
     } catch (error) {
       // Handle authentication failure
-      throw new UnauthorizedException(error.message);
+      throw new BadRequestException(error);
     }
   }
 }

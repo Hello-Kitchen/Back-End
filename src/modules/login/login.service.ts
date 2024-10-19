@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { DB } from 'src/db/db';
 import * as bcrypt from 'bcrypt';
@@ -40,7 +40,7 @@ export class LoginService extends DB {
 
     if (!user) {
       // Throw an error if the user does not exist
-      throw new UnauthorizedException();
+      throw new BadRequestException();
     }
 
     // Hash the provided password using bcrypt
@@ -49,7 +49,7 @@ export class LoginService extends DB {
     // Compare the hashed password with the stored password
     if (password !== user.users[0].password) {
       // Throw an error if the password does not match
-      throw new UnauthorizedException();
+      throw new BadRequestException();
     }
 
     return user.users[0];  // Return the authenticated user if successful
