@@ -43,9 +43,6 @@ export class LoginService extends DB {
       throw new BadRequestException();
     }
 
-    // Hash the provided password using bcrypt
-    password = bcrypt.hashSync(password, process.env.SALT_HASH);
-
     // Compare the hashed password with the stored password
     if (password !== user.users[0].password) {
       // Throw an error if the password does not match
