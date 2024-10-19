@@ -40,7 +40,7 @@ export class LoginService extends DB {
 
     if (!user) {
       // Throw an error if the user does not exist
-      throw new UnauthorizedException('USER NOT FOUND');
+      throw new UnauthorizedException();
     }
 
     // Hash the provided password using bcrypt
@@ -49,7 +49,7 @@ export class LoginService extends DB {
     // Compare the hashed password with the stored password
     if (password !== user.users[0].password) {
       // Throw an error if the password does not match
-      throw new UnauthorizedException('WRONG PASSWORD');
+      throw new UnauthorizedException();
     }
 
     return user.users[0];  // Return the authenticated user if successful
