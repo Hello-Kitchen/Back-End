@@ -17,8 +17,9 @@ import {
   Delete,
   NotFoundException,
   BadRequestException,
-  InternalServerErrorException,
   UseGuards,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { DetailsService } from './details.service';
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';

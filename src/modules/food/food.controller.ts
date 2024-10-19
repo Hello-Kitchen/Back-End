@@ -16,8 +16,8 @@ import {
   Put,
   Delete,
   NotFoundException,
-  BadRequestException,
-  InternalServerErrorException,
+  HttpException,
+  HttpStatus,
   UseGuards,
 } from '@nestjs/common';
 import { FoodService } from './food.service';

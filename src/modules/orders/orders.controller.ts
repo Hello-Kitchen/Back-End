@@ -9,7 +9,8 @@ import {
   Delete,
   NotFoundException,
   BadRequestException,
-  InternalServerErrorException,
+  HttpException,
+  HttpStatus,
   UseGuards,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
