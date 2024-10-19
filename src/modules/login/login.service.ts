@@ -38,7 +38,6 @@ export class LoginService extends DB {
       { projection: { _id: 0, users: { $elemMatch: { username: username } } } },
     );
 
-    console.log(user.users[0].password)
     if (!user) {
       // Throw an error if the user does not exist
       throw new UnauthorizedException('USER NOT FOUND');
@@ -67,7 +66,6 @@ export class LoginService extends DB {
    */
   async login(user: any) {
     const payload = { username: user.username, sub: user.id };
-    console.log(payload)
     return {
       access_token: await this.jwtService.signAsync(payload),  // Generates the JWT token
     };

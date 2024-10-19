@@ -1,4 +1,4 @@
-import { Controller, Req, Post, UnauthorizedException, Body } from '@nestjs/common';
+import { Controller, Req, Post, UnauthorizedException, Body, Get } from '@nestjs/common';
 import { LoginService } from './login.service';
 
 // Controller for handling login requests
@@ -14,7 +14,7 @@ export class LoginController {
    * @returns {Promise<any>} The authentication result.
    * @throws {UnauthorizedException} If authentication fails.
    */
-  @Post()
+  @Get()
   async login(@Req() request: Request) {
     try {
       // Attempt to authenticate the user using the service
@@ -23,12 +23,9 @@ export class LoginController {
         request.body['username'],
         request.body['password'],
       );
-      console.log(auth);
       const token = await this.loginService.login(auth);
-      console.log(token)
       return token; // Return the authentication result
     } catch (error) {
-      console.log(error)
       // Handle authentication failure
       throw new UnauthorizedException(error.message);
     }
