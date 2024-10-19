@@ -9,11 +9,12 @@ import {
   Delete,
   NotFoundException,
   BadRequestException,
-  InternalServerErrorException,
   HttpException,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
+import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 
 @Controller('api/:idRestaurant/orders')
 export class OrdersController {
@@ -40,6 +41,7 @@ export class OrdersController {
    * @returns {Promise<any>} The list of orders.
    * @throws {InternalServerErrorException} If an error occurs while fetching orders.
    */
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getOrders(
     @Query('status') status: string,
@@ -70,6 +72,7 @@ export class OrdersController {
    * @throws {NotFoundException} If the order is not found.
    * @throws {InternalServerErrorException} If an error occurs while fetching the order.
    */
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getOneOrder(@Query('forKDS') forKDS: string, @Param('id') id: number, @Param('idRestaurant') idRestaurant: number) {
     try {
@@ -134,6 +137,7 @@ export class OrdersController {
    * @throws {BadRequestException} If the order creation fails.
    * @throws {InternalServerErrorException} If an error occurs while creating the order.
    */
+  @UseGuards(JwtAuthGuard)
   @Post()
   async createOrder(@Req() request: Request, @Param('idRestaurant') idRestaurant: number) {
     try {
@@ -164,6 +168,7 @@ export class OrdersController {
    * @throws {BadRequestException} If no changes were made to the order.
    * @throws {InternalServerErrorException} If an error occurs while updating the order.
    */
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   async updateOneOrder(@Param('id') id: number, @Req() request: Request, @Param('idRestaurant') idRestaurant: number) {
     try {
@@ -196,6 +201,7 @@ export class OrdersController {
    * @throws {NotFoundException} If the order is not found.
    * @throws {InternalServerErrorException} If an error occurs while deleting the order.
    */
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deleteOneOrder(@Param('id') id: number, @Param('idRestaurant') idRestaurant: number) {
     try {
@@ -221,6 +227,7 @@ export class OrdersController {
    * @throws {NotFoundException} If the order is not found.
    * @throws {InternalServerErrorException} If an error occurs while updating the order status.
    */
+  @UseGuards(JwtAuthGuard)
   @Put('status/:id')
   async ChangeStatusFoodOrdered(@Param('idRestaurant') idRestaurant: number, @Param('id') id: number) {
     try {

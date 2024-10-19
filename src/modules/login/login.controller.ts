@@ -1,30 +1,37 @@
-import { Controller, Req, Post, UnauthorizedException, Body } from '@nestjs/common';
+import { Controller, Req, Get, BadRequestException, Query } from '@nestjs/common';
 import { LoginService } from './login.service';
 
 // Controller for handling login requests
 @Controller('api/login')
 export class LoginController {
-  constructor(private readonly loginService: LoginService) {}
+  constructor(private readonly loginService: LoginService) {
+  }
 
   /**
    * Authenticates a user based on the provided credentials.
    * 
-   * @param {LoginDto} loginData - The login credentials containing username and password.
+   * @param {string} password - The password of the user.
+   * @param {string} username - The username of the user.
+   * @param {number} idRestaurant - The id of the restaurant where containing the user.
    * @returns {Promise<any>} The authentication result.
    * @throws {UnauthorizedException} If authentication fails.
    */
-  @Post()
-  async checkOneInfoUser(@Req() request: Request) {
+  @Get()
+  async login(@Query('password') password: string,
+              @Query('username') username: string,
+              @Query('idRestaurant') idRestaurant: number) {
     try {
       // Attempt to authenticate the user using the service
-      const result = await this.loginService.authenticateUser(
-        request.body['username'],
-        request.body['password'],
+      const auth = await this.loginService.authenticateUser(
+        Number(idRestaurant),
+        username,
+        password,
       );
-      return result; // Return the authentication result
+      const token = await this.loginService.login(auth);
+      return token; // Return the authentication result
     } catch (error) {
       // Handle authentication failure
-      throw new UnauthorizedException(error.message);
+      throw new BadRequestException(error);
     }
   }
 }

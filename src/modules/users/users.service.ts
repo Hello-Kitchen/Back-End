@@ -41,6 +41,24 @@ export class UsersService extends DB {
   }
 
   /**
+   * Retrieves a single user by their username.
+   *
+   * @param {number} idRestaurant - The ID of the restaurant.
+   * @param {string} username - The username of the user.
+   * @returns {Promise<mongoose.mongo.WithId<mongoose.AnyObject>>} The user object if found.
+   */
+  async findOne(idRestaurant: number, username: string): Promise<mongoose.mongo.WithId<mongoose.AnyObject>> {
+    const db = this.getDbConnection();
+
+    const restaurant = await db.collection('restaurant').findOne(
+      { id: idRestaurant },
+      { projection: { _id: 0, users: { $elemMatch: { username: username } } } },
+    );
+
+    return restaurant?.users[0]; // Return the matched user object or undefined
+  }
+
+  /**
    * Creates a new user for a specific restaurant.
    *
    * @param {number} idRestaurant - The ID of the restaurant.

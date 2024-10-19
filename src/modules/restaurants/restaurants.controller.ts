@@ -8,12 +8,13 @@ import {
   Delete,
   NotFoundException,
   BadRequestException,
-  InternalServerErrorException,
   HttpException,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { RestaurantsService } from './restaurants.service';
 import { Request } from 'express'; // Ensure to import Request from express
+import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 
 @Controller('api/restaurants')
 export class RestaurantsController {
@@ -24,6 +25,7 @@ export class RestaurantsController {
    *
    * @returns {Promise<any>} An array of restaurants.
    */
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getAllRestaurants() {
     try {
@@ -46,6 +48,7 @@ export class RestaurantsController {
    * @param {number} id - The ID of the restaurant.
    * @returns {Promise<any>} The restaurant if found.
    */
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getOneRestaurant(@Param('id') id: number) {
     try {
@@ -68,6 +71,7 @@ export class RestaurantsController {
    * @param {Request} request - The incoming request containing the restaurant data.
    * @returns {Promise<any>} The created restaurant.
    */
+  @UseGuards(JwtAuthGuard)
   @Post()
   async createRestaurant(@Req() request: Request) {
     try {
@@ -93,6 +97,7 @@ export class RestaurantsController {
    * @param {Request} request - The incoming request containing the updated restaurant data.
    * @returns {Promise<any>} A success message.
    */
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   async updateOneRestaurant(@Param('id') id: number, @Req() request: Request) {
     try {
@@ -121,6 +126,7 @@ export class RestaurantsController {
    * @param {number} id - The ID of the restaurant to delete.
    * @returns {Promise<any>} A success message.
    */
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deleteOneRestaurant(@Param('id') id: number) {
     try {

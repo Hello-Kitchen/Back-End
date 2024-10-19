@@ -1,5 +1,6 @@
-import { Controller, Get, Param, NotFoundException, InternalServerErrorException, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Param, NotFoundException, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { PosService } from './pos.service';
+import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 
 @Controller('api/pos')
 export class PosController {
@@ -14,6 +15,7 @@ export class PosController {
    * @throws {HttpException} - Throws if there is an error during deletion.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getAllDataPOS(@Param('id') id: number) {
     try {

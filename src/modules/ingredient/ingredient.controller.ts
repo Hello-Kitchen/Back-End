@@ -8,12 +8,13 @@ import {
   Delete,
   NotFoundException,
   BadRequestException,
-  InternalServerErrorException,
   HttpException,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { IngredientService } from './ingredient.service';
 import { Request } from 'express';
+import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 
 /**
  * Controller for managing ingredients within a restaurant.
@@ -23,7 +24,7 @@ import { Request } from 'express';
  */
 @Controller('api/:idRestaurant/ingredient')
 export class IngredientController {
-  constructor(private readonly ingredientService: IngredientService) {}
+  constructor(private readonly ingredientService: IngredientService) { }
 
   /**
    * Retrieves all ingredients for a specific restaurant.
@@ -34,6 +35,7 @@ export class IngredientController {
    * @throws {HttpException} - Throws if there is an error during retrieval.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getAllIngredient(@Param('idRestaurant') idRestaurant: number) {
     try {
@@ -62,6 +64,7 @@ export class IngredientController {
    * @throws {HttpException} - Throws if there is an error during retrieval.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getOneIngredient(
     @Param('idRestaurant') idRestaurant: number,
@@ -94,6 +97,7 @@ export class IngredientController {
    * @throws {HttpException} - Throws if there is an error during creation.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Post()
   async createIngredient(
     @Param('idRestaurant') idRestaurant: number,
@@ -131,6 +135,7 @@ export class IngredientController {
    * @throws {HttpException} - Throws if there is an error during the update.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   async updateOneIngredient(
     @Param('idRestaurant') idRestaurant: number,
@@ -168,6 +173,7 @@ export class IngredientController {
    * @throws {HttpException} - Throws if there is an error during deletion.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deleteOneIngredient(
     @Param('idRestaurant') idRestaurant: number,
