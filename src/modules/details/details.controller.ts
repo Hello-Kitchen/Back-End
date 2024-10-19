@@ -17,10 +17,11 @@ import {
   Delete,
   NotFoundException,
   BadRequestException,
-  HttpException,
-  HttpStatus,
+  InternalServerErrorException,
+  UseGuards,
 } from '@nestjs/common';
 import { DetailsService } from './details.service';
+import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 
 @Controller('api/:idRestaurant/details')
 export class DetailsController {
@@ -35,6 +36,7 @@ export class DetailsController {
    * @throws {HttpException} - Throws if there is an error during retrieval.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getAllDetail(@Param('idRestaurant') idRestaurant: number) {
     try {
@@ -61,6 +63,7 @@ export class DetailsController {
    * @throws {HttpException} - Throws if there is an error during retrieval.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getOneDetail(
     @Param('idRestaurant') idRestaurant: number,
@@ -93,6 +96,7 @@ export class DetailsController {
    * @throws {HttpException} - Throws if there is an error during creation.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Post()
   async createDetail(
     @Param('idRestaurant') idRestaurant: number,
@@ -130,6 +134,7 @@ export class DetailsController {
    * @throws {HttpException} - Throws if there is an error during the update.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   async updateOneDetail(
     @Param('idRestaurant') idRestaurant: number,
@@ -167,6 +172,7 @@ export class DetailsController {
    * @throws {HttpException} - Throws if there is an error during deletion.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deleteOneDetail(
     @Param('idRestaurant') idRestaurant: number,

@@ -20,9 +20,11 @@ import { PermissionModule } from './modules/permission/permission.module';
 import { PosModule } from './modules/pos/pos.module';
 import { RestaurantsModule } from './modules/restaurants/restaurants.module';
 import { UsersModule } from './modules/users/users.module';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
+    PassportModule.register({ defaultStrategy : 'jwt' }), /**< Register new configuration authentification */
     ConfigModule.forRoot(), /**< Loads environment configuration */
     DetailsModule,          /**< Manages restaurant details */
     FoodModule,             /**< Handles food-related functionality */
@@ -33,7 +35,7 @@ import { UsersModule } from './modules/users/users.module';
     PermissionModule,       /**< Manages permissions in the system */
     PosModule,              /**< Handles point-of-sale functionality */
     RestaurantsModule,      /**< Manages restaurant information */
-    UsersModule,            /**< Manages users and their information */
+    UsersModule,            /**< Manages users and their information */          
   ],
   controllers: [AppController],  /**< Application controller */
   providers: [AppService],       /**< Core application service */

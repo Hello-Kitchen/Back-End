@@ -9,11 +9,11 @@ import {
   NotFoundException,
   BadRequestException,
   InternalServerErrorException,
-  HttpException,
-  HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Request } from 'express'; // Ensure to import Request from express
+import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 
 @Controller('api/:idRestaurant/users')
 export class UsersController {
@@ -28,6 +28,7 @@ export class UsersController {
    * @throws {HttpException} - Throws if there is an error during retrieval.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getAllUser(@Param('idRestaurant') idRestaurant: number) {
     try {
@@ -54,6 +55,7 @@ export class UsersController {
    * @throws {HttpException} - Throws if there is an error during retrieval.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getOneUser(@Param('idRestaurant') idRestaurant: number, @Param('id') id: number) {
     try {
@@ -80,6 +82,7 @@ export class UsersController {
    * @throws {HttpException} - Throws if there is an error during creation.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Post()
   async createUser(@Param('idRestaurant') idRestaurant: number, @Req() request: Request) {
     try {
@@ -108,6 +111,7 @@ export class UsersController {
    * @throws {HttpException} - Throws if there is an error during the update.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   async updateOneUser(
     @Param('idRestaurant') idRestaurant: number,
@@ -145,6 +149,7 @@ export class UsersController {
    * @throws {HttpException} - Throws if there is an error during deletion.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deleteOneUser(@Param('idRestaurant') idRestaurant: number, @Param('id') id: number) {
     try {

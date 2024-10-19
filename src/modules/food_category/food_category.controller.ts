@@ -8,10 +8,11 @@ import {
   Delete,
   NotFoundException,
   BadRequestException,
-  HttpException,
-  HttpStatus,
+  InternalServerErrorException,
+  UseGuards,
 } from '@nestjs/common';
 import { FoodCategoryService } from './food_category.service';
+import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 
 /**
  * Controller for managing food categories in a restaurant.
@@ -32,6 +33,7 @@ export class FoodCategoryController {
    * @throws {NotFoundException} If no food categories are found.
    * @throws {HttpException} If there's an error fetching the categories.
    */
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getAllFoodCategory(@Param('idRestaurant') idRestaurant: number) {
     try {
@@ -59,6 +61,7 @@ export class FoodCategoryController {
    * @throws {NotFoundException} If the food category with the specified ID is not found.
    * @throws {HttpException} If there's an error fetching the category.
    */
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getOneFoodCategory(
     @Param('idRestaurant') idRestaurant: number,
@@ -90,6 +93,7 @@ export class FoodCategoryController {
    * @throws {BadRequestException} If there's an error creating the food category.
    * @throws {HttpException} If there's an error during the creation process.
    */
+  @UseGuards(JwtAuthGuard)
   @Post()
   async createFoodCategory(
     @Param('idRestaurant') idRestaurant: number,
@@ -126,6 +130,7 @@ export class FoodCategoryController {
    * @throws {BadRequestException} If no changes were made to the food category.
    * @throws {HttpException} If there's an error updating the category.
    */
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   async updateOneFoodCategory(
     @Param('idRestaurant') idRestaurant: number,
@@ -162,6 +167,7 @@ export class FoodCategoryController {
    * @throws {NotFoundException} If the food category with the specified ID is not found.
    * @throws {HttpException} If there's an error deleting the category.
    */
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deleteOneFoodCategory(
     @Param('idRestaurant') idRestaurant: number,

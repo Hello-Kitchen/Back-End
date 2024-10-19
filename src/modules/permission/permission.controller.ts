@@ -9,10 +9,10 @@ import {
   NotFoundException,
   BadRequestException,
   InternalServerErrorException,
-  HttpException,
-  HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { PermissionService } from './permission.service';
+import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 
 /**
  * Controller for managing permissions.
@@ -33,6 +33,7 @@ export class PermissionController {
    * @throws {HttpException} - Throws if there is an error during retrieval.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getAllPermission(@Param('idRestaurant') idRestaurant: number) {
     try {
@@ -59,6 +60,7 @@ export class PermissionController {
    * @throws {HttpException} - Throws if there is an error during retrieval.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getOnePermission(
     @Param('idRestaurant') idRestaurant: number,
@@ -91,6 +93,7 @@ export class PermissionController {
    * @throws {HttpException} - Throws if there is an error during creation.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Post()
   async createPermission(
     @Param('idRestaurant') idRestaurant: number,
@@ -128,6 +131,7 @@ export class PermissionController {
    * @throws {HttpException} - Throws if there is an error during the update.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   async updateOnePermission(
     @Param('idRestaurant') idRestaurant: number,
@@ -165,6 +169,7 @@ export class PermissionController {
    * @throws {HttpException} - Throws if there is an error during deletion.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deleteOnePermission(
     @Param('idRestaurant') idRestaurant: number,

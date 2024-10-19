@@ -17,10 +17,11 @@ import {
   Delete,
   NotFoundException,
   BadRequestException,
-  HttpException,
-  HttpStatus,
+  InternalServerErrorException,
+  UseGuards,
 } from '@nestjs/common';
 import { FoodService } from './food.service';
+import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 
 @Controller('api/:idRestaurant/food')
 export class FoodController {
@@ -35,6 +36,7 @@ export class FoodController {
    * @throws {HttpException} if there is an error during the operation.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getAllFood(@Param('idRestaurant') idRestaurant: number): Promise<any> {
     try {
@@ -61,6 +63,7 @@ export class FoodController {
    * @throws {HttpException} if there is an error during the operation.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getOneFood(
     @Param('idRestaurant') idRestaurant: number,
@@ -93,6 +96,7 @@ export class FoodController {
    * @throws {HttpException} if there is an error during the operation.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Post()
   async createFood(
     @Param('idRestaurant') idRestaurant: number,
@@ -130,6 +134,7 @@ export class FoodController {
    * @throws {HttpException} if there is an error during the operation.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   async updateOneFood(
     @Param('idRestaurant') idRestaurant: number,
@@ -167,6 +172,7 @@ export class FoodController {
    * @throws {HttpException} if there is an error during the operation.
    * @async
    */
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deleteOneFood(
     @Param('idRestaurant') idRestaurant: number,
