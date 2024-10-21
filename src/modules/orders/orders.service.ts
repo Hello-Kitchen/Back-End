@@ -451,21 +451,26 @@ export class OrdersService extends DB {
   }
 
   /**
- * @brief Increments the 'part' field in a specific order within a restaurant's document.
- * 
- * This method updates the `part` field of an order in the `orders` array of the restaurant document.
- * It increments the value of `part` by 1 for the order identified by `orderId`.
- * 
- * @param {number} restaurantId The ID of the restaurant containing the order.
- * @param {number} orderId The ID of the order whose 'part' field will be incremented.
- * @returns {Promise<WithId<AnyObject>>} Returns the updated restaurant document including the modified order.
- */
-  async incrementOrderPart(restaurantId: number, orderId: number): Promise<WithId<AnyObject>> {
+   * @brief Increments the 'part' field in a specific order within a restaurant's document.
+   *
+   * This method updates the `part` field of an order in the `orders` array of the restaurant document.
+   * It increments the value of `part` by 1 for the order identified by `orderId`.
+   *
+   * @param {number} restaurantId The ID of the restaurant containing the order.
+   * @param {number} orderId The ID of the order whose 'part' field will be incremented.
+   * @returns {Promise<WithId<AnyObject>>} Returns the updated restaurant document including the modified order.
+   */
+  async incrementOrderPart(
+    restaurantId: number,
+    orderId: number,
+  ): Promise<WithId<AnyObject>> {
     const db = this.getDbConnection();
 
-    return await db.collection('restaurant').findOneAndUpdate(
-      { id: restaurantId, 'orders.id': orderId },
-      { $inc: { 'orders.$.part': 1 } },
-    );
+    return await db
+      .collection('restaurant')
+      .findOneAndUpdate(
+        { id: restaurantId, 'orders.id': orderId },
+        { $inc: { 'orders.$.part': 1 } },
+      );
   }
 }

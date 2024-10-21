@@ -307,38 +307,43 @@ export class OrdersController {
   }
 
   /**
- * @brief Marks a specific food order as ready by updating the 'part' field.
- * 
- * This method is responsible for handling HTTP PUT requests to change the `part` of an order,
- * identified by the `idRestaurant` and `id` parameters. It uses the `ordersService` to perform
- * the update and ensures that the operation was successful.
- * 
- * @param {number} idRestaurant The ID of the restaurant where the order is located.
- * @param {number} id The ID of the order that will be modified.
- * @returns {Promise<void>} Returns nothing on success, throws an exception if the order is not found or if there is a server error.
- * 
- * @throws {NotFoundException} If the order to update was not found.
- * @throws {HttpException} For other errors, such as internal server issues.
- */
-@UseGuards(JwtAuthGuard)
-@Put('next/:id')
-async ChangePartOrder(
-  @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
-  @Param('id', PositiveNumberPipe) id: number
-): Promise<void> {
-  try {
-    const result = await this.ordersService.incrementOrderPart(Number(idRestaurant), Number(id));
+   * @brief Marks a specific food order as ready by updating the 'part' field.
+   *
+   * This method is responsible for handling HTTP PUT requests to change the `part` of an order,
+   * identified by the `idRestaurant` and `id` parameters. It uses the `ordersService` to perform
+   * the update and ensures that the operation was successful.
+   *
+   * @param {number} idRestaurant The ID of the restaurant where the order is located.
+   * @param {number} id The ID of the order that will be modified.
+   * @returns {Promise<void>} Returns nothing on success, throws an exception if the order is not found or if there is a server error.
+   *
+   * @throws {NotFoundException} If the order to update was not found.
+   * @throws {HttpException} For other errors, such as internal server issues.
+   */
+  @UseGuards(JwtAuthGuard)
+  @Put('next/:id')
+  async ChangePartOrder(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
+  ): Promise<void> {
+    try {
+      const result = await this.ordersService.incrementOrderPart(
+        Number(idRestaurant),
+        Number(id),
+      );
 
-    if (result.modifiedCount === 0) {
-      throw new NotFoundException();
+      if (result.modifiedCount === 0) {
+        throw new NotFoundException();
+      }
+      return;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
-    return;
-  } catch (error) {
-    if (error instanceof HttpException) {
-      throw error;
-    }
-    throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
   }
-}
-
 }
