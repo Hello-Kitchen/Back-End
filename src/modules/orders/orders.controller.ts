@@ -323,8 +323,8 @@ export class OrdersController {
 @UseGuards(JwtAuthGuard)
 @Put('next/:id')
 async ChangePartOrder(
-  @Param('idRestaurant') idRestaurant: number,
-  @Param('id') id: number
+  @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+  @Param('id', PositiveNumberPipe) id: number
 ): Promise<void> {
   try {
     const result = await this.ordersService.incrementOrderPart(Number(idRestaurant), Number(id));
