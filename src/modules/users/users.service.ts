@@ -4,6 +4,7 @@ import { UpdateResult, ReturnDocument } from 'mongodb';
 import { DB } from 'src/db/db';
 import { Restaurant } from 'src/shared/interfaces/restaurant.interface';
 import { Counter } from 'src/shared/interfaces/counter.interface';
+import { UsersDto } from './DTO/users.dto';
 
 @Injectable()
 export class UsersService extends DB {
@@ -62,7 +63,7 @@ export class UsersService extends DB {
    * Creates a new user for a specific restaurant.
    *
    * @param {number} idRestaurant - The ID of the restaurant.
-   * @param {ReadableStream<Uint8Array>} body - The user data.
+   * @param {UsersDto} body - The user data.
    * @returns {Promise<UpdateResult>} The update result.
    */
   async createOne(idRestaurant: number, body: Record<string, any>): Promise<UpdateResult> {
@@ -91,7 +92,7 @@ export class UsersService extends DB {
    *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the user.
-   * @param {ReadableStream<Uint8Array>} body - The updated user data.
+   * @param {UsersDto} body - The updated user data.
    * @returns {Promise<UpdateResult>} The update result.
    */
   async updateOne(idRestaurant: number, id: number, body: Record<string, any>): Promise<UpdateResult> {

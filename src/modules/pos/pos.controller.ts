@@ -1,6 +1,7 @@
-import { Controller, Get, Param, NotFoundException, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, NotFoundException, HttpException, HttpStatus, UseGuards, UsePipes } from '@nestjs/common';
 import { PosService } from './pos.service';
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
+import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
 
 @Controller('api/pos')
 export class PosController {
@@ -17,7 +18,7 @@ export class PosController {
    */
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async getAllDataPOS(@Param('id') id: number) {
+  async getAllDataPOS(@Param('id', PositiveNumberPipe) id: number) {
     try {
       // Fetches the restaurant data using the provided ID
       const restaurant = await this.posService.findRestaurant(Number(id));

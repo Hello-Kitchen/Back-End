@@ -1,5 +1,7 @@
-import { Controller, Req, Get, BadRequestException, Query } from '@nestjs/common';
+import { Controller, Req, Get, BadRequestException, Query, UsePipes } from '@nestjs/common';
 import { LoginService } from './login.service';
+import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
+import { StringPipe } from 'src/shared/pipe/string.pipe';
 
 // Controller for handling login requests
 @Controller('api/login')
@@ -17,9 +19,9 @@ export class LoginController {
    * @throws {UnauthorizedException} If authentication fails.
    */
   @Get()
-  async login(@Query('password') password: string,
-              @Query('username') username: string,
-              @Query('idRestaurant') idRestaurant: number) {
+  async login(@Query('password', StringPipe) password: string,
+              @Query('username', StringPipe) username: string,
+              @Query('idRestaurant', PositiveNumberPipe) idRestaurant: number) {
     try {
       // Attempt to authenticate the user using the service
       const auth = await this.loginService.authenticateUser(

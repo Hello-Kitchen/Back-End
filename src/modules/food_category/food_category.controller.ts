@@ -11,9 +11,12 @@ import {
   HttpException,
   HttpStatus,
   UseGuards,
+  UsePipes,
 } from '@nestjs/common';
 import { FoodCategoryService } from './food_category.service';
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
+import { FoodCategoryDto } from './DTO/food_category.dto';
+import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
 
 /**
  * Controller for managing food categories in a restaurant.
@@ -36,7 +39,7 @@ export class FoodCategoryController {
    */
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getAllFoodCategory(@Param('idRestaurant') idRestaurant: number) {
+  async getAllFoodCategory(@Param('idRestaurant', PositiveNumberPipe) idRestaurant: number) {
     try {
       const foodCategory = await this.foodCategoryService.findAll(
         Number(idRestaurant),
@@ -65,8 +68,8 @@ export class FoodCategoryController {
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getOneFoodCategory(
-    @Param('idRestaurant') idRestaurant: number,
-    @Param('id') id: number,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
   ) {
     try {
       const foodCategory = await this.foodCategoryService.findById(
@@ -89,7 +92,7 @@ export class FoodCategoryController {
    * Creates a new food category for a specific restaurant.
    * 
    * @param {number} idRestaurant - The ID of the restaurant.
-   * @param {Request} request - The HTTP request containing the food category details.
+   * @param {FoodCategoryDto} createFoodCategoryDto - The HTTP request containing the food category details.
    * @returns {Promise<any>} The created food category details.
    * @throws {BadRequestException} If there's an error creating the food category.
    * @throws {HttpException} If there's an error during the creation process.
@@ -97,13 +100,13 @@ export class FoodCategoryController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async createFoodCategory(
-    @Param('idRestaurant') idRestaurant: number,
-    @Req() request: Request,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Req() createFoodCategoryDto: FoodCategoryDto,
   ) {
     try {
       const createdFoodCategory = await this.foodCategoryService.createOne(
         Number(idRestaurant),
-        request.body,
+        createFoodCategoryDto,
       );
       if (createdFoodCategory.modifiedCount === 0) {
         throw new NotFoundException();
@@ -125,7 +128,7 @@ export class FoodCategoryController {
    * 
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the food category to update.
-   * @param {Request} request - The HTTP request containing the updated food category details.
+   * @param {FoodCategoryDto} updateFoodCategoryDto - The HTTP request containing the updated food category details.
    * @returns {Promise<any>} A success message.
    * @throws {NotFoundException} If the food category with the specified ID is not found.
    * @throws {BadRequestException} If no changes were made to the food category.
@@ -134,15 +137,15 @@ export class FoodCategoryController {
   @UseGuards(JwtAuthGuard)
   @Put(':id')
   async updateOneFoodCategory(
-    @Param('idRestaurant') idRestaurant: number,
-    @Param('id') id: number,
-    @Req() request: Request,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
+    @Req() updateFoodCategoryDto: FoodCategoryDto,
   ) {
     try {
       const result = await this.foodCategoryService.updateOne(
         Number(idRestaurant),
         Number(id),
-        request.body,
+        updateFoodCategoryDto,
       );
       if (result.matchedCount === 0) {
         throw new NotFoundException();
@@ -171,8 +174,8 @@ export class FoodCategoryController {
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deleteOneFoodCategory(
-    @Param('idRestaurant') idRestaurant: number,
-    @Param('id') id: number,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
   ) {
     try {
       const result = await this.foodCategoryService.deleteOne(

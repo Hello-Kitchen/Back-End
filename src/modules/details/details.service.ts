@@ -4,6 +4,7 @@ import { UpdateResult, ReturnDocument } from 'mongodb';
 import { DB } from 'src/db/db';
 import { Restaurant } from 'src/shared/interfaces/restaurant.interface';
 import { Counter } from 'src/shared/interfaces/counter.interface';
+import { DetailDto } from './DTO/detail.dto';
 
 /**
  * Service for managing details associated with restaurants.
@@ -61,14 +62,14 @@ export class DetailsService extends DB {
    * Creates a new detail for a specified restaurant.
    * 
    * @param {number} idRestaurant - The ID of the restaurant.
-   * @param {ReadableStream<Uint8Array>} body - The detail data to be created.
+   * @param {DetailDto} body - The detail data to be created.
    * @returns {Promise<UpdateResult>} 
    *          A promise that resolves to the result of the update operation.
    * @async
    */
   async createOne(
     idRestaurant: number,
-    body: ReadableStream<Uint8Array>,
+    body: DetailDto,
   ): Promise<UpdateResult> {
     const db = this.getDbConnection();
     const id = await db
@@ -90,7 +91,7 @@ export class DetailsService extends DB {
    * 
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the detail to update.
-   * @param {ReadableStream<Uint8Array>} body - The updated detail data.
+   * @param {DetailDto} body - The updated detail data.
    * @returns {Promise<UpdateResult>} 
    *          A promise that resolves to the result of the update operation.
    * @async
@@ -98,7 +99,7 @@ export class DetailsService extends DB {
   async updateOne(
     idRestaurant: number,
     id: number,
-    body: ReadableStream<Uint8Array>,
+    body: DetailDto,
   ): Promise<UpdateResult> {
     const db = this.getDbConnection();
 

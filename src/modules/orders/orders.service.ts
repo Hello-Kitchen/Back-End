@@ -4,6 +4,7 @@ import { UpdateResult, ReturnDocument } from 'mongodb';
 import { DB } from 'src/db/db';
 import { Counter } from 'src/shared/interfaces/counter.interface';
 import { Restaurant } from 'src/shared/interfaces/restaurant.interface';
+import { OrdersDto } from './DTO/orders.dto';
 
 
 @Injectable()
@@ -305,12 +306,12 @@ export class OrdersService extends DB {
  * from a counter collection. Each food item in the `food_ordered` array is also assigned a unique ID.
  * 
  * @param {number} idRestaurant The unique identifier of the restaurant to which the order will be added.
- * @param {ReadableStream<Uint8Array<ArrayBufferLike>>} body A stream containing the order details, including the food items ordered.
+ * @param {OrdersDto} body A stream containing the order details, including the food items ordered.
  * @return {Promise<UpdateResult>} A promise that resolves to the result of the update operation.
  */
   async createOne(
     idRestaurant: number,
-    body: ReadableStream<Uint8Array>,
+    body: OrdersDto,
   ): Promise<UpdateResult> {
     const db = this.getDbConnection();
     const id = await db
@@ -329,7 +330,7 @@ export class OrdersService extends DB {
         { returnDocument: ReturnDocument.AFTER }
       );
 
-      food.id = id.sequence_value;
+      food['id'] = id.sequence_value;
     }
     return db
       .collection('restaurant')
@@ -346,13 +347,13 @@ export class OrdersService extends DB {
  * 
  * @param {number} idRestaurant The unique identifier of the restaurant that contains the order to update.
  * @param {number} id The unique identifier of the order to be updated.
- * @param {ReadableStream<Uint8Array<ArrayBufferLike>>} body A stream containing the updated order details.
+ * @param {OrdersDto} body A stream containing the updated order details.
  * @return {Promise<UpdateResult>} A promise that resolves to the result of the update operation.
  */
   async updateOne(
     idRestaurant: number,
     id: number,
-    body: ReadableStream<Uint8Array>,
+    body: OrdersDto,
   ): Promise<UpdateResult> {
     const db = this.getDbConnection();
 

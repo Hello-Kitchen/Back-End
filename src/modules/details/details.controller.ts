@@ -20,9 +20,13 @@ import {
   UseGuards,
   HttpException,
   HttpStatus,
+  UsePipes,
+  Body,
 } from '@nestjs/common';
 import { DetailsService } from './details.service';
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
+import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
+import { DetailDto } from './DTO/detail.dto';
 
 @Controller('api/:idRestaurant/details')
 export class DetailsController {
@@ -39,7 +43,7 @@ export class DetailsController {
    */
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getAllDetail(@Param('idRestaurant') idRestaurant: number) {
+  async getAllDetail(@Param('idRestaurant', PositiveNumberPipe) idRestaurant: number) {
     try {
       const details = await this.detailsService.findAll(Number(idRestaurant));
       if (!details || details.length === 0) {
@@ -67,8 +71,8 @@ export class DetailsController {
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getOneDetail(
-    @Param('idRestaurant') idRestaurant: number,
-    @Param('id') id: number,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
   ) {
     try {
       const detail = await this.detailsService.findById(
@@ -91,7 +95,7 @@ export class DetailsController {
    * Creates a new detail for a specific restaurant.
    * 
    * @param {number} idRestaurant - The unique identifier of the restaurant.
-   * @param {Request} request - The request object containing detail data.
+   * @param {DetailDto} detailDto - The request object containing detail data.
    * @returns {Promise<any>} - A promise that resolves to the created detail.
    * @throws {BadRequestException} - Throws if there is an error during creation.
    * @throws {HttpException} - Throws if there is an error during creation.
@@ -100,13 +104,13 @@ export class DetailsController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async createDetail(
-    @Param('idRestaurant') idRestaurant: number,
-    @Req() request: Request,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Body() createDetailDto: DetailDto,
   ) {
     try {
       const createdDetail = await this.detailsService.createOne(
         Number(idRestaurant),
-        request.body,
+        createDetailDto,
       );
       if (createdDetail.modifiedCount === 0) {
         throw new NotFoundException();
@@ -128,7 +132,7 @@ export class DetailsController {
    * 
    * @param {number} idRestaurant - The unique identifier of the restaurant.
    * @param {number} id - The unique identifier of the detail to be updated.
-   * @param {Request} request - The request object containing updated detail data.
+   * @param {DetailDto} updateDetailDto - The request object containing updated detail data.
    * @returns {Promise<any>} - A promise that resolves to a success message.
    * @throws {NotFoundException} - Throws if the detail is not found.
    * @throws {BadRequestException} - Throws if no changes are made.
@@ -138,15 +142,15 @@ export class DetailsController {
   @UseGuards(JwtAuthGuard)
   @Put(':id')
   async updateOneDetail(
-    @Param('idRestaurant') idRestaurant: number,
-    @Param('id') id: number,
-    @Req() request: Request,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
+    @Body() updateDetailDto: DetailDto,
   ) {
     try {
       const result = await this.detailsService.updateOne(
         Number(idRestaurant),
         Number(id),
-        request.body,
+        updateDetailDto,
       );
       if (result.matchedCount === 0) {
         throw new NotFoundException();
@@ -176,8 +180,8 @@ export class DetailsController {
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deleteOneDetail(
-    @Param('idRestaurant') idRestaurant: number,
-    @Param('id') id: number,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
   ) {
     try {
       const result = await this.detailsService.deleteOne(

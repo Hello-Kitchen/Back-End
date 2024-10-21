@@ -11,9 +11,11 @@ import {
   HttpException,
   HttpStatus,
   UseGuards,
+  UsePipes,
 } from '@nestjs/common';
 import { PermissionService } from './permission.service';
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
+import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
 
 /**
  * Controller for managing permissions.
@@ -36,7 +38,7 @@ export class PermissionController {
    */
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getAllPermission(@Param('idRestaurant') idRestaurant: number) {
+  async getAllPermission(@Param('idRestaurant', PositiveNumberPipe) idRestaurant: number) {
     try {
       const permissions = await this.permissionService.findAll(Number(idRestaurant));
       if (!permissions || permissions.length === 0) {
@@ -64,8 +66,8 @@ export class PermissionController {
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getOnePermission(
-    @Param('idRestaurant') idRestaurant: number,
-    @Param('id') id: number,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
   ) {
     try {
       const permission = await this.permissionService.findById(
@@ -97,7 +99,7 @@ export class PermissionController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async createPermission(
-    @Param('idRestaurant') idRestaurant: number,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
     @Req() request: Request,
   ) {
     try {
@@ -135,8 +137,8 @@ export class PermissionController {
   @UseGuards(JwtAuthGuard)
   @Put(':id')
   async updateOnePermission(
-    @Param('idRestaurant') idRestaurant: number,
-    @Param('id') id: number,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
     @Req() request: Request,
   ) {
     try {
@@ -173,8 +175,8 @@ export class PermissionController {
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deleteOnePermission(
-    @Param('idRestaurant') idRestaurant: number,
-    @Param('id') id: number,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
   ) {
     try {
       const result = await this.permissionService.deleteOne(

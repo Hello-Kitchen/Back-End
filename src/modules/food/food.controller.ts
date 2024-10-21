@@ -19,9 +19,13 @@ import {
   HttpException,
   HttpStatus,
   UseGuards,
+  Body,
+  UsePipes,
 } from '@nestjs/common';
 import { FoodService } from './food.service';
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
+import { FoodDto } from './DTO/food.dto';
+import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
 
 @Controller('api/:idRestaurant/food')
 export class FoodController {
@@ -38,7 +42,7 @@ export class FoodController {
    */
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getAllFood(@Param('idRestaurant') idRestaurant: number): Promise<any> {
+  async getAllFood(@Param('idRestaurant', PositiveNumberPipe) idRestaurant: number): Promise<any> {
     try {
       const food = await this.foodService.findAll(Number(idRestaurant));
       if (!food || food.length === 0) {
@@ -66,8 +70,8 @@ export class FoodController {
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getOneFood(
-    @Param('idRestaurant') idRestaurant: number,
-    @Param('id') id: number,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
   ): Promise<any> {
     try {
       const food = await this.foodService.findById(
@@ -90,7 +94,7 @@ export class FoodController {
    * Creates a new food item for a specific restaurant.
    * 
    * @param {number} idRestaurant - The unique identifier for the restaurant.
-   * @param {Request} request - The request object containing the food item data.
+   * @param {FoodDto} createFoodDto - The request object containing the food item data.
    * @returns {Promise<any>} The created food item.
    * @throws {BadRequestException} if there is an error during creation.
    * @throws {HttpException} if there is an error during the operation.
@@ -99,13 +103,13 @@ export class FoodController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async createFood(
-    @Param('idRestaurant') idRestaurant: number,
-    @Req() request: Request,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Body() createFoodDto: FoodDto,
   ): Promise<any> {
     try {
       const createdFood = await this.foodService.createOne(
         Number(idRestaurant),
-        request.body,
+        createFoodDto,
       );
       if (createdFood.modifiedCount === 0) {
         throw new NotFoundException();
@@ -127,7 +131,7 @@ export class FoodController {
    * 
    * @param {number} idRestaurant - The unique identifier for the restaurant.
    * @param {number} id - The unique identifier for the food item.
-   * @param {Request} request - The request object containing the updated food item data.
+   * @param {FoodDto} updateFoodDto - The request object containing the updated food item data.
    * @returns {Promise<any>} A success message if the food item is updated successfully.
    * @throws {NotFoundException} if the food item is not found.
    * @throws {BadRequestException} if no changes are made.
@@ -137,15 +141,15 @@ export class FoodController {
   @UseGuards(JwtAuthGuard)
   @Put(':id')
   async updateOneFood(
-    @Param('idRestaurant') idRestaurant: number,
-    @Param('id') id: number,
-    @Req() request: Request,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
+    @Body() updateFoodDto: FoodDto,
   ): Promise<any> {
     try {
       const result = await this.foodService.updateOne(
         Number(idRestaurant),
         Number(id),
-        request.body,
+        updateFoodDto,
       );
       if (result.matchedCount === 0) {
         throw new NotFoundException();
@@ -175,8 +179,8 @@ export class FoodController {
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deleteOneFood(
-    @Param('idRestaurant') idRestaurant: number,
-    @Param('id') id: number,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
   ): Promise<any> {
     try {
       const result = await this.foodService.deleteOne(

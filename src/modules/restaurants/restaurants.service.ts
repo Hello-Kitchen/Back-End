@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import mongoose from 'mongoose';
 import { UpdateResult, DeleteResult } from 'mongodb';
 import { DB } from 'src/db/db';
+import { RestaurantDto } from './DTO/restaurants.dto';
 
 @Injectable()
 export class RestaurantsService extends DB {
@@ -29,7 +30,7 @@ export class RestaurantsService extends DB {
   /**
    * Creates a new restaurant in the database.
    *
-   * @param {mongoose.AnyObject} body - The restaurant data to be inserted.
+   * @param {RestaurantDto} body - The restaurant data to be inserted.
    * @returns {Promise<mongoose.mongo.InsertOneResult<mongoose.AnyObject>>} The result of the insert operation.
    */
   async createOne(
@@ -43,7 +44,7 @@ export class RestaurantsService extends DB {
    * Updates a restaurant by its ID.
    *
    * @param {number} id - The ID of the restaurant to update.
-   * @param {mongoose.AnyObject} body - The updated restaurant data.
+   * @param {RestaurantDto} body - The updated restaurant data.
    * @returns {Promise<UpdateResult>} The result of the update operation.
    */
   async updateOne(

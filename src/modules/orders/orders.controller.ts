@@ -12,9 +12,16 @@ import {
   HttpException,
   HttpStatus,
   UseGuards,
+  Body,
+  UsePipes,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
+import { OrdersDto } from './DTO/orders.dto';
+import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
+import { StatusPipe } from './pipe/status.pipe';
+import { SortPipe } from './pipe/sort.pipe';
+import { ForKDSPipe } from './pipe/forKDS.pipe';
 
 @Controller('api/:idRestaurant/orders')
 export class OrdersController {
@@ -44,9 +51,9 @@ export class OrdersController {
   @UseGuards(JwtAuthGuard)
   @Get()
   async getOrders(
-    @Query('status') status: string,
-    @Query('sort') sort: string,
-    @Param('idRestaurant') idRestaurant: number
+    @Query('status', StatusPipe) status: string,
+    @Query('sort', SortPipe) sort: string,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number
   ) {
     try {
       const queryKey = `${status || ''}${sort || ''}`.trim() || 'default';
@@ -74,7 +81,7 @@ export class OrdersController {
    */
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async getOneOrder(@Query('forKDS') forKDS: string, @Param('id') id: number, @Param('idRestaurant') idRestaurant: number) {
+  async getOneOrder(@Query('forKDS', ForKDSPipe) forKDS: string, @Param('id', PositiveNumberPipe) id: number, @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number) {
     try {
       let foodOrdered;
       // Fetching order details based on the KDS flag
@@ -131,7 +138,7 @@ export class OrdersController {
   /**
    * Creates a new order.
    * 
-   * @param {Request} request - The request object containing order details.
+   * @param {OrdersDto} createOrderDTO - The request object containing order details.
    * @param {number} idRestaurant - The ID of the restaurant.
    * @returns {Promise<any>} The created order.
    * @throws {BadRequestException} If the order creation fails.
@@ -139,9 +146,9 @@ export class OrdersController {
    */
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createOrder(@Req() request: Request, @Param('idRestaurant') idRestaurant: number) {
+  async createOrder(@Body() createOrderDTO: OrdersDto, @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number) {
     try {
-      const createdOrder = await this.ordersService.createOne(Number(idRestaurant), request.body);
+      const createdOrder = await this.ordersService.createOne(Number(idRestaurant), createOrderDTO);
       if (createdOrder.modifiedCount === 0) {
         throw new NotFoundException();
       }
@@ -161,7 +168,7 @@ export class OrdersController {
    * Updates an existing order by its ID.
    * 
    * @param {number} id - The ID of the order to update.
-   * @param {Request} request - The request object containing updated order details.
+   * @param {OrdersDto} updateOrderDTO - The request object containing updated order details.
    * @param {number} idRestaurant - The ID of the restaurant.
    * @returns {Promise<any>} A success message upon successful update.
    * @throws {NotFoundException} If the order is not found.
@@ -170,12 +177,12 @@ export class OrdersController {
    */
   @UseGuards(JwtAuthGuard)
   @Put(':id')
-  async updateOneOrder(@Param('id') id: number, @Req() request: Request, @Param('idRestaurant') idRestaurant: number) {
+  async updateOneOrder(@Param('id', PositiveNumberPipe) id: number, @Body() updateOrderDTO: OrdersDto, @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number) {
     try {
       const result = await this.ordersService.updateOne(
         Number(idRestaurant),
         Number(id),
-        request.body,
+        updateOrderDTO,
       );
       if (result.matchedCount === 0) {
         throw new NotFoundException();
@@ -203,7 +210,7 @@ export class OrdersController {
    */
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async deleteOneOrder(@Param('id') id: number, @Param('idRestaurant') idRestaurant: number) {
+  async deleteOneOrder(@Param('id', PositiveNumberPipe) id: number, @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number) {
     try {
       const result = await this.ordersService.deleteOne(Number(idRestaurant), Number(id));
       if (result.modifiedCount === 0) {
@@ -229,7 +236,7 @@ export class OrdersController {
    */
   @UseGuards(JwtAuthGuard)
   @Put('status/:id')
-  async ChangeStatusFoodOrdered(@Param('idRestaurant') idRestaurant: number, @Param('id') id: number) {
+  async ChangeStatusFoodOrdered(@Param('idRestaurant', PositiveNumberPipe) idRestaurant: number, @Param('id', PositiveNumberPipe) id: number) {
     try {
       const result = await this.ordersService.markFoodOrderedReady(Number(idRestaurant), Number(id));
       if (result.modifiedCount === 0) {

@@ -4,6 +4,7 @@ import { UpdateResult, ReturnDocument } from 'mongodb';
 import { DB } from 'src/db/db';
 import { Restaurant } from 'src/shared/interfaces/restaurant.interface';
 import { Counter } from 'src/shared/interfaces/counter.interface';
+import { FoodCategoryDto } from './DTO/food_category.dto';
 
 /**
  * Service for managing food categories within a restaurant.
@@ -57,12 +58,12 @@ export class FoodCategoryService extends DB {
    * Creates a new food category for a specific restaurant.
    * 
    * @param {number} idRestaurant - The ID of the restaurant.
-   * @param {ReadableStream<Uint8Array>} body - The food category data.
+   * @param {FoodCategoryDto} body - The food category data.
    * @returns {Promise<UpdateResult>} The result of the update operation.
    */
   async createOne(
     idRestaurant: number,
-    body: ReadableStream<Uint8Array>,  // You may consider using a more specific type instead of ReadableStream
+    body: FoodCategoryDto,  // You may consider using a more specific type instead of ReadableStream
   ): Promise<UpdateResult> {
     const db = this.getDbConnection();
     
@@ -95,13 +96,13 @@ export class FoodCategoryService extends DB {
    * 
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the food category to update.
-   * @param {ReadableStream<Uint8Array>} body - The updated food category data.
+   * @param {FoodCategoryDto} body - The updated food category data.
    * @returns {Promise<UpdateResult>} The result of the update operation.
    */
   async updateOne(
     idRestaurant: number,
     id: number,
-    body: ReadableStream<Uint8Array>,  // Consider using a more specific type here as well
+    body: FoodCategoryDto,  // Consider using a more specific type here as well
   ): Promise<UpdateResult> {
     const db = this.getDbConnection();
 

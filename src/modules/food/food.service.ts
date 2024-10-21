@@ -4,6 +4,8 @@ import { UpdateResult, ReturnDocument } from 'mongodb';
 import { DB } from 'src/db/db';
 import { Restaurant } from 'src/shared/interfaces/restaurant.interface';
 import { Counter } from 'src/shared/interfaces/counter.interface';
+import { FoodDto } from './DTO/food.dto';
+import { Food } from './interfaces/food.interface';
 
 /**
  * Service for managing food items in a restaurant.
@@ -64,14 +66,14 @@ export class FoodService extends DB {
    * Creates a new food item for a specific restaurant.
    * 
    * @param {number} idRestaurant - The ID of the restaurant.
-   * @param {ReadableStream<Uint8Array>} body - The details of the food item to create.
+   * @param {FoodDto} body - The details of the food item to create.
    * @returns {Promise<UpdateResult>} 
    *          A promise that resolves to the result of the update operation.
    * @async
    */
   async createOne(
     idRestaurant: number,
-    body: ReadableStream<Uint8Array>,
+    body: FoodDto,
   ): Promise<UpdateResult> {
     const db = this.getDbConnection();
     const id = await db
@@ -93,7 +95,7 @@ export class FoodService extends DB {
    * 
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the food item to update.
-   * @param {ReadableStream<Uint8Array>} body - The updated details of the food item.
+   * @param {FoodDto} body - The updated details of the food item.
    * @returns {Promise<UpdateResult>} 
    *          A promise that resolves to the result of the update operation.
    * @async
@@ -101,7 +103,7 @@ export class FoodService extends DB {
   async updateOne(
     idRestaurant: number,
     id: number,
-    body: ReadableStream<Uint8Array>,
+    body: FoodDto,
   ): Promise<UpdateResult> {
     const db = this.getDbConnection();
 

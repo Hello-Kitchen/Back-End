@@ -11,10 +11,14 @@ import {
   HttpException,
   HttpStatus,
   UseGuards,
+  Body,
+  UsePipes,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Request } from 'express'; // Ensure to import Request from express
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
+import { UsersDto } from './DTO/users.dto';
+import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
 
 @Controller('api/:idRestaurant/users')
 export class UsersController {
@@ -31,7 +35,7 @@ export class UsersController {
    */
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getAllUser(@Param('idRestaurant') idRestaurant: number) {
+  async getAllUser(@Param('idRestaurant', PositiveNumberPipe) idRestaurant: number) {
     try {
       const users = await this.usersService.findAll(Number(idRestaurant));
       if (!users || users.length === 0) {
@@ -58,7 +62,7 @@ export class UsersController {
    */
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async getOneUser(@Param('idRestaurant') idRestaurant: number, @Param('id') id: number) {
+  async getOneUser(@Param('idRestaurant', PositiveNumberPipe) idRestaurant: number, @Param('id', PositiveNumberPipe) id: number) {
     try {
       const user = await this.usersService.findById(Number(idRestaurant), Number(id));
       if (!user) {
@@ -77,7 +81,7 @@ export class UsersController {
    * Creates a new user for a specific restaurant.
    *
    * @param {number} idRestaurant - The ID of the restaurant.
-   * @param {Request} request - The request object containing user data.
+   * @param {UsersDto} createUsersDto - The request object containing user data.
    * @returns {Promise<any>} The created user object.
    * @throws {BadRequestException} - Throws if there is an error during creation.
    * @throws {HttpException} - Throws if there is an error during creation.
@@ -85,9 +89,9 @@ export class UsersController {
    */
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createUser(@Param('idRestaurant') idRestaurant: number, @Req() request: Request) {
+  async createUser(@Param('idRestaurant', PositiveNumberPipe) idRestaurant: number, @Body() createUsersDto: UsersDto) {
     try {
-      const createdUser = await this.usersService.createOne(Number(idRestaurant), request.body);
+      const createdUser = await this.usersService.createOne(Number(idRestaurant), createUsersDto);
       if (!createdUser) {
         throw new BadRequestException();
       }
@@ -105,7 +109,7 @@ export class UsersController {
    *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the user.
-   * @param {Request} request - The request object containing updated user data.
+   * @param {UsersDto} updateUsersDto - The request object containing updated user data.
    * @returns {Promise<any>} A success message.
    * @throws {NotFoundException} - Throws if the user is not found.
    * @throws {BadRequestException} - Throws if no changes are made.
@@ -113,17 +117,18 @@ export class UsersController {
    * @async
    */
   @UseGuards(JwtAuthGuard)
+  @UsePipes()
   @Put(':id')
   async updateOneUser(
-    @Param('idRestaurant') idRestaurant: number,
-    @Param('id') id: number,
-    @Req() request: Request,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
+    @Body() updateUsersDto: UsersDto,
   ) {
     try {
       const result = await this.usersService.updateOne(
         Number(idRestaurant),
         Number(id),
-        request.body,
+        updateUsersDto,
       );
       if (result.matchedCount === 0) {
         throw new NotFoundException();
@@ -152,7 +157,7 @@ export class UsersController {
    */
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async deleteOneUser(@Param('idRestaurant') idRestaurant: number, @Param('id') id: number) {
+  async deleteOneUser(@Param('idRestaurant', PositiveNumberPipe) idRestaurant: number, @Param('id', PositiveNumberPipe) id: number) {
     try {
       const result = await this.usersService.deleteOne(Number(idRestaurant), Number(id));
       if (result.modifiedCount === 0) {
