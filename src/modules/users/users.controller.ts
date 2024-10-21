@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Req,
   Param,
   Post,
   Put,
@@ -12,10 +11,8 @@ import {
   HttpStatus,
   UseGuards,
   Body,
-  UsePipes,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { Request } from 'express'; // Ensure to import Request from express
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 import { UsersDto } from './DTO/users.dto';
 import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
@@ -35,7 +32,9 @@ export class UsersController {
    */
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getAllUser(@Param('idRestaurant', PositiveNumberPipe) idRestaurant: number) {
+  async getAllUser(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+  ) {
     try {
       const users = await this.usersService.findAll(Number(idRestaurant));
       if (!users || users.length === 0) {
@@ -46,7 +45,10 @@ export class UsersController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -62,9 +64,15 @@ export class UsersController {
    */
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async getOneUser(@Param('idRestaurant', PositiveNumberPipe) idRestaurant: number, @Param('id', PositiveNumberPipe) id: number) {
+  async getOneUser(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
+  ) {
     try {
-      const user = await this.usersService.findById(Number(idRestaurant), Number(id));
+      const user = await this.usersService.findById(
+        Number(idRestaurant),
+        Number(id),
+      );
       if (!user) {
         throw new NotFoundException();
       }
@@ -73,7 +81,10 @@ export class UsersController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -89,9 +100,15 @@ export class UsersController {
    */
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createUser(@Param('idRestaurant', PositiveNumberPipe) idRestaurant: number, @Body() createUsersDto: UsersDto) {
+  async createUser(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Body() createUsersDto: UsersDto,
+  ) {
     try {
-      const createdUser = await this.usersService.createOne(Number(idRestaurant), createUsersDto);
+      const createdUser = await this.usersService.createOne(
+        Number(idRestaurant),
+        createUsersDto,
+      );
       if (!createdUser) {
         throw new BadRequestException();
       }
@@ -100,7 +117,10 @@ export class UsersController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -117,7 +137,6 @@ export class UsersController {
    * @async
    */
   @UseGuards(JwtAuthGuard)
-  @UsePipes()
   @Put(':id')
   async updateOneUser(
     @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
@@ -141,7 +160,10 @@ export class UsersController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -157,9 +179,15 @@ export class UsersController {
    */
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async deleteOneUser(@Param('idRestaurant', PositiveNumberPipe) idRestaurant: number, @Param('id', PositiveNumberPipe) id: number) {
+  async deleteOneUser(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
+  ) {
     try {
-      const result = await this.usersService.deleteOne(Number(idRestaurant), Number(id));
+      const result = await this.usersService.deleteOne(
+        Number(idRestaurant),
+        Number(id),
+      );
       if (result.modifiedCount === 0) {
         throw new NotFoundException();
       }
@@ -168,7 +196,10 @@ export class UsersController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

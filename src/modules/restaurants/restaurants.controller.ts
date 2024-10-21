@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Req,
   Param,
   Post,
   Put,
@@ -11,11 +10,9 @@ import {
   HttpException,
   HttpStatus,
   UseGuards,
-  UsePipes,
   Body,
 } from '@nestjs/common';
 import { RestaurantsService } from './restaurants.service';
-import { Request } from 'express'; // Ensure to import Request from express
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
 import { RestaurantDto } from './DTO/restaurants.dto';
@@ -42,7 +39,10 @@ export class RestaurantsController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -65,7 +65,10 @@ export class RestaurantsController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -79,9 +82,8 @@ export class RestaurantsController {
   @Post()
   async createRestaurant(@Body() createRestaurantDto: RestaurantDto) {
     try {
-      const createdRestaurant = await this.restaurantsService.createOne(
-        createRestaurantDto,
-      );
+      const createdRestaurant =
+        await this.restaurantsService.createOne(createRestaurantDto);
       if (!createdRestaurant) {
         throw new BadRequestException();
       }
@@ -90,7 +92,10 @@ export class RestaurantsController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -103,7 +108,10 @@ export class RestaurantsController {
    */
   @UseGuards(JwtAuthGuard)
   @Put(':id')
-  async updateOneRestaurant(@Param('id', PositiveNumberPipe) id: number, @Body() updateRestaurantDto: RestaurantDto) {
+  async updateOneRestaurant(
+    @Param('id', PositiveNumberPipe) id: number,
+    @Body() updateRestaurantDto: RestaurantDto,
+  ) {
     try {
       const result = await this.restaurantsService.updateOne(
         Number(id),
@@ -120,7 +128,10 @@ export class RestaurantsController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -143,7 +154,10 @@ export class RestaurantsController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

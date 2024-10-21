@@ -7,18 +7,17 @@ import { DetailsService } from './details.service';
  * It encapsulates the functionality related to detail management,
  * providing an interface for HTTP requests through the `DetailsController`
  * and implementing the business logic with the `DetailsService`.
- * 
+ *
  * @module DetailsModule
  */
 
 @Module({
   imports: [],
   controllers: [
-    DetailsController /**< Manages incoming requests related to restaurant details. */
+    DetailsController /**< Manages incoming requests related to restaurant details. */,
   ],
   providers: [
-    DetailsService /**< Contains the logic for handling details management for restaurants. */
+    DetailsService /**< Contains the logic for handling details management for restaurants. */,
   ],
 })
 export class DetailsModule {}
-

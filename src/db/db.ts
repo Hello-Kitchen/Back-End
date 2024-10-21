@@ -1,9 +1,9 @@
 /**
  * The DB class handles the connection to the MongoDB database.
- * 
+ *
  * It establishes a connection to a specified database and provides
  * a method to retrieve the database connection.
- * 
+ *
  * @class DB
  */
 
@@ -16,10 +16,10 @@ export class DB {
   /**
    * Initializes a new instance of the DB class and creates a connection
    * to the MongoDB database using the provided DB_URL environment variable.
-   * 
+   *
    * The connection is established with a timeout of 5000ms for server selection,
    * and the specific database used is 'HelloKitchen'.
-   * 
+   *
    * @constructor
    */
   constructor() {
@@ -31,7 +31,7 @@ export class DB {
 
   /**
    * Retrieves the current database connection.
-   * 
+   *
    * @returns {Connection} The mongoose connection to the 'HelloKitchen' database.
    * @memberof DB
    */

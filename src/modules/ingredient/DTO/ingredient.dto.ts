@@ -17,5 +17,5 @@ export class IngredientDto {
   quantity: number;
 
   @IsString()
-  unit: string
+  unit: string;
 }

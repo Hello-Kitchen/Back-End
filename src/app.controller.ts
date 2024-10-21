@@ -1,8 +1,8 @@
 /**
  * The AppController class handles incoming HTTP requests and routes them to the appropriate service methods.
- * 
+ *
  * It uses the `AppService` to handle the core logic and returns responses to the client.
- * 
+ *
  * @class AppController
  */
 
@@ -13,7 +13,7 @@ import { AppService } from './app.service';
 export class AppController {
   /**
    * The constructor injects the `AppService` to handle business logic for the controller.
-   * 
+   *
    * @param {AppService} appService - The service that provides core application logic.
    * @memberof AppController
    */
@@ -21,9 +21,9 @@ export class AppController {
 
   /**
    * Handles GET requests to the root path ('/') and returns a welcome message.
-   * 
+   *
    * This method uses the `AppService` to generate the welcome message for the API.
-   * 
+   *
    * @returns {string} A welcome message from the API.
    * @memberof AppController
    */
@@ -32,4 +32,3 @@ export class AppController {
     return this.appService.Welcome();
   }
 }
-

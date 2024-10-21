@@ -8,20 +8,20 @@ import { DetailDto } from './DTO/detail.dto';
 
 /**
  * Service for managing details associated with restaurants.
- * 
- * The `DetailsService` class extends the `DB` class and provides methods to 
- * interact with the restaurant details in the database. This includes 
+ *
+ * The `DetailsService` class extends the `DB` class and provides methods to
+ * interact with the restaurant details in the database. This includes
  * fetching, creating, updating, and deleting details.
- * 
+ *
  * @extends DB
  */
 @Injectable()
 export class DetailsService extends DB {
   /**
    * Retrieves all details for a specified restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
-   * @returns {Promise<mongoose.mongo.WithId<mongoose.AnyObject>>} 
+   * @returns {Promise<mongoose.mongo.WithId<mongoose.AnyObject>>}
    *          A promise that resolves to the restaurant details.
    * @async
    */
@@ -37,10 +37,10 @@ export class DetailsService extends DB {
 
   /**
    * Retrieves a specific detail by its ID for a specified restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the detail to retrieve.
-   * @returns {Promise<mongoose.mongo.WithId<mongoose.AnyObject>>} 
+   * @returns {Promise<mongoose.mongo.WithId<mongoose.AnyObject>>}
    *          A promise that resolves to the specific detail.
    * @async
    */
@@ -60,10 +60,10 @@ export class DetailsService extends DB {
 
   /**
    * Creates a new detail for a specified restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {DetailDto} body - The detail data to be created.
-   * @returns {Promise<UpdateResult>} 
+   * @returns {Promise<UpdateResult>}
    *          A promise that resolves to the result of the update operation.
    * @async
    */
@@ -88,11 +88,11 @@ export class DetailsService extends DB {
 
   /**
    * Updates an existing detail for a specified restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the detail to update.
    * @param {DetailDto} body - The updated detail data.
-   * @returns {Promise<UpdateResult>} 
+   * @returns {Promise<UpdateResult>}
    *          A promise that resolves to the result of the update operation.
    * @async
    */
@@ -107,10 +107,10 @@ export class DetailsService extends DB {
       { id: idRestaurant, 'details.id': id },
       {
         $set: {
-          'details.$.name': body['name'],            // Update the name of the detail.
-          'details.$.multiple': body['multiple'],      // Update the multiple field.
+          'details.$.name': body['name'], // Update the name of the detail.
+          'details.$.multiple': body['multiple'], // Update the multiple field.
           'details.$.id_restaurant': body['id_restaurant'], // Update the restaurant ID.
-          'details.$.data': body['data'],              // Update the detail data.
+          'details.$.data': body['data'], // Update the detail data.
         },
       },
     );
@@ -118,10 +118,10 @@ export class DetailsService extends DB {
 
   /**
    * Deletes a specific detail for a specified restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the detail to delete.
-   * @returns {Promise<UpdateResult>} 
+   * @returns {Promise<UpdateResult>}
    *          A promise that resolves to the result of the update operation.
    * @async
    */

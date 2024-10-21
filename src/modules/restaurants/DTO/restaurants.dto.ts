@@ -1,6 +1,6 @@
-import { IsString, IsNotEmpty, IsNumber, IsBoolean, IsArray } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsArray } from 'class-validator';
 import { DetailDto } from 'src/modules/details/DTO/detail.dto';
-import { IngredientDto } from 'src/modules/ingredient/DTO/ingredient.dto'; 
+import { IngredientDto } from 'src/modules/ingredient/DTO/ingredient.dto';
 import { FoodCategoryDto } from 'src/modules/food_category/DTO/food_category.dto';
 import { FoodDto } from 'src/modules/food/DTO/food.dto';
 import { OrdersDto } from 'src/modules/orders/DTO/orders.dto';

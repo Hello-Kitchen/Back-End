@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, IsNumber, IsBoolean, IsArray } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  IsBoolean,
+  IsArray,
+} from 'class-validator';
 
 export class DetailDto {
   @IsString()

@@ -9,9 +9,9 @@ import { Counter } from 'src/shared/interfaces/counter.interface';
 export class PermissionService extends DB {
   /**
    * Retrieves all permission for a specified restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
-   * @returns {Promise<mongoose.mongo.WithId<mongoose.AnyObject>>} 
+   * @returns {Promise<mongoose.mongo.WithId<mongoose.AnyObject>>}
    *          A promise that resolves to the restaurant permission.
    * @async
    */
@@ -27,10 +27,10 @@ export class PermissionService extends DB {
 
   /**
    * Retrieves a specific permission by its ID for a specified restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the permission to retrieve.
-   * @returns {Promise<mongoose.mongo.WithId<mongoose.AnyObject>>} 
+   * @returns {Promise<mongoose.mongo.WithId<mongoose.AnyObject>>}
    *          A promise that resolves to the specific permission.
    * @async
    */
@@ -50,10 +50,10 @@ export class PermissionService extends DB {
 
   /**
    * Creates a new permission for a specified restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {ReadableStream<Uint8Array>} body - The permission data to be created.
-   * @returns {Promise<UpdateResult>} 
+   * @returns {Promise<UpdateResult>}
    *          A promise that resolves to the result of the update operation.
    * @async
    */
@@ -78,11 +78,11 @@ export class PermissionService extends DB {
 
   /**
    * Updates an existing permission for a specified restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the permission to update.
    * @param {ReadableStream<Uint8Array>} body - The updated permission data.
-   * @returns {Promise<UpdateResult>} 
+   * @returns {Promise<UpdateResult>}
    *          A promise that resolves to the result of the update operation.
    * @async
    */
@@ -96,19 +96,17 @@ export class PermissionService extends DB {
     return db.collection('restaurant').updateOne(
       { id: idRestaurant, 'permission.id': id },
       {
-        $set: {
-          
-        },
+        $set: { body },
       },
     );
   }
 
   /**
    * Deletes a specific permission for a specified restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the permission to delete.
-   * @returns {Promise<UpdateResult>} 
+   * @returns {Promise<UpdateResult>}
    *          A promise that resolves to the result of the update operation.
    * @async
    */

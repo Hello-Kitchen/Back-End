@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Req,
   Param,
   Post,
   Put,
@@ -12,10 +11,8 @@ import {
   HttpStatus,
   UseGuards,
   Body,
-  UsePipes,
 } from '@nestjs/common';
 import { IngredientService } from './ingredient.service';
-import { Request } from 'express';
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 import { IngredientDto } from './DTO/ingredient.dto';
 import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
@@ -28,11 +25,11 @@ import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
  */
 @Controller('api/:idRestaurant/ingredient')
 export class IngredientController {
-  constructor(private readonly ingredientService: IngredientService) { }
+  constructor(private readonly ingredientService: IngredientService) {}
 
   /**
    * Retrieves all ingredients for a specific restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @returns {Promise<any>} The list of ingredients.
    * @throws {NotFoundException} - Throws if no ingredients are found for the restaurant.
@@ -41,7 +38,9 @@ export class IngredientController {
    */
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getAllIngredient(@Param('idRestaurant', PositiveNumberPipe) idRestaurant: number) {
+  async getAllIngredient(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+  ) {
     try {
       const ingredient = await this.ingredientService.findAll(
         Number(idRestaurant),
@@ -54,13 +53,16 @@ export class IngredientController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   /**
    * Retrieves a specific ingredient by its ID for a given restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the ingredient.
    * @returns {Promise<any>} The ingredient.
@@ -87,13 +89,16 @@ export class IngredientController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   /**
    * Creates a new ingredient for a specific restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {IngredientDto} createIngredientDto - The request containing ingredient data.
    * @returns {Promise<any>} The created ingredient.
@@ -123,13 +128,16 @@ export class IngredientController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   /**
    * Updates an existing ingredient for a specific restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the ingredient to update.
    * @param {IngredientDto} updateIngredientDto - The request containing updated ingredient data.
@@ -163,13 +171,16 @@ export class IngredientController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   /**
    * Deletes a specific ingredient for a restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the ingredient to delete.
    * @returns {Promise<any>} The delete result message.
@@ -196,7 +207,10 @@ export class IngredientController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

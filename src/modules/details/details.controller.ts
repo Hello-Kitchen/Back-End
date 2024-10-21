@@ -1,16 +1,15 @@
 /**
  * Controller for managing details associated with a restaurant.
- * 
+ *
  * The `DetailsController` provides endpoints for retrieving, creating,
  * updating, and deleting detail objects for a specific restaurant.
- * 
+ *
  * @controller DetailsController
  */
 
 import {
   Controller,
   Get,
-  Req,
   Param,
   Post,
   Put,
@@ -20,7 +19,6 @@ import {
   UseGuards,
   HttpException,
   HttpStatus,
-  UsePipes,
   Body,
 } from '@nestjs/common';
 import { DetailsService } from './details.service';
@@ -34,7 +32,7 @@ export class DetailsController {
 
   /**
    * Retrieves all details for a specific restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The unique identifier of the restaurant.
    * @returns {Promise<any>} - A promise that resolves to an array of details.
    * @throws {NotFoundException} - Throws if no details are found for the restaurant.
@@ -43,7 +41,9 @@ export class DetailsController {
    */
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getAllDetail(@Param('idRestaurant', PositiveNumberPipe) idRestaurant: number) {
+  async getAllDetail(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+  ) {
     try {
       const details = await this.detailsService.findAll(Number(idRestaurant));
       if (!details || details.length === 0) {
@@ -54,13 +54,16 @@ export class DetailsController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   /**
    * Retrieves a specific detail by its ID for a specific restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The unique identifier of the restaurant.
    * @param {number} id - The unique identifier of the detail.
    * @returns {Promise<any>} - A promise that resolves to the requested detail.
@@ -87,13 +90,16 @@ export class DetailsController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   /**
    * Creates a new detail for a specific restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The unique identifier of the restaurant.
    * @param {DetailDto} detailDto - The request object containing detail data.
    * @returns {Promise<any>} - A promise that resolves to the created detail.
@@ -123,13 +129,16 @@ export class DetailsController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   /**
    * Updates an existing detail for a specific restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The unique identifier of the restaurant.
    * @param {number} id - The unique identifier of the detail to be updated.
    * @param {DetailDto} updateDetailDto - The request object containing updated detail data.
@@ -163,13 +172,16 @@ export class DetailsController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   /**
    * Deletes a specific detail for a restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The unique identifier of the restaurant.
    * @param {number} id - The unique identifier of the detail to be deleted.
    * @returns {Promise<any>} - A promise that resolves to a success message.
@@ -196,7 +208,10 @@ export class DetailsController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

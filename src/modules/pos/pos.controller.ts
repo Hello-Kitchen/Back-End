@@ -1,11 +1,19 @@
-import { Controller, Get, Param, NotFoundException, HttpException, HttpStatus, UseGuards, UsePipes } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  NotFoundException,
+  HttpException,
+  HttpStatus,
+  UseGuards,
+} from '@nestjs/common';
 import { PosService } from './pos.service';
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
 
 @Controller('api/pos')
 export class PosController {
-  constructor(private readonly posService: PosService) {} 
+  constructor(private readonly posService: PosService) {}
 
   /**
    * Get Data by the id restaurant.
@@ -37,7 +45,8 @@ export class PosController {
           price: food.price,
           // Filters details that match the food item's details
           details: restaurant.details.filter(
-            (detail) => food.details != null && food.details.includes(detail.id),
+            (detail) =>
+              food.details != null && food.details.includes(detail.id),
           ),
           // Filters ingredients that match the food item's ingredients
           ingredients: restaurant.ingredients.filter(
@@ -62,7 +71,10 @@ export class PosController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

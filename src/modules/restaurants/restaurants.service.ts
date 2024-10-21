@@ -22,7 +22,9 @@ export class RestaurantsService extends DB {
    * @param {number} id - The ID of the restaurant.
    * @returns {Promise<mongoose.mongo.WithId<mongoose.AnyObject>>} The restaurant if found.
    */
-  async findById(id: number): Promise<mongoose.mongo.WithId<mongoose.AnyObject>> {
+  async findById(
+    id: number,
+  ): Promise<mongoose.mongo.WithId<mongoose.AnyObject>> {
     const db = this.getDbConnection();
     return db.collection('restaurant').findOne({ id });
   }
@@ -34,7 +36,7 @@ export class RestaurantsService extends DB {
    * @returns {Promise<mongoose.mongo.InsertOneResult<mongoose.AnyObject>>} The result of the insert operation.
    */
   async createOne(
-    body: mongoose.AnyObject, // Changed from ReadableStream<Uint8Array> to the correct type
+    body: RestaurantDto, // Changed from ReadableStream<Uint8Array> to the correct type
   ): Promise<mongoose.mongo.InsertOneResult<mongoose.AnyObject>> {
     const db = this.getDbConnection();
     return db.collection('restaurant').insertOne(body);
@@ -49,7 +51,7 @@ export class RestaurantsService extends DB {
    */
   async updateOne(
     id: number,
-    body: mongoose.AnyObject, // Changed from ReadableStream<Uint8Array> to the correct type
+    body: RestaurantDto, // Changed from ReadableStream<Uint8Array> to the correct type
   ): Promise<UpdateResult> {
     const db = this.getDbConnection();
     return db.collection('restaurant').updateOne({ id }, { $set: body });
