@@ -2,20 +2,23 @@ import { Type } from 'class-transformer';
 import {
   IsString,
   IsNotEmpty,
-  IsNumber,
   IsBoolean,
   IsArray,
-  IsObject,
   ValidateNested,
+  IsEnum,
 } from 'class-validator';
 
+enum DataType {
+  TYPE1 = 'text',
+  TYPE2 = 'food',
+}
 
 class DataDto {
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @IsString()
+  @IsEnum(DataType)
   @IsNotEmpty()
   type: string;
 }

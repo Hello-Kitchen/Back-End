@@ -7,10 +7,17 @@ import {
   IsArray,
   IsObject,
   ValidateNested,
+  IsEnum,
 } from 'class-validator';
 
+enum ModsIngredientType {
+  TYPE1 = 'DEL',
+  TYPE2 = 'ADD',
+  TYPE3 = 'ALE',
+}
+
 class ModsIngredient {
-  @IsString()
+  @IsEnum(ModsIngredientType)
   @IsNotEmpty()
   type: string;
 
