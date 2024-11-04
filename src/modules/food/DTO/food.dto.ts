@@ -14,8 +14,10 @@ export class FoodDto {
   id_category: number;
 
   @IsArray()
+  @IsNumber({}, { each: true })
   ingredients: number[];
 
   @IsArray()
+  @IsNumber({}, { each: true })
   details: number[];
 }
