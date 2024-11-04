@@ -6,6 +6,17 @@ import {
   IsArray,
 } from 'class-validator';
 
+
+class DataDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  type: string;
+}
+
 export class DetailDto {
   @IsString()
   @IsNotEmpty()
@@ -17,5 +28,5 @@ export class DetailDto {
 
   @IsArray()
   @IsNotEmpty()
-  data: { type: string, name: string }[];
+  data: DataDto[]
 }

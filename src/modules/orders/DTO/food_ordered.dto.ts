@@ -7,6 +7,16 @@ import {
   IsObject,
 } from 'class-validator';
 
+class ModsIngredient {
+  @IsString()
+  @IsNotEmpty()
+  type: string;
+
+  @IsString()
+  @IsNotEmpty()
+  ingredient: string;
+}
+
 export class FoodOrderedDto {
   @IsNumber()
   @IsNotEmpty()
@@ -20,7 +30,7 @@ export class FoodOrderedDto {
   part: number;
 
   @IsArray()
-  mods_ingredients: { type: string; ingredient: string }[];
+  mods_ingredients: ModsIngredient[];
 
   @IsArray()
   details: string[];
