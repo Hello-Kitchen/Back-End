@@ -4,6 +4,7 @@ import { UpdateResult, ReturnDocument } from 'mongodb';
 import { DB } from 'src/db/db';
 import { Restaurant } from 'src/shared/interfaces/restaurant.interface';
 import { Counter } from 'src/shared/interfaces/counter.interface';
+import { IngredientDto } from './DTO/ingredient.dto';
 
 /**
  * Service for managing ingredients within a restaurant.
@@ -12,7 +13,7 @@ import { Counter } from 'src/shared/interfaces/counter.interface';
 export class IngredientService extends DB {
   /**
    * Retrieves all ingredients for a specific restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @returns {Promise<mongoose.mongo.WithId<mongoose.AnyObject>>} The restaurant's ingredients.
    */
@@ -31,7 +32,7 @@ export class IngredientService extends DB {
 
   /**
    * Retrieves a specific ingredient by its ID for a given restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the ingredient.
    * @returns {Promise<mongoose.mongo.WithId<mongoose.AnyObject>>} The ingredient.
@@ -52,14 +53,14 @@ export class IngredientService extends DB {
 
   /**
    * Creates a new ingredient for a specific restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
-   * @param {any} body - The ingredient data to be added.
+   * @param {IngredientDto} body - The ingredient data to be added.
    * @returns {Promise<UpdateResult>} The result of the update operation.
    */
   async createOne(
     idRestaurant: number,
-    body: any, // Change type based on your actual body structure
+    body: IngredientDto, // Change type based on your actual body structure
   ): Promise<UpdateResult> {
     const db = this.getDbConnection();
     const id = await db
@@ -70,7 +71,7 @@ export class IngredientService extends DB {
         { returnDocument: ReturnDocument.AFTER },
       );
 
-    body.id = id.sequence_value; // Assuming the body is mutable
+    body['id'] = id.sequence_value; // Assuming the body is mutable
     return db
       .collection('restaurant')
       .updateOne({ id: idRestaurant }, { $addToSet: { ingredients: body } });
@@ -78,16 +79,16 @@ export class IngredientService extends DB {
 
   /**
    * Updates an existing ingredient for a specific restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the ingredient to update.
-   * @param {any} body - The updated ingredient data.
+   * @param {IngredientDto} body - The updated ingredient data.
    * @returns {Promise<UpdateResult>} The result of the update operation.
    */
   async updateOne(
     idRestaurant: number,
     id: number,
-    body: any, // Change type based on your actual body structure
+    body: IngredientDto, // Change type based on your actual body structure
   ): Promise<UpdateResult> {
     const db = this.getDbConnection();
 
@@ -97,7 +98,8 @@ export class IngredientService extends DB {
         $set: {
           'ingredients.$.name': body.name,
           'ingredients.$.price': body.price,
-          'ingredients.$.id_restaurant': body.id_restaurant,
+          'ingredients.$.quantity': body.quantity,
+          'ingredients.$.unit': body.unit,
         },
       },
     );
@@ -105,7 +107,7 @@ export class IngredientService extends DB {
 
   /**
    * Deletes a specific ingredient for a restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the ingredient to delete.
    * @returns {Promise<UpdateResult>} The result of the delete operation.

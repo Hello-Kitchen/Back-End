@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { PermissionService } from './permission.service';
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
+import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
 
 /**
  * Controller for managing permissions.
@@ -27,7 +28,7 @@ export class PermissionController {
 
   /**
    * Retrieves all permissions for a specific restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The unique identifier of the restaurant.
    * @returns {Promise<any>} - A promise that resolves to an array of permissions.
    * @throws {NotFoundException} - Throws if no permissions are found for the restaurant.
@@ -36,9 +37,13 @@ export class PermissionController {
    */
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getAllPermission(@Param('idRestaurant') idRestaurant: number) {
+  async getAllPermission(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+  ) {
     try {
-      const permissions = await this.permissionService.findAll(Number(idRestaurant));
+      const permissions = await this.permissionService.findAll(
+        Number(idRestaurant),
+      );
       if (!permissions || permissions.length === 0) {
         throw new NotFoundException();
       }
@@ -47,13 +52,16 @@ export class PermissionController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   /**
    * Retrieves a specific permission by its ID for a specific restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The unique identifier of the restaurant.
    * @param {number} id - The unique identifier of the permission.
    * @returns {Promise<any>} - A promise that resolves to the requested permission.
@@ -64,8 +72,8 @@ export class PermissionController {
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getOnePermission(
-    @Param('idRestaurant') idRestaurant: number,
-    @Param('id') id: number,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
   ) {
     try {
       const permission = await this.permissionService.findById(
@@ -80,13 +88,16 @@ export class PermissionController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   /**
    * Creates a new permission for a specific restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The unique identifier of the restaurant.
    * @param {Request} request - The request object containing permission data.
    * @returns {Promise<any>} - A promise that resolves to the created permission.
@@ -97,7 +108,7 @@ export class PermissionController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async createPermission(
-    @Param('idRestaurant') idRestaurant: number,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
     @Req() request: Request,
   ) {
     try {
@@ -116,13 +127,16 @@ export class PermissionController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   /**
    * Updates an existing permission for a specific restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The unique identifier of the restaurant.
    * @param {number} id - The unique identifier of the permission to be updated.
    * @param {Request} request - The request object containing updated permission data.
@@ -135,8 +149,8 @@ export class PermissionController {
   @UseGuards(JwtAuthGuard)
   @Put(':id')
   async updateOnePermission(
-    @Param('idRestaurant') idRestaurant: number,
-    @Param('id') id: number,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
     @Req() request: Request,
   ) {
     try {
@@ -156,13 +170,16 @@ export class PermissionController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   /**
    * Deletes a specific permission for a restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The unique identifier of the restaurant.
    * @param {number} id - The unique identifier of the permission to be deleted.
    * @returns {Promise<any>} - A promise that resolves to a success message.
@@ -173,8 +190,8 @@ export class PermissionController {
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deleteOnePermission(
-    @Param('idRestaurant') idRestaurant: number,
-    @Param('id') id: number,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
   ) {
     try {
       const result = await this.permissionService.deleteOne(
@@ -189,7 +206,10 @@ export class PermissionController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

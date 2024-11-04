@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { DB } from '../../db/db';
 import mongoose from 'mongoose';
 
@@ -12,9 +16,11 @@ export class PosService extends DB {
    * @throws {NotFoundException} If the restaurant is not found.
    * @throws {InternalServerErrorException} For any unexpected errors during the database operation.
    */
-  async findRestaurant(id: number): Promise<mongoose.mongo.WithId<mongoose.AnyObject> | null> {
+  async findRestaurant(
+    id: number,
+  ): Promise<mongoose.mongo.WithId<mongoose.AnyObject> | null> {
     const db = this.getDbConnection();
-    
+
     try {
       const restaurant = await db.collection('restaurant').findOne({ id: id });
       if (!restaurant) {

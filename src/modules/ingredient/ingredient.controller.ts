@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Req,
   Param,
   Post,
   Put,
@@ -11,10 +10,12 @@ import {
   HttpException,
   HttpStatus,
   UseGuards,
+  Body,
 } from '@nestjs/common';
 import { IngredientService } from './ingredient.service';
-import { Request } from 'express';
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
+import { IngredientDto } from './DTO/ingredient.dto';
+import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
 
 /**
  * Controller for managing ingredients within a restaurant.
@@ -24,11 +25,11 @@ import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
  */
 @Controller('api/:idRestaurant/ingredient')
 export class IngredientController {
-  constructor(private readonly ingredientService: IngredientService) { }
+  constructor(private readonly ingredientService: IngredientService) {}
 
   /**
    * Retrieves all ingredients for a specific restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @returns {Promise<any>} The list of ingredients.
    * @throws {NotFoundException} - Throws if no ingredients are found for the restaurant.
@@ -37,7 +38,9 @@ export class IngredientController {
    */
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getAllIngredient(@Param('idRestaurant') idRestaurant: number) {
+  async getAllIngredient(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+  ) {
     try {
       const ingredient = await this.ingredientService.findAll(
         Number(idRestaurant),
@@ -50,13 +53,16 @@ export class IngredientController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   /**
    * Retrieves a specific ingredient by its ID for a given restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the ingredient.
    * @returns {Promise<any>} The ingredient.
@@ -67,8 +73,8 @@ export class IngredientController {
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getOneIngredient(
-    @Param('idRestaurant') idRestaurant: number,
-    @Param('id') id: number,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
   ) {
     try {
       const ingredient = await this.ingredientService.findById(
@@ -83,15 +89,18 @@ export class IngredientController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   /**
    * Creates a new ingredient for a specific restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
-   * @param {Request} request - The request containing ingredient data.
+   * @param {IngredientDto} createIngredientDto - The request containing ingredient data.
    * @returns {Promise<any>} The created ingredient.
    * @throws {BadRequestException} - Throws if there is an error during creation.
    * @throws {HttpException} - Throws if there is an error during creation.
@@ -100,13 +109,13 @@ export class IngredientController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async createIngredient(
-    @Param('idRestaurant') idRestaurant: number,
-    @Req() request: Request,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Body() createIngredientDto: IngredientDto,
   ) {
     try {
       const createdIngredient = await this.ingredientService.createOne(
         Number(idRestaurant),
-        request.body,
+        createIngredientDto,
       );
       if (createdIngredient.modifiedCount === 0) {
         throw new NotFoundException();
@@ -119,16 +128,19 @@ export class IngredientController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   /**
    * Updates an existing ingredient for a specific restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the ingredient to update.
-   * @param {Request} request - The request containing updated ingredient data.
+   * @param {IngredientDto} updateIngredientDto - The request containing updated ingredient data.
    * @returns {Promise<any>} The update result message.
    * @throws {NotFoundException} - Throws if the detail is not found.
    * @throws {BadRequestException} - Throws if no changes are made.
@@ -138,15 +150,15 @@ export class IngredientController {
   @UseGuards(JwtAuthGuard)
   @Put(':id')
   async updateOneIngredient(
-    @Param('idRestaurant') idRestaurant: number,
-    @Param('id') id: number,
-    @Req() request: Request,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
+    @Body() updateIngredientDto: IngredientDto,
   ) {
     try {
       const result = await this.ingredientService.updateOne(
         Number(idRestaurant),
         Number(id),
-        request.body,
+        updateIngredientDto,
       );
       if (result.matchedCount === 0) {
         throw new NotFoundException();
@@ -159,13 +171,16 @@ export class IngredientController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   /**
    * Deletes a specific ingredient for a restaurant.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the ingredient to delete.
    * @returns {Promise<any>} The delete result message.
@@ -176,8 +191,8 @@ export class IngredientController {
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deleteOneIngredient(
-    @Param('idRestaurant') idRestaurant: number,
-    @Param('id') id: number,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
   ) {
     try {
       const result = await this.ingredientService.deleteOne(
@@ -192,7 +207,10 @@ export class IngredientController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Req,
   Param,
   Post,
   Put,
@@ -11,10 +10,12 @@ import {
   HttpException,
   HttpStatus,
   UseGuards,
+  Body,
 } from '@nestjs/common';
 import { RestaurantsService } from './restaurants.service';
-import { Request } from 'express'; // Ensure to import Request from express
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
+import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
+import { RestaurantDto } from './DTO/restaurants.dto';
 
 @Controller('api/restaurants')
 export class RestaurantsController {
@@ -38,7 +39,10 @@ export class RestaurantsController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -50,7 +54,7 @@ export class RestaurantsController {
    */
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async getOneRestaurant(@Param('id') id: number) {
+  async getOneRestaurant(@Param('id', PositiveNumberPipe) id: number) {
     try {
       const restaurant = await this.restaurantsService.findById(Number(id));
       if (!restaurant) {
@@ -61,23 +65,25 @@ export class RestaurantsController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   /**
    * Creates a new restaurant.
    *
-   * @param {Request} request - The incoming request containing the restaurant data.
+   * @param {RestaurantDto} createRestaurantDto - The incoming request containing the restaurant data.
    * @returns {Promise<any>} The created restaurant.
    */
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createRestaurant(@Req() request: Request) {
+  async createRestaurant(@Body() createRestaurantDto: RestaurantDto) {
     try {
-      const createdRestaurant = await this.restaurantsService.createOne(
-        request.body,
-      );
+      const createdRestaurant =
+        await this.restaurantsService.createOne(createRestaurantDto);
       if (!createdRestaurant) {
         throw new BadRequestException();
       }
@@ -86,7 +92,10 @@ export class RestaurantsController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -94,16 +103,19 @@ export class RestaurantsController {
    * Updates an existing restaurant by its ID.
    *
    * @param {number} id - The ID of the restaurant to update.
-   * @param {Request} request - The incoming request containing the updated restaurant data.
+   * @param {RestaurantDto} updateRestaurantDto - The incoming request containing the updated restaurant data.
    * @returns {Promise<any>} A success message.
    */
   @UseGuards(JwtAuthGuard)
   @Put(':id')
-  async updateOneRestaurant(@Param('id') id: number, @Req() request: Request) {
+  async updateOneRestaurant(
+    @Param('id', PositiveNumberPipe) id: number,
+    @Body() updateRestaurantDto: RestaurantDto,
+  ) {
     try {
       const result = await this.restaurantsService.updateOne(
         Number(id),
-        request.body,
+        updateRestaurantDto,
       );
       if (result.matchedCount === 0) {
         throw new NotFoundException();
@@ -116,7 +128,10 @@ export class RestaurantsController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -128,7 +143,7 @@ export class RestaurantsController {
    */
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async deleteOneRestaurant(@Param('id') id: number) {
+  async deleteOneRestaurant(@Param('id', PositiveNumberPipe) id: number) {
     try {
       const result = await this.restaurantsService.deleteOne(Number(id));
       if (result.deletedCount === 0) {
@@ -139,7 +154,10 @@ export class RestaurantsController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

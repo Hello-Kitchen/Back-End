@@ -1,10 +1,10 @@
 /**
  * @interface Food
- * 
+ *
  * Represents a food item in the system.
- * 
- * The `Food` interface defines the structure of a food item, including 
- * its identifying properties, price, associated categories, restaurant 
+ *
+ * The `Food` interface defines the structure of a food item, including
+ * its identifying properties, price, associated categories, restaurant
  * information, and details regarding the food item.
  */
 export interface Food {
@@ -50,4 +50,3 @@ export interface Food {
    */
   ingredients: number[];
 }
-

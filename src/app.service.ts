@@ -11,7 +11,7 @@ import { Injectable } from '@nestjs/common';
 export class AppService {
   /**
    * Returns a welcome message when the API is accessed.
-   * 
+   *
    * @returns {string} A message welcoming the user to the API.
    * @memberof AppService
    */

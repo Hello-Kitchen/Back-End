@@ -1,7 +1,7 @@
 /**
  * The AppModule class is the root module of the application.
  * It imports all the necessary modules and provides the application's controllers and services.
- * 
+ *
  * @module AppModule
  */
 
@@ -24,21 +24,22 @@ import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
-    PassportModule.register({ defaultStrategy : 'jwt' }), /**< Register new configuration authentification */
-    ConfigModule.forRoot(), /**< Loads environment configuration */
-    DetailsModule,          /**< Manages restaurant details */
-    FoodModule,             /**< Handles food-related functionality */
-    FoodCategoryModule,     /**< Manages categories of food */
-    IngredientModule,       /**< Handles ingredients for the food */
-    LoginModule,            /**< Manages user authentication */
-    OrdersModule,           /**< Handles orders and order-related functionality */
-    PermissionModule,       /**< Manages permissions in the system */
-    PosModule,              /**< Handles point-of-sale functionality */
-    RestaurantsModule,      /**< Manages restaurant information */
-    UsersModule,            /**< Manages users and their information */          
+    PassportModule.register({
+      defaultStrategy: 'jwt',
+    }) /**< Register new configuration authentification */,
+    ConfigModule.forRoot() /**< Loads environment configuration */,
+    DetailsModule /**< Manages restaurant details */,
+    FoodModule /**< Handles food-related functionality */,
+    FoodCategoryModule /**< Manages categories of food */,
+    IngredientModule /**< Handles ingredients for the food */,
+    LoginModule /**< Manages user authentication */,
+    OrdersModule /**< Handles orders and order-related functionality */,
+    PermissionModule /**< Manages permissions in the system */,
+    PosModule /**< Handles point-of-sale functionality */,
+    RestaurantsModule /**< Manages restaurant information */,
+    UsersModule /**< Manages users and their information */,
   ],
-  controllers: [AppController],  /**< Application controller */
-  providers: [AppService],       /**< Core application service */
+  controllers: [AppController] /**< Application controller */,
+  providers: [AppService] /**< Core application service */,
 })
 export class AppModule {}
-

@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Req,
   Query,
   Param,
   Post,
@@ -12,29 +11,43 @@ import {
   HttpException,
   HttpStatus,
   UseGuards,
+  Body,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
+import { OrdersDto } from './DTO/orders.dto';
+import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
+import { StatusPipe } from './pipe/status.pipe';
+import { SortPipe } from './pipe/sort.pipe';
+import { ForKDSPipe } from './pipe/forKDS.pipe';
 
 @Controller('api/:idRestaurant/orders')
 export class OrdersController {
-  private queryMapping: { [key: string]: (idRestaurant: number) => Promise<any> };
+  private queryMapping: {
+    [key: string]: (idRestaurant: number) => Promise<any>;
+  };
 
   constructor(private readonly ordersService: OrdersService) {
     // Mapping query keys to service functions for retrieving orders
     this.queryMapping = {
-      pendingtime: (idRestaurant: number) => this.ordersService.findPendingSortedByDate(idRestaurant),
-      readytime: (idRestaurant: number) => this.ordersService.findReadySortedByDate(idRestaurant),
-      pending: (idRestaurant: number) => this.ordersService.findPending(idRestaurant),
-      ready: (idRestaurant: number) => this.ordersService.findReady(idRestaurant),
-      time: (idRestaurant: number) => this.ordersService.findAllSortedByDate(idRestaurant),
-      default: (idRestaurant: number) => this.ordersService.findAll(idRestaurant),
+      pendingtime: (idRestaurant: number) =>
+        this.ordersService.findPendingSortedByDate(idRestaurant),
+      readytime: (idRestaurant: number) =>
+        this.ordersService.findReadySortedByDate(idRestaurant),
+      pending: (idRestaurant: number) =>
+        this.ordersService.findPending(idRestaurant),
+      ready: (idRestaurant: number) =>
+        this.ordersService.findReady(idRestaurant),
+      time: (idRestaurant: number) =>
+        this.ordersService.findAllSortedByDate(idRestaurant),
+      default: (idRestaurant: number) =>
+        this.ordersService.findAll(idRestaurant),
     };
   }
 
   /**
    * Retrieves orders based on the provided status and sort parameters.
-   * 
+   *
    * @param {string} status - The status of the orders to filter.
    * @param {string} sort - The sort order of the retrieved orders.
    * @param {number} idRestaurant - The ID of the restaurant.
@@ -44,27 +57,31 @@ export class OrdersController {
   @UseGuards(JwtAuthGuard)
   @Get()
   async getOrders(
-    @Query('status') status: string,
-    @Query('sort') sort: string,
-    @Param('idRestaurant') idRestaurant: number
+    @Query('status', StatusPipe) status: string,
+    @Query('sort', SortPipe) sort: string,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
   ) {
     try {
       const queryKey = `${status || ''}${sort || ''}`.trim() || 'default';
-      const queryFunc = this.queryMapping[queryKey] || this.queryMapping['default'];
-      const result = await queryFunc(Number(idRestaurant))
+      const queryFunc =
+        this.queryMapping[queryKey] || this.queryMapping['default'];
+      const result = await queryFunc(Number(idRestaurant));
 
       return result;
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   /**
    * Retrieves a specific order by its ID.
-   * 
+   *
    * @param {string} forKDS - Indicates if the request is for KDS (Kitchen Display System).
    * @param {number} id - The ID of the order to retrieve.
    * @param {number} idRestaurant - The ID of the restaurant.
@@ -74,7 +91,11 @@ export class OrdersController {
    */
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async getOneOrder(@Query('forKDS') forKDS: string, @Param('id') id: number, @Param('idRestaurant') idRestaurant: number) {
+  async getOneOrder(
+    @Query('forKDS', ForKDSPipe) forKDS: string,
+    @Param('id', PositiveNumberPipe) id: number,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+  ) {
     try {
       let foodOrdered;
       // Fetching order details based on the KDS flag
@@ -85,7 +106,10 @@ export class OrdersController {
         );
         foodOrdered = foodOrdered[0];
       } else {
-        foodOrdered = await this.ordersService.findById(Number(idRestaurant), Number(id));
+        foodOrdered = await this.ordersService.findById(
+          Number(idRestaurant),
+          Number(id),
+        );
         foodOrdered = foodOrdered.orders[0];
       }
       if (!foodOrdered) {
@@ -99,13 +123,14 @@ export class OrdersController {
           const item = await itemPromise;
           const name = await this.ordersService.findFoodByIdsWithParam(
             Number(idRestaurant),
-            item.food
+            item.food,
           );
 
           const foundItem = acc.find(
             (el) =>
               JSON.stringify(el.food) === JSON.stringify(item.food) &&
-              JSON.stringify(el.mods_ingredients) === JSON.stringify(item.mods_ingredients) &&
+              JSON.stringify(el.mods_ingredients) ===
+                JSON.stringify(item.mods_ingredients) &&
               JSON.stringify(el.is_ready) === JSON.stringify(item.is_ready) &&
               JSON.stringify(el.note) === JSON.stringify(item.note) &&
               JSON.stringify(el.details) === JSON.stringify(item.details),
@@ -124,14 +149,17 @@ export class OrdersController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   /**
    * Creates a new order.
-   * 
-   * @param {Request} request - The request object containing order details.
+   *
+   * @param {OrdersDto} createOrderDTO - The request object containing order details.
    * @param {number} idRestaurant - The ID of the restaurant.
    * @returns {Promise<any>} The created order.
    * @throws {BadRequestException} If the order creation fails.
@@ -139,9 +167,15 @@ export class OrdersController {
    */
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createOrder(@Req() request: Request, @Param('idRestaurant') idRestaurant: number) {
+  async createOrder(
+    @Body() createOrderDTO: OrdersDto,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+  ) {
     try {
-      const createdOrder = await this.ordersService.createOne(Number(idRestaurant), request.body);
+      const createdOrder = await this.ordersService.createOne(
+        Number(idRestaurant),
+        createOrderDTO,
+      );
       if (createdOrder.modifiedCount === 0) {
         throw new NotFoundException();
       }
@@ -153,15 +187,18 @@ export class OrdersController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   /**
    * Updates an existing order by its ID.
-   * 
+   *
    * @param {number} id - The ID of the order to update.
-   * @param {Request} request - The request object containing updated order details.
+   * @param {OrdersDto} updateOrderDTO - The request object containing updated order details.
    * @param {number} idRestaurant - The ID of the restaurant.
    * @returns {Promise<any>} A success message upon successful update.
    * @throws {NotFoundException} If the order is not found.
@@ -170,12 +207,16 @@ export class OrdersController {
    */
   @UseGuards(JwtAuthGuard)
   @Put(':id')
-  async updateOneOrder(@Param('id') id: number, @Req() request: Request, @Param('idRestaurant') idRestaurant: number) {
+  async updateOneOrder(
+    @Param('id', PositiveNumberPipe) id: number,
+    @Body() updateOrderDTO: OrdersDto,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+  ) {
     try {
       const result = await this.ordersService.updateOne(
         Number(idRestaurant),
         Number(id),
-        request.body,
+        updateOrderDTO,
       );
       if (result.matchedCount === 0) {
         throw new NotFoundException();
@@ -188,13 +229,16 @@ export class OrdersController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   /**
    * Deletes an existing order by its ID.
-   * 
+   *
    * @param {number} id - The ID of the order to delete.
    * @param {number} idRestaurant - The ID of the restaurant.
    * @returns {Promise<any>} A success message upon successful deletion.
@@ -203,9 +247,15 @@ export class OrdersController {
    */
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async deleteOneOrder(@Param('id') id: number, @Param('idRestaurant') idRestaurant: number) {
+  async deleteOneOrder(
+    @Param('id', PositiveNumberPipe) id: number,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+  ) {
     try {
-      const result = await this.ordersService.deleteOne(Number(idRestaurant), Number(id));
+      const result = await this.ordersService.deleteOne(
+        Number(idRestaurant),
+        Number(id),
+      );
       if (result.modifiedCount === 0) {
         throw new NotFoundException();
       }
@@ -214,13 +264,16 @@ export class OrdersController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   /**
    * Changes the status of a food order to ready.
-   * 
+   *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the food order.
    * @returns {Promise<any>} A success message upon successful status change.
@@ -229,9 +282,15 @@ export class OrdersController {
    */
   @UseGuards(JwtAuthGuard)
   @Put('status/:id')
-  async ChangeStatusFoodOrdered(@Param('idRestaurant') idRestaurant: number, @Param('id') id: number) {
+  async ChangeStatusFoodOrdered(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
+  ) {
     try {
-      const result = await this.ordersService.markFoodOrderedReady(Number(idRestaurant), Number(id));
+      const result = await this.ordersService.markFoodOrderedReady(
+        Number(idRestaurant),
+        Number(id),
+      );
       if (result.modifiedCount === 0) {
         throw new NotFoundException();
       }
@@ -240,43 +299,51 @@ export class OrdersController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   /**
- * @brief Marks a specific food order as ready by updating the 'part' field.
- * 
- * This method is responsible for handling HTTP PUT requests to change the `part` of an order,
- * identified by the `idRestaurant` and `id` parameters. It uses the `ordersService` to perform
- * the update and ensures that the operation was successful.
- * 
- * @param {number} idRestaurant The ID of the restaurant where the order is located.
- * @param {number} id The ID of the order that will be modified.
- * @returns {Promise<void>} Returns nothing on success, throws an exception if the order is not found or if there is a server error.
- * 
- * @throws {NotFoundException} If the order to update was not found.
- * @throws {HttpException} For other errors, such as internal server issues.
- */
-@UseGuards(JwtAuthGuard)
-@Put('next/:id')
-async ChangePartOrder(
-  @Param('idRestaurant') idRestaurant: number,
-  @Param('id') id: number
-): Promise<void> {
-  try {
-    const result = await this.ordersService.incrementOrderPart(Number(idRestaurant), Number(id));
+   * @brief Marks a specific food order as ready by updating the 'part' field.
+   *
+   * This method is responsible for handling HTTP PUT requests to change the `part` of an order,
+   * identified by the `idRestaurant` and `id` parameters. It uses the `ordersService` to perform
+   * the update and ensures that the operation was successful.
+   *
+   * @param {number} idRestaurant The ID of the restaurant where the order is located.
+   * @param {number} id The ID of the order that will be modified.
+   * @returns {Promise<void>} Returns nothing on success, throws an exception if the order is not found or if there is a server error.
+   *
+   * @throws {NotFoundException} If the order to update was not found.
+   * @throws {HttpException} For other errors, such as internal server issues.
+   */
+  @UseGuards(JwtAuthGuard)
+  @Put('next/:id')
+  async ChangePartOrder(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
+  ): Promise<void> {
+    try {
+      const result = await this.ordersService.incrementOrderPart(
+        Number(idRestaurant),
+        Number(id),
+      );
 
-    if (result.modifiedCount === 0) {
-      throw new NotFoundException();
+      if (result.modifiedCount === 0) {
+        throw new NotFoundException();
+      }
+      return;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
-    return;
-  } catch (error) {
-    if (error instanceof HttpException) {
-      throw error;
-    }
-    throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
   }
-}
-
 }
