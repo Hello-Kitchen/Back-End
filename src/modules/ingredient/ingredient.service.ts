@@ -98,7 +98,8 @@ export class IngredientService extends DB {
         $set: {
           'ingredients.$.name': body.name,
           'ingredients.$.price': body.price,
-          'ingredients.$.id_restaurant': body.id_restaurant,
+          'ingredients.$.quantity': body.quantity,
+          'ingredients.$.unit': body.unit,
         },
       },
     );
