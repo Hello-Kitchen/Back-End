@@ -11,10 +11,6 @@ export class DetailDto {
   @IsNotEmpty()
   name: string;
 
-  @IsNumber()
-  @IsNotEmpty()
-  id_restaurant: number;
-
   @IsBoolean()
   @IsNotEmpty()
   multiple: boolean;
