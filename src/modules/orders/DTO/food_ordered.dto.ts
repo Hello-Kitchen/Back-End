@@ -12,10 +12,6 @@ export class FoodOrderedDto {
   @IsNotEmpty()
   food: number;
 
-  @IsNumber()
-  @IsNotEmpty()
-  id_restaurant: number;
-
   @IsBoolean()
   @IsNotEmpty()
   is_ready: boolean;
@@ -23,12 +19,10 @@ export class FoodOrderedDto {
   @IsNumber()
   part: number;
 
-  @IsArray({ each: true })
-  @IsObject()
+  @IsArray()
   mods_ingredients: { type: string; ingredient: string }[];
 
-  @IsArray({ each: true })
-  @IsString()
+  @IsArray()
   details: string[];
 
   @IsString()

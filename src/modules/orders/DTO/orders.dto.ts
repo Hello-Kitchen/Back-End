@@ -2,10 +2,6 @@ import { IsString, IsNotEmpty, IsNumber, IsArray } from 'class-validator';
 import { FoodOrderedDto } from './food_ordered.dto';
 
 export class OrdersDto {
-  @IsNumber()
-  @IsNotEmpty()
-  id_restaurant: number;
-
   @IsString()
   @IsNotEmpty()
   date: string;

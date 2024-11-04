@@ -10,10 +10,6 @@ export class IngredientDto {
   price: number;
 
   @IsNumber()
-  @IsNotEmpty()
-  id_restaurant: number;
-
-  @IsNumber()
   quantity: number;
 
   @IsString()

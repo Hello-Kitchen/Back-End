@@ -19,8 +19,7 @@ export class DetailDto {
   @IsNotEmpty()
   multiple: boolean;
 
-  @IsArray({ each: true })
+  @IsArray()
   @IsNotEmpty()
-  @IsString()
-  data: string[];
+  data: { type: string, name: string }[];
 }

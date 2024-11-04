@@ -13,14 +13,9 @@ export class FoodDto {
   @IsNotEmpty()
   id_category: number;
 
-  @IsNumber()
-  id_restaurant: number;
-
-  @IsArray({ each: true })
-  @IsNumber()
+  @IsArray()
   ingredients: number[];
 
-  @IsArray({ each: true })
-  @IsNumber()
+  @IsArray()
   details: number[];
 }

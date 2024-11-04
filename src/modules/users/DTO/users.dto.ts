@@ -5,10 +5,6 @@ export class UsersDto {
   @IsNotEmpty()
   username: string;
 
-  @IsNumber()
-  @IsNotEmpty()
-  id_restaurant: number;
-
   @IsString()
   @IsNotEmpty()
   password: string;
