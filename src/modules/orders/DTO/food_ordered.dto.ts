@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsString,
   IsNotEmpty,
@@ -5,6 +6,7 @@ import {
   IsBoolean,
   IsArray,
   IsObject,
+  ValidateNested,
 } from 'class-validator';
 
 class ModsIngredient {
@@ -30,9 +32,12 @@ export class FoodOrderedDto {
   part: number;
 
   @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ModsIngredient)
   mods_ingredients: ModsIngredient[];
 
   @IsArray()
+  @IsString({ each: true })
   details: string[];
 
   @IsString()

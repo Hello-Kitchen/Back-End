@@ -1,9 +1,12 @@
+import { Type } from 'class-transformer';
 import {
   IsString,
   IsNotEmpty,
   IsNumber,
   IsBoolean,
   IsArray,
+  IsObject,
+  ValidateNested,
 } from 'class-validator';
 
 
@@ -27,6 +30,8 @@ export class DetailDto {
   multiple: boolean;
 
   @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => DataDto)
   @IsNotEmpty()
   data: DataDto[]
 }
