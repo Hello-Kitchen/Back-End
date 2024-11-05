@@ -8,6 +8,8 @@ import {
   IsObject,
   ValidateNested,
   IsEnum,
+  IsEmpty,
+  IsOptional,
 } from 'class-validator';
 
 enum ModsIngredientType {
@@ -35,18 +37,22 @@ export class FoodOrderedDto {
   @IsNotEmpty()
   is_ready: boolean;
 
+  @IsOptional()
   @IsNumber()
   part: number;
 
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ModsIngredient)
   mods_ingredients: ModsIngredient[];
 
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
   details: string[];
 
+  @IsOptional()
   @IsString()
   note: string;
 }
