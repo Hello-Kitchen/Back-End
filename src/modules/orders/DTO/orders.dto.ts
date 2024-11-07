@@ -4,6 +4,7 @@ import {
   IsNumber,
   IsArray,
   IsEnum,
+  ValidateNested,
 } from 'class-validator';
 import { FoodOrderedDto } from './food_ordered.dto';
 import { Type } from 'class-transformer';
