@@ -22,8 +22,8 @@ import {
   Body,
 } from '@nestjs/common';
 import { DetailsService } from './details.service';
-import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
-import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
+import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
+import { PositiveNumberPipe } from '../../shared/pipe/positive-number.pipe';
 import { DetailDto } from './DTO/detail.dto';
 
 @Controller('api/:idRestaurant/details')
@@ -46,7 +46,7 @@ export class DetailsController {
   ) {
     try {
       const details = await this.detailsService.findAll(Number(idRestaurant));
-      if (!details || details.length === 0) {
+      if (!details || details.details.length === 0) {
         throw new NotFoundException();
       }
       return details.details;

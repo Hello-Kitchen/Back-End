@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, IsNumber, IsArray, IsEnum } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  IsArray,
+  IsEnum,
+} from 'class-validator';
 import { FoodOrderedDto } from './food_ordered.dto';
 
 enum Channel {

@@ -1,10 +1,16 @@
-import { IsString, IsNotEmpty, IsNumber, IsArray, ValidateNested } from 'class-validator';
-import { DetailDto } from 'src/modules/details/DTO/detail.dto';
-import { IngredientDto } from 'src/modules/ingredient/DTO/ingredient.dto';
-import { FoodCategoryDto } from 'src/modules/food_category/DTO/food_category.dto';
-import { FoodDto } from 'src/modules/food/DTO/food.dto';
-import { OrdersDto } from 'src/modules/orders/DTO/orders.dto';
-import { UsersDto } from 'src/modules/users/DTO/users.dto';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  IsArray,
+  ValidateNested,
+} from 'class-validator';
+import { DetailDto } from '../../../modules/details/DTO/detail.dto';
+import { IngredientDto } from '../../../modules/ingredient/DTO/ingredient.dto';
+import { FoodCategoryDto } from '../../../modules/food_category/DTO/food_category.dto';
+import { FoodDto } from '../../../modules/food/DTO/food.dto';
+import { OrdersDto } from '../../../modules/orders/DTO/orders.dto';
+import { UsersDto } from '../../../modules/users/DTO/users.dto';
 import { Type } from 'class-transformer';
 
 export class RestaurantDto {

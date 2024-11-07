@@ -8,8 +8,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { PosService } from './pos.service';
-import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
-import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
+import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
+import { PositiveNumberPipe } from '../../shared/pipe/positive-number.pipe';
 
 @Controller('api/pos')
 export class PosController {

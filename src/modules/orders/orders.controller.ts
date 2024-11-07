@@ -14,9 +14,9 @@ import {
   Body,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { OrdersDto } from './DTO/orders.dto';
-import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
+import { PositiveNumberPipe } from '../../shared/pipe/positive-number.pipe';
 import { StatusPipe } from './pipe/status.pipe';
 import { SortPipe } from './pipe/sort.pipe';
 import { ForKDSPipe } from './pipe/forKDS.pipe';

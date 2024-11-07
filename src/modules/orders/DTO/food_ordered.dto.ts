@@ -5,7 +5,6 @@ import {
   IsNumber,
   IsBoolean,
   IsArray,
-  IsObject,
   ValidateNested,
   IsEnum,
 } from 'class-validator';

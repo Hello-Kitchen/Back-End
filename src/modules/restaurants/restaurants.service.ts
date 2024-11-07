@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import mongoose from 'mongoose';
 import { UpdateResult, DeleteResult } from 'mongodb';
-import { DB } from 'src/db/db';
+import { DB } from '../../db/db';
 import { RestaurantDto } from './DTO/restaurants.dto';
 
 @Injectable()

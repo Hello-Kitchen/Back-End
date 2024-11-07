@@ -13,9 +13,9 @@ import {
   Body,
 } from '@nestjs/common';
 import { IngredientService } from './ingredient.service';
-import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { IngredientDto } from './DTO/ingredient.dto';
-import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
+import { PositiveNumberPipe } from '../../shared/pipe/positive-number.pipe';
 
 /**
  * Controller for managing ingredients within a restaurant.

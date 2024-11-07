@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import mongoose from 'mongoose';
 import { UpdateResult, ReturnDocument } from 'mongodb';
-import { DB } from 'src/db/db';
+import { DB } from '../../db/db';
 import { Restaurant } from 'src/shared/interfaces/restaurant.interface';
 import { Counter } from 'src/shared/interfaces/counter.interface';
 import { DetailDto } from './DTO/detail.dto';

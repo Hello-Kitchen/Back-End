@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import mongoose, { AnyObject } from 'mongoose';
 import { UpdateResult, ReturnDocument, WithId } from 'mongodb';
-import { DB } from 'src/db/db';
-import { Counter } from 'src/shared/interfaces/counter.interface';
-import { Restaurant } from 'src/shared/interfaces/restaurant.interface';
+import { DB } from '../../db/db';
+import { Counter } from '../../shared/interfaces/counter.interface';
+import { Restaurant } from '../../shared/interfaces/restaurant.interface';
 import { OrdersDto } from './DTO/orders.dto';
 
 @Injectable()

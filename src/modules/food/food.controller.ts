@@ -21,9 +21,9 @@ import {
   Body,
 } from '@nestjs/common';
 import { FoodService } from './food.service';
-import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { FoodDto } from './DTO/food.dto';
-import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
+import { PositiveNumberPipe } from '../../shared/pipe/positive-number.pipe';
 
 @Controller('api/:idRestaurant/food')
 export class FoodController {

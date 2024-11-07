@@ -13,9 +13,9 @@ import {
   Body,
 } from '@nestjs/common';
 import { FoodCategoryService } from './food_category.service';
-import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { FoodCategoryDto } from './DTO/food_category.dto';
-import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
+import { PositiveNumberPipe } from '../../shared/pipe/positive-number.pipe';
 
 /**
  * Controller for managing food categories in a restaurant.

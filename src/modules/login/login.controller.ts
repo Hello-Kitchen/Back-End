@@ -1,7 +1,7 @@
 import { Controller, Get, BadRequestException, Query } from '@nestjs/common';
 import { LoginService } from './login.service';
-import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
-import { StringPipe } from 'src/shared/pipe/string.pipe';
+import { PositiveNumberPipe } from '../../shared/pipe/positive-number.pipe';
+import { StringPipe } from '../../shared/pipe/string.pipe';
 
 // Controller for handling login requests
 @Controller('api/login')
