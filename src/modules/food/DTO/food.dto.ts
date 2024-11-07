@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsNumber, IsArray } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsArray, IsOptional } from 'class-validator';
 
 export class FoodDto {
   @IsString()
@@ -13,10 +13,12 @@ export class FoodDto {
   @IsNotEmpty()
   id_category: number;
 
+  @IsOptional()
   @IsArray()
   @IsNumber({}, { each: true })
   ingredients: number[];
 
+  @IsOptional()
   @IsArray()
   @IsNumber({}, { each: true })
   details: number[];

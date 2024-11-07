@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 export class IngredientDto {
   @IsString()
@@ -9,9 +9,11 @@ export class IngredientDto {
   @IsNotEmpty()
   price: number;
 
+  @IsOptional()
   @IsNumber()
   quantity: number;
 
+  @IsOptional()
   @IsString()
   unit: string;
 }

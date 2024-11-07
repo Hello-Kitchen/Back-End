@@ -6,6 +6,7 @@ import {
   IsEnum,
 } from 'class-validator';
 import { FoodOrderedDto } from './food_ordered.dto';
+import { Type } from 'class-transformer';
 
 enum Channel {
   TYPE1 = 'Sur place',
@@ -30,6 +31,9 @@ export class OrdersDto {
   @IsNotEmpty()
   part: number;
 
-  @IsArray({ each: true })
+  @IsNotEmpty()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => FoodOrderedDto)
   food_ordered: FoodOrderedDto[];
 }
