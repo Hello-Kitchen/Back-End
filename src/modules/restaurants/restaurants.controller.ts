@@ -13,8 +13,8 @@ import {
   Body,
 } from '@nestjs/common';
 import { RestaurantsService } from './restaurants.service';
-import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
-import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
+import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
+import { PositiveNumberPipe } from '../../shared/pipe/positive-number.pipe';
 import { RestaurantDto } from './DTO/restaurants.dto';
 
 @Controller('api/restaurants')

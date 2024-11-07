@@ -13,9 +13,9 @@ import {
   Body,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { UsersDto } from './DTO/users.dto';
-import { PositiveNumberPipe } from 'src/shared/pipe/positive-number.pipe';
+import { PositiveNumberPipe } from '../../shared/pipe/positive-number.pipe';
 
 @Controller('api/:idRestaurant/users')
 export class UsersController {

@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { DB } from 'src/db/db';
+import { DB } from '../../db/db';
 
 @Injectable()
 /**

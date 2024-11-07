@@ -36,5 +36,5 @@ export class DetailDto {
   @ValidateNested({ each: true })
   @Type(() => DataDto)
   @IsNotEmpty()
-  data: DataDto[]
+  data: DataDto[];
 }

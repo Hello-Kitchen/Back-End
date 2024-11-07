@@ -29,6 +29,7 @@ async function bootstrap() {
       transform: true, // Transform the values according to the type specified in the DTO
     }),
   );
+
   await app.listen(3000);
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
