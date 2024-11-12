@@ -42,5 +42,5 @@ export class DetailDto {
 
   @IsOptional()
   @IsNumber()
-  id: number;
+  id?: number;
 }

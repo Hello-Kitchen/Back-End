@@ -55,5 +55,5 @@ export class RestaurantDto {
 
   @IsOptional()
   @IsNumber()
-  id: number;
+  id?: number;
 }

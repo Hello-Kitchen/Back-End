@@ -11,5 +11,5 @@ export class UsersDto {
 
   @IsOptional()
   @IsNumber()
-  id: number;
+  id?: number;
 }

@@ -7,5 +7,5 @@ export class FoodCategoryDto {
 
   @IsOptional()
   @IsNumber()
-  id: number;
+  id?: number;
 }

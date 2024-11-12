@@ -37,24 +37,24 @@ export class FoodOrderedDto {
 
   @IsOptional()
   @IsNumber()
-  part: number;
+  part?: number;
 
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ModsIngredient)
-  mods_ingredients: ModsIngredient[];
+  mods_ingredients?: ModsIngredient[];
 
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  details: string[];
+  details?: string[];
 
   @IsOptional()
   @IsString()
-  note: string;
+  note?: string;
 
   @IsOptional()
   @IsNumber()
-  id: number;
+  id?: number;
 }
