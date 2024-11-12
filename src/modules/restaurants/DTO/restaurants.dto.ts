@@ -4,6 +4,7 @@ import {
   IsNumber,
   IsArray,
   ValidateNested,
+  IsOptional,
 } from 'class-validator';
 import { DetailDto } from '../../../modules/details/DTO/detail.dto';
 import { IngredientDto } from '../../../modules/ingredient/DTO/ingredient.dto';
@@ -51,4 +52,8 @@ export class RestaurantDto {
   @ValidateNested({ each: true })
   @Type(() => UsersDto)
   users: UsersDto[];
+
+  @IsOptional()
+  @IsNumber()
+  id: number;
 }

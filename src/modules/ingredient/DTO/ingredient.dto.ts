@@ -16,4 +16,8 @@ export class IngredientDto {
   @IsOptional()
   @IsString()
   unit: string;
+
+  @IsOptional()
+  @IsNumber()
+  id: number;
 }

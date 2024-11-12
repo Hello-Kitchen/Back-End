@@ -28,4 +28,8 @@ export class FoodDto {
   @IsArray()
   @IsNumber({}, { each: true })
   details: number[];
+
+  @IsOptional()
+  @IsNumber()
+  id: number;
 }

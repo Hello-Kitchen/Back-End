@@ -53,4 +53,8 @@ export class FoodOrderedDto {
   @IsOptional()
   @IsString()
   note: string;
+
+  @IsOptional()
+  @IsNumber()
+  id: number;
 }

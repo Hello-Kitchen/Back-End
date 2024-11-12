@@ -5,6 +5,7 @@ import {
   IsArray,
   IsEnum,
   ValidateNested,
+  IsOptional,
 } from 'class-validator';
 import { FoodOrderedDto } from './food_ordered.dto';
 import { Type } from 'class-transformer';
@@ -37,4 +38,8 @@ export class OrdersDto {
   @ValidateNested({ each: true })
   @Type(() => FoodOrderedDto)
   food_ordered: FoodOrderedDto[];
+
+  @IsOptional()
+  @IsNumber()
+  id: number;
 }

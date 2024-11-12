@@ -6,6 +6,8 @@ import {
   IsArray,
   ValidateNested,
   IsEnum,
+  IsOptional,
+  IsNumber,
 } from 'class-validator';
 
 enum DataType {
@@ -37,4 +39,8 @@ export class DetailDto {
   @Type(() => DataDto)
   @IsNotEmpty()
   data: DataDto[];
+
+  @IsOptional()
+  @IsNumber()
+  id: number;
 }
