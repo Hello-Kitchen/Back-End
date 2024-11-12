@@ -11,9 +11,13 @@ export class IngredientDto {
 
   @IsOptional()
   @IsNumber()
-  quantity: number;
+  quantity?: number;
 
   @IsOptional()
   @IsString()
-  unit: string;
+  unit?: string;
+
+  @IsOptional()
+  @IsNumber()
+  id?: number;
 }

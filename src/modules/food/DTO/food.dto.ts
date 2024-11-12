@@ -22,10 +22,14 @@ export class FoodDto {
   @IsOptional()
   @IsArray()
   @IsNumber({}, { each: true })
-  ingredients: number[];
+  ingredients?: number[];
 
   @IsOptional()
   @IsArray()
   @IsNumber({}, { each: true })
-  details: number[];
+  details?: number[];
+
+  @IsOptional()
+  @IsNumber()
+  id?: number;
 }
