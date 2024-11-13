@@ -8,6 +8,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { rateLimit } from 'express-rate-limit';
+import helmet from 'helmet';
 
 /**
  * The bootstrap function initializes the application and starts it on port 3000.
@@ -27,6 +29,13 @@ async function bootstrap() {
       whitelist: true, // Remove undefined properties in the DTO
       forbidNonWhitelisted: true, // Throw an error if undefined properties are present
       transform: true, // Transform the values according to the type specified in the DTO
+    }),
+  );
+  app.use(helmet());
+  app.use(
+    rateLimit({
+      windowMs: 15 * 60 * 1000, // 15 min
+      max: 100, // IP Limit
     }),
   );
 
