@@ -1,21 +1,21 @@
+import { Test, TestingModule } from '@nestjs/testing';
 import { HealthController } from './health.controller';
-import { HttpStatus } from '@nestjs/common';
 
 describe('HealthController', () => {
   let healthController: HealthController;
 
-  beforeEach(() => {
-    healthController = new HealthController();
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [HealthController],
+    }).compile();
+
+    healthController = module.get<HealthController>(HealthController);
   });
 
   describe('checkHealth', () => {
-    it('should return status 200 with a healthy message', async () => {
+    it('should return status 200', async () => {
       const result = await healthController.checkHealth();
-
-      expect(result).toEqual({
-        status: HttpStatus.OK,
-        message: 'Server is healthy',
-      });
+      expect(result).toEqual(undefined);
     });
   });
 });

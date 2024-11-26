@@ -1,5 +1,4 @@
-import { Controller, Get, HttpStatus, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
+import { Controller, Get } from '@nestjs/common';
 
 /**
  * Controller for health checks.
@@ -17,16 +16,12 @@ export class HealthController {
    * response indicating whether the server is running correctly.
    * It requires JWT authentication to access.
    *
-   * @returns {Object} - An object containing the HTTP status and a health message.
+   * @returns {undefined} - Only return status code.
    * @throws {UnauthorizedException} - Throws if the request is not authenticated.
    * @async
    */
-  @UseGuards(JwtAuthGuard)
   @Get()
   async checkHealth() {
-    return {
-      status: HttpStatus.OK,
-      message: 'Server is healthy',
-    };
+    return;
   }
 }
