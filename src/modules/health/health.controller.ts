@@ -7,7 +7,7 @@ import { Controller, Get } from '@nestjs/common';
  * of the server. This can be used for monitoring or status checks to ensure
  * the server is running properly.
  */
-@Controller('api/health')
+@Controller('api/ping')
 export class HealthController {
   /**
    * Performs a health check on the server.
