@@ -21,6 +21,7 @@ import { PosModule } from './modules/pos/pos.module';
 import { RestaurantsModule } from './modules/restaurants/restaurants.module';
 import { UsersModule } from './modules/users/users.module';
 import { PassportModule } from '@nestjs/passport';
+import { HealthModule } from './modules/health/health.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { PassportModule } from '@nestjs/passport';
     PosModule /**< Handles point-of-sale functionality */,
     RestaurantsModule /**< Manages restaurant information */,
     UsersModule /**< Manages users and their information */,
+    HealthModule /**< Handles health functionality */,
   ],
   controllers: [AppController] /**< Application controller */,
   providers: [AppService] /**< Core application service */,
