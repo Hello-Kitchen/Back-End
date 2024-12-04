@@ -80,6 +80,7 @@ export class OrdersService extends DB {
         { $match: { id: idRestaurant } },
         { $project: { orders: 1 } },
         { $unwind: '$orders' },
+        { $match: { 'orders.servie': false } },
         { $group: { _id: '$_id', orders: { $push: '$orders' } } },
       ])
       .toArray();
@@ -317,6 +318,24 @@ export class OrdersService extends DB {
   }
 
   /**
+   * @brief Retrieves orders based on the provided parameters.
+   *
+   * This function executes an aggregation on the 'restaurant' collection
+   * using the specified parameters to filter and transform the order data.
+   *
+   * @param {object[]} param - An array of aggregation pipeline stages to apply.
+   * @returns {Promise<mongoose.mongo.BSON.Document[]>} A promise that resolves to an array of orders matching the aggregation criteria.
+   */
+
+  async findOrderWithParam(
+    param: object[],
+  ): Promise<mongoose.mongo.BSON.Document[]> {
+    const db = this.getDbConnection();
+
+    return db.collection('restaurant').aggregate(param).toArray();
+  }
+
+  /**
    * @brief Creates a new order for a specified restaurant.
    *
    * This asynchronous function generates a unique ID for the order and each food item in the order
@@ -385,6 +404,7 @@ export class OrdersService extends DB {
           'orders.$.food_ordered': body['food_ordered'],
           'orders.$.part': body['part'],
           'orders.$.date': body['date'],
+          'orders.$.servie': body['servie'],
         },
       },
     );
