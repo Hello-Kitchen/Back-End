@@ -29,6 +29,9 @@ export class OrdersController {
 
   constructor(private readonly ordersService: OrdersService) {
     // Mapping query keys to service functions for retrieving orders
+    // const today = new Date();
+    // const formattedDate = today.toISOString().split('T')[0];
+
     this.queryMapping = {
       pendingtime: (idRestaurant: number) =>
         this.ordersService.findPendingSortedByDate(idRestaurant),
@@ -40,6 +43,13 @@ export class OrdersController {
         this.ordersService.findReady(idRestaurant),
       time: (idRestaurant: number) =>
         this.ordersService.findAllSortedByDate(idRestaurant),
+      servie: (idRestaurant: number) =>
+        this.ordersService.findOrderWithParam([
+          { $match: { id: idRestaurant } },
+          { $unwind: '$orders' },
+          { $match: { 'orders.servie': true } },
+          { $replaceRoot: { newRoot: '$orders' } },
+        ]),
       default: (idRestaurant: number) =>
         this.ordersService.findAll(idRestaurant),
     };

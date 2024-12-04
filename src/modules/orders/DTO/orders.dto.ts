@@ -6,6 +6,7 @@ import {
   IsEnum,
   ValidateNested,
   IsOptional,
+  IsBoolean,
 } from 'class-validator';
 import { FoodOrderedDto } from './food_ordered.dto';
 import { Type } from 'class-transformer';
@@ -28,6 +29,10 @@ export class OrdersDto {
   @IsString()
   @IsNotEmpty()
   number: string;
+
+  @IsBoolean()
+  @IsNotEmpty()
+  servie: boolean;
 
   @IsNumber()
   @IsNotEmpty()
