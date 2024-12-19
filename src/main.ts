@@ -21,7 +21,7 @@ import { ValidationPipe } from '@nestjs/common';
  * @returns {Promise<void>} Returns a promise that resolves when the application starts.
  */
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { abortOnError: false });
+  const app = await NestFactory.create(AppModule, { abortOnError: false, cors: true });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true, // Remove undefined properties in the DTO
