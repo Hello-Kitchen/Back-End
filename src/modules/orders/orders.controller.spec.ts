@@ -127,7 +127,7 @@ describe('OrdersController', () => {
       food_ordered: [],
       part: 1,
       date: new Date().toISOString(),
-      servie: false,
+      served: false,
     };
 
     it('should create order successfully', async () => {
@@ -163,7 +163,7 @@ describe('OrdersController', () => {
       food_ordered: [],
       part: 1,
       date: new Date().toISOString(),
-      servie: false,
+      served: false,
     };
 
     it('should update order successfully', async () => {
