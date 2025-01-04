@@ -32,7 +32,7 @@ export class OrdersDto {
 
   @IsBoolean()
   @IsNotEmpty()
-  servie: boolean;
+  served: boolean;
 
   @IsNumber()
   @IsNotEmpty()

@@ -80,7 +80,7 @@ export class OrdersService extends DB {
         { $match: { id: idRestaurant } },
         { $project: { orders: 1 } },
         { $unwind: '$orders' },
-        { $match: { 'orders.servie': false } },
+        { $match: { 'orders.served': false } },
         { $group: { _id: '$_id', orders: { $push: '$orders' } } },
       ])
       .toArray();
@@ -404,7 +404,7 @@ export class OrdersService extends DB {
           'orders.$.food_ordered': body['food_ordered'],
           'orders.$.part': body['part'],
           'orders.$.date': body['date'],
-          'orders.$.servie': body['servie'],
+          'orders.$.served': body['served'],
         },
       },
     );
