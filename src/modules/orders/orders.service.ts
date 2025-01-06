@@ -494,4 +494,40 @@ export class OrdersService extends DB {
         { $inc: { 'orders.$.part': 1 } },
       );
   }
+
+  /**
+   * @brief Marks a specific food item as ready or not ready for a given restaurant.
+   *
+   * This asynchronous function toggles the `is_ready` status of a food item identified by
+   * `idOrder` in the orders of the restaurant specified by `idRestaurant`.
+   * It first retrieves the current readiness status and then updates it in the database.
+   *
+   * @param {number} idRestaurant The unique identifier of the restaurant containing the order.
+   * @param {number} idOrder The unique identifier of the food item to be marked as ready or not ready.
+   * @return {Promise<mongoose.mongo.WithId<mongoose.AnyObject>>} A promise that resolves to the result of the update operation.
+   */
+  async changeValueServed(
+    idRestaurant: number,
+    idOrder: number,
+  ): Promise<mongoose.mongo.WithId<mongoose.AnyObject>> {
+    const db = this.getDbConnection();
+    const res = await db
+      .collection('restaurant')
+      .findOne({ id: idRestaurant }, { projection: { _id: 0, orders: 1 } });
+    let value: boolean;
+
+    for (const order of res.orders) {
+      if (order.id === idOrder) value = !order.served;
+    }
+
+    return await db.collection('restaurant').findOneAndUpdate(
+      {
+        id: idRestaurant,
+        'orders.id': idOrder,
+      },
+      {
+        $set: { 'orders.$.served': value },
+      },
+    );
+  }
 }
