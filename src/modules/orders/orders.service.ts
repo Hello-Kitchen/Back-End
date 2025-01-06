@@ -360,6 +360,7 @@ export class OrdersService extends DB {
       );
 
     body['id'] = id.sequence_value;
+    body['served'] = false;
     for (const food of body['food_ordered']) {
       const id = await db
         .collection<Counter>('counter')
