@@ -22,6 +22,7 @@ describe('OrdersController', () => {
     findById: jest.fn(),
     findByIdWithParam: jest.fn(),
     findFoodByIdsWithParam: jest.fn(),
+    findOrderWithParam: jest.fn(),
     createOne: jest.fn(),
     updateOne: jest.fn(),
     deleteOne: jest.fn(),
@@ -70,6 +71,16 @@ describe('OrdersController', () => {
       );
 
       const result = await controller.getOrders('ready', 'time', 1);
+      expect(result).toEqual(mockReadyOrders);
+    });
+
+    it('should return order who is served', async () => {
+      const mockReadyOrders = [
+        { id: 1, status: 'ready', date: new Date(), served: true },
+      ];
+      mockOrdersService.findOrderWithParam.mockResolvedValue(mockReadyOrders);
+
+      const result = await controller.getOrders('served', '', 1);
       expect(result).toEqual(mockReadyOrders);
     });
 
@@ -127,6 +138,7 @@ describe('OrdersController', () => {
       food_ordered: [],
       part: 1,
       date: new Date().toISOString(),
+      served: false,
     };
 
     it('should create order successfully', async () => {
@@ -162,6 +174,7 @@ describe('OrdersController', () => {
       food_ordered: [],
       part: 1,
       date: new Date().toISOString(),
+      served: false,
     };
 
     it('should update order successfully', async () => {

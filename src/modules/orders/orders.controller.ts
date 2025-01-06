@@ -29,6 +29,9 @@ export class OrdersController {
 
   constructor(private readonly ordersService: OrdersService) {
     // Mapping query keys to service functions for retrieving orders
+    // const today = new Date();
+    // const formattedDate = today.toISOString().split('T')[0];
+
     this.queryMapping = {
       pendingtime: (idRestaurant: number) =>
         this.ordersService.findPendingSortedByDate(idRestaurant),
@@ -40,6 +43,13 @@ export class OrdersController {
         this.ordersService.findReady(idRestaurant),
       time: (idRestaurant: number) =>
         this.ordersService.findAllSortedByDate(idRestaurant),
+      served: (idRestaurant: number) =>
+        this.ordersService.findOrderWithParam([
+          { $match: { id: idRestaurant } },
+          { $unwind: '$orders' },
+          { $match: { 'orders.served': true } },
+          { $replaceRoot: { newRoot: '$orders' } },
+        ]),
       default: (idRestaurant: number) =>
         this.ordersService.findAll(idRestaurant),
     };
@@ -328,6 +338,47 @@ export class OrdersController {
   ): Promise<void> {
     try {
       const result = await this.ordersService.incrementOrderPart(
+        Number(idRestaurant),
+        Number(id),
+      );
+
+      if (result.modifiedCount === 0) {
+        throw new NotFoundException();
+      }
+      return;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  /**
+   * @brief Change the fields 'served' for a order.
+   *
+   * This method is responsible for handling HTTP PUT requests to change the `served` of an order,
+   * identified by the `idRestaurant` and `id` parameters. It uses the `ordersService` to perform
+   * the update and ensures that the operation was successful.
+   *
+   * @param {number} idRestaurant The ID of the restaurant where the order is located.
+   * @param {number} id The ID of the order that will be modified.
+   * @returns {Promise<void>} Returns nothing on success, throws an exception if the order is not found or if there is a server error.
+   *
+   * @throws {NotFoundException} If the order to update was not found.
+   * @throws {HttpException} For other errors, such as internal server issues.
+   */
+  @UseGuards(JwtAuthGuard)
+  @Put('served/:id')
+  async ChangeStatusServed(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
+  ): Promise<void> {
+    try {
+      const result = await this.ordersService.changeValueServed(
         Number(idRestaurant),
         Number(id),
       );

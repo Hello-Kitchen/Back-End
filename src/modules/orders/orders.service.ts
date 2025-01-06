@@ -80,6 +80,7 @@ export class OrdersService extends DB {
         { $match: { id: idRestaurant } },
         { $project: { orders: 1 } },
         { $unwind: '$orders' },
+        { $match: { 'orders.served': false } },
         { $group: { _id: '$_id', orders: { $push: '$orders' } } },
       ])
       .toArray();
@@ -317,6 +318,24 @@ export class OrdersService extends DB {
   }
 
   /**
+   * @brief Retrieves orders based on the provided parameters.
+   *
+   * This function executes an aggregation on the 'restaurant' collection
+   * using the specified parameters to filter and transform the order data.
+   *
+   * @param {object[]} param - An array of aggregation pipeline stages to apply.
+   * @returns {Promise<mongoose.mongo.BSON.Document[]>} A promise that resolves to an array of orders matching the aggregation criteria.
+   */
+
+  async findOrderWithParam(
+    param: object[],
+  ): Promise<mongoose.mongo.BSON.Document[]> {
+    const db = this.getDbConnection();
+
+    return db.collection('restaurant').aggregate(param).toArray();
+  }
+
+  /**
    * @brief Creates a new order for a specified restaurant.
    *
    * This asynchronous function generates a unique ID for the order and each food item in the order
@@ -341,6 +360,7 @@ export class OrdersService extends DB {
       );
 
     body['id'] = id.sequence_value;
+    body['served'] = false;
     for (const food of body['food_ordered']) {
       const id = await db
         .collection<Counter>('counter')
@@ -385,6 +405,7 @@ export class OrdersService extends DB {
           'orders.$.food_ordered': body['food_ordered'],
           'orders.$.part': body['part'],
           'orders.$.date': body['date'],
+          'orders.$.served': body['served'],
         },
       },
     );
@@ -472,5 +493,41 @@ export class OrdersService extends DB {
         { id: restaurantId, 'orders.id': orderId },
         { $inc: { 'orders.$.part': 1 } },
       );
+  }
+
+  /**
+   * @brief Marks a specific food item as ready or not ready for a given restaurant.
+   *
+   * This asynchronous function toggles the `is_ready` status of a food item identified by
+   * `idOrder` in the orders of the restaurant specified by `idRestaurant`.
+   * It first retrieves the current readiness status and then updates it in the database.
+   *
+   * @param {number} idRestaurant The unique identifier of the restaurant containing the order.
+   * @param {number} idOrder The unique identifier of the food item to be marked as ready or not ready.
+   * @return {Promise<mongoose.mongo.WithId<mongoose.AnyObject>>} A promise that resolves to the result of the update operation.
+   */
+  async changeValueServed(
+    idRestaurant: number,
+    idOrder: number,
+  ): Promise<mongoose.mongo.WithId<mongoose.AnyObject>> {
+    const db = this.getDbConnection();
+    const res = await db
+      .collection('restaurant')
+      .findOne({ id: idRestaurant }, { projection: { _id: 0, orders: 1 } });
+    let value: boolean;
+
+    for (const order of res.orders) {
+      if (order.id === idOrder) value = !order.served;
+    }
+
+    return await db.collection('restaurant').findOneAndUpdate(
+      {
+        id: idRestaurant,
+        'orders.id': idOrder,
+      },
+      {
+        $set: { 'orders.$.served': value },
+      },
+    );
   }
 }
