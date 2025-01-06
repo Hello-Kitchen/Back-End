@@ -43,11 +43,11 @@ export class OrdersController {
         this.ordersService.findReady(idRestaurant),
       time: (idRestaurant: number) =>
         this.ordersService.findAllSortedByDate(idRestaurant),
-      servie: (idRestaurant: number) =>
+      served: (idRestaurant: number) =>
         this.ordersService.findOrderWithParam([
           { $match: { id: idRestaurant } },
           { $unwind: '$orders' },
-          { $match: { 'orders.servie': true } },
+          { $match: { 'orders.served': true } },
           { $replaceRoot: { newRoot: '$orders' } },
         ]),
       default: (idRestaurant: number) =>
