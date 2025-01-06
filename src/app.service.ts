@@ -16,6 +16,6 @@ export class AppService {
    * @memberof AppService
    */
   Welcome(): string {
-    return 'Welcome to the API !';
+    return 'Access the API documentation at /api';
   }
 }

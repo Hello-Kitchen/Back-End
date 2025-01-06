@@ -8,6 +8,9 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import * as swaggerUi from 'swagger-ui-express';
+import * as fs from 'fs';
+import * as path from 'path';
 
 /**
  * The bootstrap function initializes the application and starts it on port 3000.
@@ -32,6 +35,15 @@ async function bootstrap() {
       transform: true, // Transform the values according to the type specified in the DTO
     }),
   );
+
+    // Loading Swagger file
+    const swaggerDocument = JSON.parse(
+      fs.readFileSync(path.join('docs', 'swagger.json'), 'utf-8')
+    );
+
+    // Served documentation with SwaggerUI
+    app.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 
   await app.listen(3000);
   console.log(`Application is running on: ${await app.getUrl()}`);

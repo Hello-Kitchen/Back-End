@@ -1,0 +1,2732 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Hello Kitchen Back-end",
+    "description": "Documentation of the Hello Kitchen's back-end API",
+    "version": "1.4.3"
+  },
+  "servers": [
+    {
+      "url": "http://vps-8a0c228a.vps.ovh.ca:3000/api",
+      "description": "Canadian VPS"
+    },
+    {
+      "url": "http://vps-e98b74b5.vps.ovh.net:3000/api",
+      "description": "UK VPS"
+    },
+    {
+      "url": "http://localhost:{port}/api",
+      "description": "Local development server",
+      "variables": {
+        "port": {
+          "description": "Local port",
+          "default": "3000"
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/{restaurant_id}/details": {
+      "summary": "Restaurant's details paths",
+      "get": {
+        "tags": [
+          "Details"
+        ],
+        "summary": "Get restaurant's details",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/details"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant's ID not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Details"
+        ],
+        "summary": "Create a new detail",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Detail to be added",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/details"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/SuccessfullCreation"
+          },
+          "400": {
+            "description": "Restaurant's ID or body syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/{restaurant_id}/details/{id}": {
+      "summary": "Restaurant's detail paths",
+      "get": {
+        "tags": [
+          "Details"
+        ],
+        "summary": "Get specific details",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the detail",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/details"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Restaurant's ID or detail's ID syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant or detail not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Details"
+        ],
+        "summary": "Edit an existing detail",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the detail",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Detail to be edited",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/details"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SuccessfullOperation"
+          },
+          "400": {
+            "description": "Restaurant's ID, detail's ID, or body syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant or detail not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Details"
+        ],
+        "summary": "Delete an existing detail",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the detail",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SuccessfullOperation"
+          },
+          "400": {
+            "description": "Restaurant's ID or detail's ID syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant or detail not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/{restaurant_id}/food": {
+      "summary": "Restaurant's food paths",
+      "get": {
+        "tags": [
+          "Food"
+        ],
+        "summary": "Get all restaurant's foods",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/food"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Restaurant's ID syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Food"
+        ],
+        "summary": "Create a new food",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Food to be added",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/food"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/SuccessfullCreation"
+          },
+          "400": {
+            "description": "Restaurant's ID or body syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant or food not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/{restaurant_id}/food/{id}": {
+      "summary": "Restaurant's food paths",
+      "get": {
+        "tags": [
+          "Food"
+        ],
+        "summary": "Get specific food",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the food",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/food"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Restaurant's ID or food's ID syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant or food not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Food"
+        ],
+        "summary": "Edit an existing food",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the food",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Food to be edited",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/food"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SuccessfullOperation"
+          },
+          "400": {
+            "description": "Restaurant's ID, food's ID, or body syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant or food not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Food"
+        ],
+        "summary": "Delete an existing food",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the food",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SuccessfullOperation"
+          },
+          "400": {
+            "description": "Restaurant's ID or food's ID syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant or food not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/{restaurant_id}/food_category": {
+      "summary": "Restaurant's food categories paths",
+      "get": {
+        "tags": [
+          "Food Category"
+        ],
+        "summary": "Get all restaurant's food categories",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "foodCategory",
+            "in": "query",
+            "description": "Filter food by category",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/food_category"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Restaurant's ID syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Food Category"
+        ],
+        "summary": "Create a new food category",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Food category to be added",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/food_category"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/SuccessfullCreation"
+          },
+          "400": {
+            "description": "Restaurant's ID or body syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant or food_category not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/{restaurant_id}/food_category/{id}": {
+      "summary": "Restaurant's food category paths",
+      "get": {
+        "tags": [
+          "Food Category"
+        ],
+        "summary": "Get specific food category",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the food category",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/food_category"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Restaurant's ID or food_category' ID syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant or food_category not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Food Category"
+        ],
+        "summary": "Edit an existing food category",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the food category",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Food category to be edited",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/food_category"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SuccessfullOperation"
+          },
+          "400": {
+            "description": "Restaurant's ID, food_category' ID, or body syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant or food_category not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Food Category"
+        ],
+        "summary": "Delete an existing food category",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the food category",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SuccessfullOperation"
+          },
+          "400": {
+            "description": "Restaurant's ID or food_category' ID syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant or food_category not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/{restaurant_id}/ingredient": {
+      "summary": "Restaurant's ingredients paths",
+      "get": {
+        "tags": [
+          "Ingredients"
+        ],
+        "summary": "Get all restaurant's ingredients",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ingredients"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Restaurant's ID syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Ingredients"
+        ],
+        "summary": "Create a new ingredient",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Ingredient to be added",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ingredients"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/SuccessfullCreation"
+          },
+          "400": {
+            "description": "Restaurant's ID or body syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant or ingredient not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/{restaurant_id}/ingredient/{id}": {
+      "summary": "Restaurant's ingredients paths",
+      "get": {
+        "tags": [
+          "Ingredients"
+        ],
+        "summary": "Get specific ingredient",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the ingredient",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ingredients"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Restaurant's ID or ingredient's ID syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant or ingredient not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Ingredients"
+        ],
+        "summary": "Edit an existing ingredient",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the ingredient",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Ingredient to be edited",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ingredients"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SuccessfullOperation"
+          },
+          "400": {
+            "description": "Restaurant's ID, ingredient's ID, or body syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant or ingredient not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Ingredients"
+        ],
+        "summary": "Delete an existing ingredient",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the ingredient",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SuccessfullOperation"
+          },
+          "400": {
+            "description": "Restaurant's ID or ingredient's ID error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant or ingredient not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/login": {
+      "summary": "Restaurant's food paths",
+      "get": {
+        "tags": [
+          "Login"
+        ],
+        "parameters": [
+          {
+            "name": "idRestaurant",
+            "in": "query",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "username",
+            "in": "query",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "description": "Hashed password",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Syntax error. Username or password is incorrect"
+          }
+        }
+      }
+    },
+    "/{restaurant_id}/orders": {
+      "summary": "Restaurant's orders paths",
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Get all restaurants orders",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filter the order by being fully ready or at least one item is ready",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ready",
+                "pending",
+                "served"
+              ]
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sort the orders",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "time"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/order"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Restaurant's ID, orders' ID, querry param or body syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Create a new order",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Order to be added",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/order"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/SuccessfullCreation"
+          },
+          "400": {
+            "description": "Restaurant's ID or body syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant or order not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/{restaurant_id}/orders/{id}": {
+      "summary": "Restaurant's orders paths",
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Get specific order",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the order",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "forKDS",
+            "in": "query",
+            "description": "Only return the food_ordered contained in the order",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_1"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Restaurant's ID, orders' ID or querry param syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant or order not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Edit an existing order",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the order",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Order to be edited",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/order"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SuccessfullOperation"
+          },
+          "400": {
+            "description": "Restaurant's ID, orders' ID, or body syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant or order not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Delete an existing order",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the order",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SuccessfullOperation"
+          },
+          "400": {
+            "description": "Restaurant's ID or orders' ID syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant or order not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/{restaurant_id}/orders/status/{id}": {
+      "summary": "Update status",
+      "put": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Change the status of an ordered food",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the food_ordered's status to be changed",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SuccessfullOperation"
+          },
+          "400": {
+            "description": "Restaurant's ID or body syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant or order not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/{restaurant_id}/orders/next/{id}": {
+      "summary": "Update status",
+      "put": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Change the part to display of an order",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Order's ID",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SuccessfullOperation"
+          },
+          "400": {
+            "description": "Restaurant's ID or order's ID syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant or order not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/pos/{id}": {
+      "summary": "Restaurant's POS paths",
+      "get": {
+        "tags": [
+          "POS"
+        ],
+        "summary": "Get all the informations the POS needs",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/pos"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Restaurant's ID syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/restaurants": {
+      "summary": "Restaurant's informations paths",
+      "get": {
+        "tags": [
+          "Restaurants"
+        ],
+        "summary": "Get all restaurant's informations",
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/restaurant"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Restaurants"
+        ],
+        "summary": "Create a new restaurant",
+        "requestBody": {
+          "description": "Restaurant to be added",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/restaurant"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/SuccessfullCreation"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/restaurants/{id}": {
+      "summary": "Restaurant's informations paths",
+      "get": {
+        "tags": [
+          "Restaurants"
+        ],
+        "summary": "Get specific restaurant's informations",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/restaurant"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Restaurant's ID syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Restaurants"
+        ],
+        "summary": "Edit an existing restaurant",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Restaurant to be edited",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/restaurant"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SuccessfullOperation"
+          },
+          "400": {
+            "description": "Restaurant's ID or body syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Restaurants"
+        ],
+        "summary": "Delete an existing restaurant",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SuccessfullOperation"
+          },
+          "400": {
+            "description": "Restaurant's ID syntax error"
+          },
+          "404": {
+            "description": "Restaurant not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/{restaurant_id}/users": {
+      "summary": "Restaurant's users paths",
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get all restaurant's users",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/user"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Restaurant's ID syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Create a new user",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "User to be added",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/user"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/SuccessfullCreation"
+          },
+          "400": {
+            "description": "Restaurant's ID or body syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/{restaurant_id}/users/{id}": {
+      "summary": "Restaurant's users paths",
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get specific user",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the user",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Restaurant's ID or user's ID syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant or user not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Edit an existing user",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the user",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "User to be edited",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/user"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SuccessfullOperation"
+          },
+          "400": {
+            "description": "Restaurant's ID, user's ID or body syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant or user not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Delete an existing user",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the user",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SuccessfullOperation"
+          },
+          "400": {
+            "description": "Restaurant's ID or user's ID syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant or user not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/ping": {
+      "summary": "Check if the back-end respond",
+      "get": {
+        "tags": [
+          "Ping"
+        ],
+        "summary": "Check if the back-end respond",
+        "responses": {
+          "200": {
+            "description": "Back-end is running"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "restaurant": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Restaurant's ID",
+            "readOnly": true,
+            "example": 12
+          },
+          "name": {
+            "type": "string",
+            "description": "Restaurant's name",
+            "example": "Le resto des copains"
+          },
+          "location": {
+            "type": "string",
+            "description": "Restaurant's location",
+            "example": "Rue de l'amitié"
+          },
+          "ingredients": {
+            "type": "array",
+            "description": "Restaurant's ingredients",
+            "items": {
+              "$ref": "#/components/schemas/ingredients"
+            }
+          },
+          "details": {
+            "type": "array",
+            "description": "Restaurant's details",
+            "items": {
+              "$ref": "#/components/schemas/details"
+            }
+          },
+          "food_category": {
+            "type": "array",
+            "description": "Restaurant's food categories",
+            "items": {
+              "$ref": "#/components/schemas/food_category"
+            }
+          },
+          "food": {
+            "type": "array",
+            "description": "Restaurant's dishes",
+            "items": {
+              "$ref": "#/components/schemas/food"
+            }
+          },
+          "orders": {
+            "type": "array",
+            "description": "Restaurant's orders",
+            "items": {
+              "$ref": "#/components/schemas/order"
+            }
+          },
+          "users": {
+            "type": "array",
+            "description": "Restaurant's users",
+            "items": {
+              "$ref": "#/components/schemas/user"
+            }
+          }
+        },
+        "description": "Restaurant content"
+      },
+      "user": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "User's ID",
+            "readOnly": true,
+            "example": 30
+          },
+          "username": {
+            "type": "string",
+            "description": "User's username",
+            "example": "EtienneTasse"
+          },
+          "password": {
+            "type": "string",
+            "description": "User's password hashed",
+            "example": "$2a$10$uSADqxe22jNkrHd8mudiCOQpsWsvC2BW3jG.8.dmSLJxzsJJgpM5S"
+          }
+        }
+      },
+      "food_ordered": {
+        "type": "object",
+        "properties": {
+          "food": {
+            "type": "integer",
+            "description": "Food's ID",
+            "readOnly": true,
+            "example": 4
+          },
+          "mod_ingredients": {
+            "type": "array",
+            "description": "Modifications required for an ingredient",
+            "items": {
+              "$ref": "#/components/schemas/food_ordered_mod_ingredients"
+            }
+          },
+          "details": {
+            "type": "array",
+            "description": "Food ordered's details",
+            "items": {
+              "type": "string",
+              "description": "Details in plain text",
+              "example": "Medium rare"
+            }
+          },
+          "is_ready": {
+            "type": "boolean",
+            "description": "Is the food ordered's ready"
+          },
+          "note": {
+            "type": "string",
+            "description": "Note added to the food ordered",
+            "example": "Fries without salt"
+          }
+        }
+      },
+      "food": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Food's ID",
+            "readOnly": true,
+            "example": 12
+          },
+          "id_category": {
+            "type": "integer",
+            "description": "Food's category ID",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Food's name",
+            "example": "Burger sympa"
+          },
+          "price": {
+            "type": "number",
+            "description": "Food's price",
+            "format": "float",
+            "example": 12.99
+          },
+          "ingredients": {
+            "type": "array",
+            "description": "Food's ingredients",
+            "example": [
+              12,
+              30,
+              3
+            ],
+            "items": {
+              "type": "integer",
+              "description": "Ingredient's ID"
+            }
+          },
+          "details": {
+            "type": "array",
+            "description": "Food's details to be prompted when the food is ordered",
+            "items": {
+              "type": "integer",
+              "description": "Detail's ID"
+            }
+          }
+        }
+      },
+      "order": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Order's ID",
+            "readOnly": true,
+            "example": 23
+          },
+          "food_ordered": {
+            "type": "array",
+            "description": "Order's ordered foods",
+            "items": {
+              "$ref": "#/components/schemas/food_ordered"
+            }
+          },
+          "date": {
+            "type": "string",
+            "description": "Date and time where the order was first places",
+            "format": "date-time",
+            "example": "2017-07-21T17:32:28Z"
+          },
+          "channel": {
+            "type": "string",
+            "description": "Channel where the order was placed",
+            "enum": [
+              "Sur place",
+              "A emporter",
+              "LAD"
+            ]
+          },
+          "number": {
+            "type": "string",
+            "description": "Written order number",
+            "example": "Table 42"
+          },
+          "part": {
+            "type": "integer",
+            "description": "Part of the order to display",
+            "example": 1
+          }
+        }
+      },
+      "details": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Detail's ID",
+            "readOnly": true,
+            "example": 3
+          },
+          "name": {
+            "type": "string",
+            "description": "Detail's name",
+            "example": "Cuisson"
+          },
+          "data": {
+            "type": "array",
+            "description": "List of the available detail's options",
+            "items": {
+              "$ref": "#/components/schemas/details_data"
+            }
+          }
+        }
+      },
+      "ingredients": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Ingredient's ID",
+            "readOnly": true,
+            "example": 12
+          },
+          "name": {
+            "type": "integer",
+            "description": "Ingredient's name"
+          },
+          "price": {
+            "type": "number",
+            "description": "Ingredient's indidual price",
+            "format": "float",
+            "example": 0.45
+          },
+          "quantity": {
+            "type": "integer",
+            "description": "Ingredient's current quantity in stock",
+            "example": 210
+          },
+          "unit": {
+            "type": "string",
+            "description": "Unit used to quantify the ingredient",
+            "example": "Slice",
+            "enum": [
+              "tbd"
+            ]
+          }
+        }
+      },
+      "food_category": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Food category's ID",
+            "readOnly": true,
+            "example": 2
+          },
+          "name": {
+            "type": "string",
+            "description": "Food category's name",
+            "example": "Soft drinks"
+          }
+        }
+      },
+      "pos": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/pos_inner"
+        }
+      },
+      "inline_response_200": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string"
+          }
+        }
+      },
+      "inline_response_200_1": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/food"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "integer",
+                "description": "MongoDB's ID //To be removed",
+                "example": 1289830281302
+              },
+              "food_ordered": {
+                "type": "array",
+                "items": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/food_ordered"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "description": "food_ordered's ID",
+                          "example": 23
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "food_ordered's name",
+                          "example": "Boisson du champion"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      "food_ordered_mod_ingredients": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Type of modification",
+            "enum": [
+              "DEL",
+              "ADD",
+              "ALE"
+            ]
+          },
+          "ingredient": {
+            "type": "string",
+            "description": "Ingredient's to modify",
+            "example": "Eggs"
+          }
+        }
+      },
+      "details_data": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Type of option. If the option refered to another food, use \"food\", else use \"text\" for a manual text entry",
+            "enum": [
+              "text",
+              "food"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of option. If the data type is \"food\", use the food's ID",
+            "example": "saignant"
+          }
+        }
+      },
+      "pos_inner": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Food_category ID",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Food_category name",
+            "example": "Soft drinks"
+          },
+          "food": {
+            "type": "array",
+            "description": "Foods in this category",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "description": "Food's ID",
+                  "example": 5
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Food's name",
+                  "example": "Burger du gourmand"
+                },
+                "id_category": {
+                  "type": "integer",
+                  "description": "Category where the food is stored",
+                  "example": 1
+                },
+                "price": {
+                  "type": "number",
+                  "description": "Food's price",
+                  "format": "float",
+                  "example": 12.99
+                },
+                "details": {
+                  "type": "array",
+                  "description": "Details available for the food",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "description": "Detail's ID",
+                        "example": 12
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Detail's name",
+                        "example": "Cuisson"
+                      },
+                      "mutlipe": {
+                        "type": "boolean",
+                        "description": "Can the user choose multiple details?",
+                        "example": false
+                      },
+                      "data": {
+                        "type": "array",
+                        "description": "Details' options",
+                        "example": [
+                          "Saignant",
+                          "À point",
+                          "Bien cuit"
+                        ],
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "ingredients": {
+                  "type": "array",
+                  "description": "Ingredients in the food",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "description": "Ingredient's ID",
+                        "example": 23
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Ingredient's name",
+                        "example": "Steak"
+                      },
+                      "price": {
+                        "type": "number",
+                        "description": "Ingredient's price",
+                        "format": "float",
+                        "example": 0.23
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "Food categories containing foods"
+      }
+    },
+    "responses": {
+      "SuccessfullOperation": {
+        "description": "Successfull operation"
+      },
+      "SuccessfullCreation": {
+        "description": "Successfully created"
+      },
+      "BadRequest": {
+        "description": "Request syntax is incorrect"
+      },
+      "Unauthorized": {
+        "description": "Unauthorized to access the ressource. Client must be logged"
+      },
+      "NotFound": {
+        "description": "Ressource not found"
+      },
+      "ServerError": {
+        "description": "Unexpected error"
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
