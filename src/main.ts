@@ -42,7 +42,7 @@ async function bootstrap() {
   );
 
   // Served documentation with SwaggerUI
-  app.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
   await app.listen(3000);
   console.log(`Application is running on: ${await app.getUrl()}`);
