@@ -16,7 +16,9 @@ describe('AppController', () => {
 
   describe('root', () => {
     it('should return "Access the API documentation at /api"', () => {
-      expect(appController.Welcome()).toBe('Access the API documentation at /api');
+      expect(appController.Welcome()).toBe(
+        'Access the API documentation at /api',
+      );
     });
   });
 });

@@ -36,14 +36,13 @@ async function bootstrap() {
     }),
   );
 
-    // Loading Swagger file
-    const swaggerDocument = JSON.parse(
-      fs.readFileSync(path.join('docs', 'swagger.json'), 'utf-8')
-    );
+  // Loading Swagger file
+  const swaggerDocument = JSON.parse(
+    fs.readFileSync(path.join('docs', 'swagger.json'), 'utf-8'),
+  );
 
-    // Served documentation with SwaggerUI
-    app.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
+  // Served documentation with SwaggerUI
+  app.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
   await app.listen(3000);
   console.log(`Application is running on: ${await app.getUrl()}`);
