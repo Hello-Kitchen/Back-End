@@ -19,11 +19,13 @@ import {
   HttpStatus,
   UseGuards,
   Body,
+  Query,
 } from '@nestjs/common';
 import { FoodService } from './food.service';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { FoodDto } from './DTO/food.dto';
 import { PositiveNumberPipe } from '../../shared/pipe/positive-number.pipe';
+import { FoodCategoryPipe } from './pipe/foodCategory.pipe';
 
 @Controller('api/:idRestaurant/food')
 export class FoodController {
@@ -33,6 +35,7 @@ export class FoodController {
    * Retrieves all food items for a specific restaurant.
    *
    * @param {number} idRestaurant - The unique identifier for the restaurant.
+   * @param {number} foodCategory - Is use for filter all food to a category.
    * @returns {Promise<any>} An array of food items.
    * @throws {NotFoundException} if no food items are found.
    * @throws {HttpException} if there is an error during the operation.
@@ -42,11 +45,18 @@ export class FoodController {
   @Get()
   async getAllFood(
     @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Query('foodCategory', FoodCategoryPipe) foodCategory: number,
   ): Promise<any> {
     try {
       const food = await this.foodService.findAll(Number(idRestaurant));
       if (!food || food.length === 0) {
         throw new NotFoundException();
+      }
+      if (foodCategory != -1) {
+        const filteredArray = food.foods.filter(
+          (element) => element.id_category === foodCategory,
+        );
+        return filteredArray;
       }
       return food.foods; // Assuming food.foods is of type any[]
     } catch (error) {

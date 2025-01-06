@@ -43,19 +43,35 @@ describe('FoodController', () => {
       };
       mockFoodService.findAll.mockResolvedValue(mockFoods);
 
-      const result = await controller.getAllFood(1);
+      const result = await controller.getAllFood(1, -1);
       expect(result).toEqual(mockFoods.foods);
+      expect(mockFoodService.findAll).toHaveBeenCalledWith(1);
+    });
+
+    it('should return all food items for a restaurant matching with category', async () => {
+      const mockFoods = {
+        foods: [
+          { id: 1, name: 'Pizza', price: 10, id_category: 1 },
+          { id: 2, name: 'Burger', price: 8, id_category: 2 },
+        ],
+      };
+      mockFoodService.findAll.mockResolvedValue(mockFoods);
+
+      const result = await controller.getAllFood(1, 1);
+      expect(result[0]).toEqual(mockFoods.foods[0]);
       expect(mockFoodService.findAll).toHaveBeenCalledWith(1);
     });
 
     it('should throw NotFoundException when no foods found', async () => {
       mockFoodService.findAll.mockResolvedValue(null);
-      await expect(controller.getAllFood(1)).rejects.toThrow(NotFoundException);
+      await expect(controller.getAllFood(1, -1)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should handle service error', async () => {
       mockFoodService.findAll.mockRejectedValue(new Error('Database error'));
-      await expect(controller.getAllFood(1)).rejects.toThrow(HttpException);
+      await expect(controller.getAllFood(1, -1)).rejects.toThrow(HttpException);
     });
   });
 
