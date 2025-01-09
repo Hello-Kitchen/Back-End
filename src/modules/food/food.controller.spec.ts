@@ -11,6 +11,7 @@ describe('FoodController', () => {
   const mockFoodService = {
     findAll: jest.fn(),
     findById: jest.fn(),
+    findByIdWithParam: jest.fn(),
     createOne: jest.fn(),
     updateOne: jest.fn(),
     deleteOne: jest.fn(),
@@ -82,21 +83,32 @@ describe('FoodController', () => {
       };
       mockFoodService.findById.mockResolvedValue(mockFood);
 
-      const result = await controller.getOneFood(1, 1);
+      const result = await controller.getOneFood(1, 1, undefined);
       expect(result).toEqual(mockFood.foods[0]);
       expect(mockFoodService.findById).toHaveBeenCalledWith(1, 1);
     });
 
+    it('should return a single food item with use Case specific', async () => {
+      const mockFood = [{ food: [{ id: 1, name: 'Pizza', price: 10 }] }];
+      mockFoodService.findByIdWithParam.mockResolvedValue(mockFood);
+
+      const result = await controller.getOneFood(1, 1, 'POS');
+      expect(result).toEqual(mockFood[0].food);
+      expect(mockFoodService.findByIdWithParam).toHaveBeenCalledWith(1, 1);
+    });
+
     it('should throw NotFoundException when food not found', async () => {
       mockFoodService.findById.mockResolvedValue(null);
-      await expect(controller.getOneFood(1, 1)).rejects.toThrow(
+      await expect(controller.getOneFood(1, 1, undefined)).rejects.toThrow(
         NotFoundException,
       );
     });
 
     it('should handle service error', async () => {
       mockFoodService.findById.mockRejectedValue(new Error('Database error'));
-      await expect(controller.getOneFood(1, 1)).rejects.toThrow(HttpException);
+      await expect(controller.getOneFood(1, 1, undefined)).rejects.toThrow(
+        HttpException,
+      );
     });
   });
 
