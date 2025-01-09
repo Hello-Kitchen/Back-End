@@ -323,6 +323,16 @@
             "explode": false,
             "schema": {
               "type": "integer"
+            },
+            {
+            "name": "foodCategory",
+            "in": "query",
+            "description": "Filter food by category",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
             }
           }
         ],
@@ -604,17 +614,6 @@
             "required": true,
             "style": "simple",
             "explode": false,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "foodCategory",
-            "in": "query",
-            "description": "Filter food by category",
-            "required": false,
-            "style": "form",
-            "explode": true,
             "schema": {
               "type": "integer"
             }
