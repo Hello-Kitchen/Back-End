@@ -61,6 +61,61 @@ export class FoodService extends DB {
   }
 
   /**
+   * Retrieves a specific food item by its ID for a given restaurant and found each ingredient et details into array associated.
+   *
+   * @param {number} idRestaurant - The ID of the restaurant.
+   * @param {number} id - The ID of the food item.
+   * @returns {Promise<mongoose.mongo.BSON.Document[]>}
+   *          A promise that resolves to the food item.
+   * @async
+   */
+  async findByIdWithParam(
+    idRestaurant: number,
+    id: number,
+  ): Promise<mongoose.mongo.BSON.Document[]> {
+    const db = this.getDbConnection();
+
+    return db
+      .collection('restaurant')
+      .aggregate([
+        { $match: { id: idRestaurant } },
+        { $unwind: '$foods' },
+        { $match: { 'foods.id': id } },
+        {
+          $project: {
+            _id: 0,
+            food: {
+              id: '$foods.id',
+              name: '$foods.name',
+              price: '$foods.price',
+              id_restaurant: '$foods.id_restaurant',
+              id_category: '$foods.id_category',
+              details: {
+                $map: {
+                  input: '$foods.details',
+                  as: 'detailId',
+                  in: {
+                    $arrayElemAt: ['$details', '$$detailId'],
+                  },
+                },
+              },
+              ingredients: {
+                $map: {
+                  input: '$foods.ingredients',
+                  as: 'ingredientId',
+                  in: {
+                    $arrayElemAt: ['$ingredients.name', '$$ingredientId'],
+                  },
+                },
+              },
+            },
+          },
+        },
+      ])
+      .toArray();
+  }
+
+  /**
    * Creates a new food item for a specific restaurant.
    *
    * @param {number} idRestaurant - The ID of the restaurant.

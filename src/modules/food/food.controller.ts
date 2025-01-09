@@ -26,6 +26,7 @@ import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { FoodDto } from './DTO/food.dto';
 import { PositiveNumberPipe } from '../../shared/pipe/positive-number.pipe';
 import { FoodCategoryPipe } from './pipe/foodCategory.pipe';
+import { UseCasePipe } from './pipe/useCase.pipe';
 
 @Controller('api/:idRestaurant/food')
 export class FoodController {
@@ -75,6 +76,7 @@ export class FoodController {
    *
    * @param {number} idRestaurant - The unique identifier for the restaurant.
    * @param {number} id - The unique identifier for the food item.
+   * @param {string} useCase - For detect a specific use case for the POS or KDS.
    * @returns {Promise<any>} The food item if found.
    * @throws {NotFoundException} if the food item is not found.
    * @throws {HttpException} if there is an error during the operation.
@@ -85,16 +87,28 @@ export class FoodController {
   async getOneFood(
     @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
     @Param('id', PositiveNumberPipe) id: number,
+    @Query('useCase', UseCasePipe) useCase: string,
   ): Promise<any> {
     try {
-      const food = await this.foodService.findById(
-        Number(idRestaurant),
-        Number(id),
-      );
-      if (!food) {
-        throw new NotFoundException();
+      if (useCase) {
+        const food = await this.foodService.findByIdWithParam(
+          Number(idRestaurant),
+          Number(id),
+        );
+        if (!food) {
+          throw new NotFoundException();
+        }
+        return food[0].food; // Assuming food.foods is of type any[]
+      } else {
+        const food = await this.foodService.findById(
+          Number(idRestaurant),
+          Number(id),
+        );
+        if (!food) {
+          throw new NotFoundException();
+        }
+        return food.foods[0]; // Assuming food.foods is of type any[]
       }
-      return food.foods[0]; // Assuming food.foods is of type any[]
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;

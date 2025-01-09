@@ -323,8 +323,9 @@
             "explode": false,
             "schema": {
               "type": "integer"
-            },
-            {
+            }
+          },
+          {
             "name": "foodCategory",
             "in": "query",
             "description": "Filter food by category",
@@ -450,6 +451,18 @@
             "explode": false,
             "schema": {
               "type": "integer"
+            }
+          },
+          {
+            "name": "useCase",
+            "in": "query",
+            "description": "specific return for POS or KDS",
+            "required": false,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "enum": ["POS"]
             }
           }
         ],
