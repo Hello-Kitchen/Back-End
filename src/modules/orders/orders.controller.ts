@@ -143,11 +143,12 @@ export class OrdersController {
                 JSON.stringify(item.mods_ingredients) &&
               JSON.stringify(el.is_ready) === JSON.stringify(item.is_ready) &&
               JSON.stringify(el.note) === JSON.stringify(item.note) &&
-              JSON.stringify(el.details) === JSON.stringify(item.details),
+              JSON.stringify(el.details) === JSON.stringify(item.details) &&
+              JSON.stringify(el.price) === JSON.stringify(item.price),
           );
           // Increment quantity if item already exists in the accumulator
           if (foundItem) foundItem.quantity += 1;
-          else acc.push({ ...item, quantity: 1, name: name.foods[0].name });
+          else acc.push({ ...item, quantity: 1, name: name.foods[0].name, price: name.foods[0].price });
           return await acc;
         },
         Promise.resolve([]),
