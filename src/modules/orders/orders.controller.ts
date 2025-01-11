@@ -148,7 +148,13 @@ export class OrdersController {
           );
           // Increment quantity if item already exists in the accumulator
           if (foundItem) foundItem.quantity += 1;
-          else acc.push({ ...item, quantity: 1, name: name.foods[0].name, price: name.foods[0].price });
+          else
+            acc.push({
+              ...item,
+              quantity: 1,
+              name: name.foods[0].name,
+              price: name.foods[0].price,
+            });
           return await acc;
         },
         Promise.resolve([]),
