@@ -35,8 +35,28 @@ export class OrdersController {
     this.queryMapping = {
       pendingtime: (idRestaurant: number) =>
         this.ordersService.findPendingSortedByDate(idRestaurant),
+      timepending: (idRestaurant: number) =>
+        this.ordersService.findPendingSortedByDate(idRestaurant),
       readytime: (idRestaurant: number) =>
         this.ordersService.findReadySortedByDate(idRestaurant),
+      timeready: (idRestaurant: number) =>
+        this.ordersService.findReadySortedByDate(idRestaurant),
+      servedtime: (idRestaurant: number) =>
+        this.ordersService.findOrderWithParam([
+          { $match: { id: idRestaurant } },
+          { $unwind: '$orders' },
+          { $sort: { 'orders.date': -1 } },
+          { $match: { 'orders.served': true } },
+          { $replaceRoot: { newRoot: '$orders' } },
+        ]),
+      timeserved: (idRestaurant: number) =>
+        this.ordersService.findOrderWithParam([
+          { $match: { id: idRestaurant } },
+          { $unwind: '$orders' },
+          { $sort: { 'orders.date': -1 } },
+          { $match: { 'orders.served': true } },
+          { $replaceRoot: { newRoot: '$orders' } },
+        ]),
       pending: (idRestaurant: number) =>
         this.ordersService.findPending(idRestaurant),
       ready: (idRestaurant: number) =>
