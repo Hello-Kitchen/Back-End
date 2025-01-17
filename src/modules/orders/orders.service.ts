@@ -114,6 +114,7 @@ export class OrdersService extends DB {
         { $match: { id: idRestaurant } },
         { $project: { orders: 1 } },
         { $unwind: '$orders' },
+        { $match: { 'orders.served': false } },
         { $sort: { 'orders.date': -1 } },
         { $group: { _id: '$_id', orders: { $push: '$orders' } } },
       ])
