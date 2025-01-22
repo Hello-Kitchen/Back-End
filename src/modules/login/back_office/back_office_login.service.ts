@@ -36,8 +36,11 @@ export class BackOfficeLoginService extends DB {
     // Retrieve the user from the database based on the username
     const user = await db.collection('restaurant').findOne(
       {
-        projection: { _id: 0, users: { $elemMatch: { username: username } } },
+        users: { $elemMatch: { username: username } } // Search for documents where 'users' array has a matching username
       },
+      {
+        projection: { _id: 0, users: { $elemMatch: { username: username } } } // Return only the matched user from the 'users' array
+      }
     );
 
     if (!user) {
