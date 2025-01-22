@@ -1234,6 +1234,52 @@
         }
       }
     },
+    "/backoffice_login": {
+      "summary": "Restaurant's food paths",
+      "get": {
+        "tags": [
+          "Login"
+        ],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "description": "Hashed password",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Syntax error. Username or password is incorrect"
+          }
+        }
+      }
+    },
     "/{restaurant_id}/orders": {
       "summary": "Restaurant's orders paths",
       "get": {
