@@ -15,6 +15,7 @@ import { FoodModule } from './modules/food/food.module';
 import { FoodCategoryModule } from './modules/food_category/food_category.module';
 import { IngredientModule } from './modules/ingredient/ingredient.module';
 import { LoginModule } from './modules/login/login.module';
+import { BackOfficeLoginModule } from './modules/login/back_office/back_office_login.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { PermissionModule } from './modules/permission/permission.module';
 import { PosModule } from './modules/pos/pos.module';
@@ -34,6 +35,7 @@ import { HealthModule } from './modules/health/health.module';
     FoodCategoryModule /**< Manages categories of food */,
     IngredientModule /**< Handles ingredients for the food */,
     LoginModule /**< Manages user authentication */,
+    BackOfficeLoginModule /**< Manages user authentication */,
     OrdersModule /**< Handles orders and order-related functionality */,
     PermissionModule /**< Manages permissions in the system */,
     PosModule /**< Handles point-of-sale functionality */,
