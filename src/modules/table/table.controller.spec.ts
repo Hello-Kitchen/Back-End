@@ -2,7 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TableController } from './table.controller';
 import { TableService } from './table.service';
 import { TableDto } from './DTO/table.dto';
-import { NotFoundException, BadRequestException, HttpException } from '@nestjs/common';
+import {
+  NotFoundException,
+  BadRequestException,
+  HttpException,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 
 describe('TableController', () => {
@@ -37,8 +41,24 @@ describe('TableController', () => {
     it('should return all Tables', async () => {
       const mockTables = {
         tables: [
-          { id: 1, name: 'Tomate', price: 2, quantity: 100, unit: 'g' },
-          { id: 2, name: 'Oignon', price: 1, quantity: 50, unit: 'g' },
+          {
+            id: 1,
+            number: 1,
+            width: 100,
+            height: 100,
+            x: 0,
+            y: 0,
+            shape: 'table',
+          },
+          {
+            id: 1,
+            number: 1,
+            width: 100,
+            height: 100,
+            x: 0,
+            y: 0,
+            shape: 'table',
+          },
         ],
       };
       mockTableService.findAll.mockResolvedValue(mockTables);
@@ -56,12 +76,8 @@ describe('TableController', () => {
     });
 
     it('should handle service error', async () => {
-      mockTableService.findAll.mockRejectedValue(
-        new Error('Database error'),
-      );
-      await expect(controller.getAllTable(1)).rejects.toThrow(
-        HttpException,
-      );
+      mockTableService.findAll.mockRejectedValue(new Error('Database error'));
+      await expect(controller.getAllTable(1)).rejects.toThrow(HttpException);
     });
   });
 
@@ -69,7 +85,15 @@ describe('TableController', () => {
     it('should return a single table', async () => {
       const mockTable = {
         tables: [
-          { id: 1, name: 'Tomate', price: 2, quantity: 100, unit: 'g' },
+          {
+            id: 1,
+            number: 1,
+            width: 100,
+            height: 100,
+            x: 0,
+            y: 0,
+            shape: 'table',
+          },
         ],
       };
       mockTableService.findById.mockResolvedValue(mockTable);
@@ -87,12 +111,8 @@ describe('TableController', () => {
     });
 
     it('should handle service error', async () => {
-      mockTableService.findById.mockRejectedValue(
-        new Error('Database error'),
-      );
-      await expect(controller.getOneTable(1, 1)).rejects.toThrow(
-        HttpException,
-      );
+      mockTableService.findById.mockRejectedValue(new Error('Database error'));
+      await expect(controller.getOneTable(1, 1)).rejects.toThrow(HttpException);
     });
   });
 
@@ -104,7 +124,7 @@ describe('TableController', () => {
       height: 100,
       x: 0,
       y: 0,
-      shape: 1,
+      shape: 'table',
     };
 
     it('should create an table successfully', async () => {
@@ -114,10 +134,7 @@ describe('TableController', () => {
       });
 
       await controller.createTable(1, mockTable);
-      expect(mockTableService.createOne).toHaveBeenCalledWith(
-        1,
-        mockTable,
-      );
+      expect(mockTableService.createOne).toHaveBeenCalledWith(1, mockTable);
     });
 
     it('should throw NotFoundException when restaurant not found', async () => {
@@ -126,18 +143,16 @@ describe('TableController', () => {
         matchedCount: 0,
       });
 
-      await expect(
-        controller.createTable(1, mockTable),
-      ).rejects.toThrow(NotFoundException);
+      await expect(controller.createTable(1, mockTable)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should handle service error', async () => {
-      mockTableService.createOne.mockRejectedValue(
-        new Error('Database error'),
+      mockTableService.createOne.mockRejectedValue(new Error('Database error'));
+      await expect(controller.createTable(1, mockTable)).rejects.toThrow(
+        HttpException,
       );
-      await expect(
-        controller.createTable(1, mockTable),
-      ).rejects.toThrow(HttpException);
     });
   });
 
@@ -149,7 +164,7 @@ describe('TableController', () => {
       height: 100,
       x: 0,
       y: 0,
-      shape: 1,
+      shape: 'table',
     };
 
     it('should update an table successfully', async () => {
@@ -189,9 +204,7 @@ describe('TableController', () => {
     });
 
     it('should handle service error', async () => {
-      mockTableService.updateOne.mockRejectedValue(
-        new Error('Database error'),
-      );
+      mockTableService.updateOne.mockRejectedValue(new Error('Database error'));
       await expect(
         controller.updateOneTable(1, 1, updateTableDto),
       ).rejects.toThrow(HttpException);
@@ -219,9 +232,7 @@ describe('TableController', () => {
     });
 
     it('should handle service error', async () => {
-      mockTableService.deleteOne.mockRejectedValue(
-        new Error('Database error'),
-      );
+      mockTableService.deleteOne.mockRejectedValue(new Error('Database error'));
       await expect(controller.deleteOneTable(1, 1)).rejects.toThrow(
         HttpException,
       );

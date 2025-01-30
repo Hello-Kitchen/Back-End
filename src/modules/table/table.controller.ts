@@ -42,9 +42,7 @@ export class TableController {
     @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
   ) {
     try {
-      const table = await this.tableService.findAll(
-        Number(idRestaurant),
-      );
+      const table = await this.tableService.findAll(Number(idRestaurant));
       if (!table || table.length === 0) {
         throw new NotFoundException();
       }

@@ -21,9 +21,9 @@ export class TableDto {
   @IsNotEmpty()
   y: number;
 
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  shape: number;
+  shape: string;
 
   @IsOptional()
   @IsNumber()

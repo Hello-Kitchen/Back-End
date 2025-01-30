@@ -24,10 +24,7 @@ export class TableService extends DB {
 
     return db
       .collection('restaurant')
-      .findOne(
-        { id: idRestaurant },
-        { projection: { _id: 0, tables: 1 } },
-      );
+      .findOne({ id: idRestaurant }, { projection: { _id: 0, tables: 1 } });
   }
 
   /**
