@@ -22,6 +22,7 @@ import { RestaurantsModule } from './modules/restaurants/restaurants.module';
 import { UsersModule } from './modules/users/users.module';
 import { PassportModule } from '@nestjs/passport';
 import { HealthModule } from './modules/health/health.module';
+import { TableModule } from './modules/table/table.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { HealthModule } from './modules/health/health.module';
     RestaurantsModule /**< Manages restaurant information */,
     UsersModule /**< Manages users and their information */,
     HealthModule /**< Handles health functionality */,
+    TableModule /**< Handles table functionality */,
   ],
   controllers: [AppController] /**< Application controller */,
   providers: [AppService] /**< Core application service */,
