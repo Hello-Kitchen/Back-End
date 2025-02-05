@@ -1,17 +1,9 @@
 import { IsString, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 export class TableDto {
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  number: number;
-
-  @IsNumber()
-  @IsNotEmpty()
-  width: number;
-
-  @IsNumber()
-  @IsNotEmpty()
-  height: number;
+  name: string;
 
   @IsNumber()
   @IsNotEmpty()
@@ -20,10 +12,6 @@ export class TableDto {
   @IsNumber()
   @IsNotEmpty()
   y: number;
-
-  @IsString()
-  @IsNotEmpty()
-  shape: string;
 
   @IsOptional()
   @IsNumber()
