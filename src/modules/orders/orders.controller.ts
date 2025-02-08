@@ -45,7 +45,7 @@ export class OrdersController {
         this.ordersService.findOrderWithParam([
           { $match: { id: idRestaurant } },
           { $unwind: '$orders' },
-          { $sort: { 'orders.date': -1 } },
+          { $sort: { 'orders.date': 1 } },
           { $match: { 'orders.served': true } },
           { $replaceRoot: { newRoot: '$orders' } },
         ]),
@@ -53,7 +53,7 @@ export class OrdersController {
         this.ordersService.findOrderWithParam([
           { $match: { id: idRestaurant } },
           { $unwind: '$orders' },
-          { $sort: { 'orders.date': -1 } },
+          { $sort: { 'orders.date': 1 } },
           { $match: { 'orders.served': true } },
           { $replaceRoot: { newRoot: '$orders' } },
         ]),
