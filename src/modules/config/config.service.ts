@@ -22,10 +22,7 @@ export class ConfigService extends DB {
 
     return db
       .collection('restaurant')
-      .findOne(
-        { id: idRestaurant },
-        { projection: { _id: 0, 'pos_config': 1 } }
-      );
+      .findOne({ id: idRestaurant }, { projection: { _id: 0, pos_config: 1 } });
   }
 
   /**
@@ -35,17 +32,14 @@ export class ConfigService extends DB {
    * @param {ConfigDto} body - The table data to be added.
    * @returns {Promise<UpdateResult>} The result of the update operation.
    */
-  async create(
-    idRestaurant: number,
-    body: ConfigDto,
-  ): Promise<UpdateResult> {
+  async create(idRestaurant: number, body: ConfigDto): Promise<UpdateResult> {
     const db = this.getDbConnection();
 
     return db
       .collection('restaurant')
       .updateOne(
         { id: idRestaurant },
-        { $addToSet: { 'pos_config.tables': body } }
+        { $addToSet: { 'pos_config.tables': body } },
       );
   }
 
@@ -57,10 +51,7 @@ export class ConfigService extends DB {
    * @param {ConfigDto} body - The updated table data.
    * @returns {Promise<UpdateResult>} The result of the update operation.
    */
-  async update(
-    idRestaurant: number,
-    body: ConfigDto,
-  ): Promise<UpdateResult> {
+  async update(idRestaurant: number, body: ConfigDto): Promise<UpdateResult> {
     const db = this.getDbConnection();
 
     return db.collection('restaurant').updateOne(

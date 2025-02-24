@@ -12,13 +12,13 @@ import { TableDto } from './DTO/table.dto';
 @Injectable()
 export class TableService extends DB {
   /**
-   * Retrieves all tables for a specific PosConfig.
+   * Retrieves all tables for a specific restaurant.
    *
-   * @param {number} idPosConfig - The ID of the PosConfig.
-   * @returns {Promise<mongoose.mongo.WithId<mongoose.AnyObject>>} The PosConfig's tables.
+   * @param {number} idRestaurant - The ID of the restaurant.
+   * @returns {Promise<mongoose.mongo.WithId<mongoose.AnyObject>>} The restaurant's tables.
    */
   async findAll(
-    idPosConfig: number,
+    idRestaurant: number,
   ): Promise<mongoose.mongo.WithId<mongoose.AnyObject>> {
     const db = this.getDbConnection();
 
@@ -26,49 +26,44 @@ export class TableService extends DB {
       .collection('restaurant')
       .findOne(
         { id: idRestaurant },
-        { projection: { _id: 0, 'pos_config.tables': 1 } }
+        { projection: { _id: 0, 'pos_config.tables': 1 } },
       );
   }
 
   /**
-   * Retrieves a specific table by its ID for a given PosConfig.
+   * Retrieves a specific table by its ID for a given restaurant.
    *
-   * @param {number} idPosConfig - The ID of the PosConfig.
+   * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the table.
    * @returns {Promise<mongoose.mongo.WithId<mongoose.AnyObject>>} The table.
    */
   async findById(
-    idPosConfig: number,
+    idRestaurant: number,
     id: number,
   ): Promise<mongoose.mongo.WithId<mongoose.AnyObject>> {
     const db = this.getDbConnection();
 
-    return db
-      .collection('pos_config')
-      .findOne(
-        { id: idRestaurant },
-        { 
-          projection: { 
-            _id: 0, 
-            'pos_config.tables': { 
-              $elemMatch: { id: id } 
-            } 
-          } 
+    return db.collection('pos_config').findOne(
+      { id: idRestaurant },
+      {
+        projection: {
+          _id: 0,
+          'pos_config.tables': {
+            $elemMatch: { id: id },
+          },
         },
-      );
+      },
+    );
   }
 
   /**
-   * Creates a new table for a specific PosConfig.
+   * Creates a new table for a specific restaurant.
    *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {TableDto} body - The table data to be added.
    * @returns {Promise<UpdateResult>} The result of the update operation.
    */
-  async createOne(
-    idRestaurant: number,
-    body: TableDto,
-  ): Promise<UpdateResult> {
+  async createOne(idRestaurant: number, body: TableDto): Promise<UpdateResult> {
     const db = this.getDbConnection();
     const id = await db
       .collection<Counter>('counter')
@@ -83,20 +78,20 @@ export class TableService extends DB {
       .collection('restaurant')
       .updateOne(
         { id: idRestaurant },
-        { $addToSet: { 'pos_config.tables': body } }
+        { $addToSet: { 'pos_config.tables': body } },
       );
   }
 
   /**
-   * Updates an existing table for a specific PosConfig.
+   * Updates an existing table for a specific restaurant.
    *
-   * @param {number} idPosConfig - The ID of the PosConfig.
+   * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the table to update.
    * @param {TableDto} body - The updated table data.
    * @returns {Promise<UpdateResult>} The result of the update operation.
    */
   async updateOne(
-    idPosConfig: number,
+    idRestaurant: number,
     id: number,
     body: TableDto,
   ): Promise<UpdateResult> {
@@ -115,20 +110,20 @@ export class TableService extends DB {
   }
 
   /**
-   * Deletes a specific table for a PosConfig.
+   * Deletes a specific table for a restaurant.
    *
-   * @param {number} idPosConfig - The ID of the PosConfig.
+   * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the table to delete.
    * @returns {Promise<UpdateResult>} The result of the delete operation.
    */
-  async deleteOne(idPosConfig: number, id: number): Promise<UpdateResult> {
+  async deleteOne(idRestaurant: number, id: number): Promise<UpdateResult> {
     const db = this.getDbConnection();
 
     return db
       .collection<Restaurant>('restaurant')
       .updateOne(
         { id: idRestaurant },
-        { $pull: { 'pos_config.tables': { id: id } } }
+        { $pull: { 'pos_config.tables': { id: id } } },
       );
   }
 }
