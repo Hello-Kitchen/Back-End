@@ -24,7 +24,10 @@ export class TableService extends DB {
 
     return db
       .collection('restaurant')
-      .findOne({ id: idRestaurant }, { projection: { _id: 0, tables: 1 } });
+      .findOne(
+        { id: idRestaurant },
+        { projection: { _id: 0, 'pos_config.tables': 1 } }
+      );
   }
 
   /**
@@ -44,7 +47,14 @@ export class TableService extends DB {
       .collection('restaurant')
       .findOne(
         { id: idRestaurant },
-        { projection: { _id: 0, tables: { $elemMatch: { id: id } } } },
+        { 
+          projection: { 
+            _id: 0, 
+            'pos_config.tables': { 
+              $elemMatch: { id: id } 
+            } 
+          } 
+        },
       );
   }
 
@@ -52,12 +62,12 @@ export class TableService extends DB {
    * Creates a new table for a specific restaurant.
    *
    * @param {number} idRestaurant - The ID of the restaurant.
-   * @param {tableDto} body - The table data to be added.
+   * @param {TableDto} body - The table data to be added.
    * @returns {Promise<UpdateResult>} The result of the update operation.
    */
   async createOne(
     idRestaurant: number,
-    body: TableDto, // Change type based on your actual body structure
+    body: TableDto,
   ): Promise<UpdateResult> {
     const db = this.getDbConnection();
     const id = await db
@@ -68,10 +78,13 @@ export class TableService extends DB {
         { returnDocument: ReturnDocument.AFTER },
       );
 
-    body['id'] = id.sequence_value; // Assuming the body is mutable
+    body['id'] = id.sequence_value;
     return db
       .collection('restaurant')
-      .updateOne({ id: idRestaurant }, { $addToSet: { tables: body } });
+      .updateOne(
+        { id: idRestaurant },
+        { $addToSet: { 'pos_config.tables': body } }
+      );
   }
 
   /**
@@ -79,25 +92,23 @@ export class TableService extends DB {
    *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {number} id - The ID of the table to update.
-   * @param {tableDto} body - The updated table data.
+   * @param {TableDto} body - The updated table data.
    * @returns {Promise<UpdateResult>} The result of the update operation.
    */
   async updateOne(
     idRestaurant: number,
     id: number,
-    body: TableDto, // Change type based on your actual body structure
+    body: TableDto,
   ): Promise<UpdateResult> {
     const db = this.getDbConnection();
 
     return db.collection('restaurant').updateOne(
-      { id: idRestaurant, 'tables.id': id },
+      { id: idRestaurant, 'pos_config.tables.id': id },
       {
         $set: {
-          'tables.$.width': body.width,
-          'tables.$.height': body.height,
-          'tables.$.x': body.x,
-          'tables.$.y': body.y,
-          'tables.$.shape': body.shape,
+          'pos_config.tables.$.x': body.x,
+          'pos_config.tables.$.y': body.y,
+          'pos_config.tables.$.name': body.name,
         },
       },
     );
@@ -115,6 +126,9 @@ export class TableService extends DB {
 
     return db
       .collection<Restaurant>('restaurant')
-      .updateOne({ id: idRestaurant }, { $pull: { tables: { id: id } } });
+      .updateOne(
+        { id: idRestaurant },
+        { $pull: { 'pos_config.tables': { id: id } } }
+      );
   }
 }

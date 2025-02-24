@@ -119,12 +119,9 @@ describe('TableController', () => {
   describe('createTable', () => {
     const mockTable: TableDto = {
       id: 1,
-      number: 1,
-      width: 100,
-      height: 100,
       x: 0,
       y: 0,
-      shape: 'table',
+      name: 'table',
     };
 
     it('should create an table successfully', async () => {
@@ -159,12 +156,9 @@ describe('TableController', () => {
   describe('updateOneTable', () => {
     const updateTableDto: TableDto = {
       id: 1,
-      number: 1,
-      width: 100,
-      height: 100,
       x: 0,
       y: 0,
-      shape: 'table',
+      name: 'table',
     };
 
     it('should update an table successfully', async () => {
