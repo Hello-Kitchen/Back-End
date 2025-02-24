@@ -12,13 +12,13 @@ import { TableDto } from './DTO/table.dto';
 @Injectable()
 export class TableService extends DB {
   /**
-   * Retrieves all tables for a specific restaurant.
+   * Retrieves all tables for a specific PosConfig.
    *
-   * @param {number} idRestaurant - The ID of the restaurant.
-   * @returns {Promise<mongoose.mongo.WithId<mongoose.AnyObject>>} The restaurant's tables.
+   * @param {number} idPosConfig - The ID of the PosConfig.
+   * @returns {Promise<mongoose.mongo.WithId<mongoose.AnyObject>>} The PosConfig's tables.
    */
   async findAll(
-    idRestaurant: number,
+    idPosConfig: number,
   ): Promise<mongoose.mongo.WithId<mongoose.AnyObject>> {
     const db = this.getDbConnection();
 
@@ -31,20 +31,20 @@ export class TableService extends DB {
   }
 
   /**
-   * Retrieves a specific table by its ID for a given restaurant.
+   * Retrieves a specific table by its ID for a given PosConfig.
    *
-   * @param {number} idRestaurant - The ID of the restaurant.
+   * @param {number} idPosConfig - The ID of the PosConfig.
    * @param {number} id - The ID of the table.
    * @returns {Promise<mongoose.mongo.WithId<mongoose.AnyObject>>} The table.
    */
   async findById(
-    idRestaurant: number,
+    idPosConfig: number,
     id: number,
   ): Promise<mongoose.mongo.WithId<mongoose.AnyObject>> {
     const db = this.getDbConnection();
 
     return db
-      .collection('restaurant')
+      .collection('pos_config')
       .findOne(
         { id: idRestaurant },
         { 
@@ -59,7 +59,7 @@ export class TableService extends DB {
   }
 
   /**
-   * Creates a new table for a specific restaurant.
+   * Creates a new table for a specific PosConfig.
    *
    * @param {number} idRestaurant - The ID of the restaurant.
    * @param {TableDto} body - The table data to be added.
@@ -88,15 +88,15 @@ export class TableService extends DB {
   }
 
   /**
-   * Updates an existing table for a specific restaurant.
+   * Updates an existing table for a specific PosConfig.
    *
-   * @param {number} idRestaurant - The ID of the restaurant.
+   * @param {number} idPosConfig - The ID of the PosConfig.
    * @param {number} id - The ID of the table to update.
    * @param {TableDto} body - The updated table data.
    * @returns {Promise<UpdateResult>} The result of the update operation.
    */
   async updateOne(
-    idRestaurant: number,
+    idPosConfig: number,
     id: number,
     body: TableDto,
   ): Promise<UpdateResult> {
@@ -115,13 +115,13 @@ export class TableService extends DB {
   }
 
   /**
-   * Deletes a specific table for a restaurant.
+   * Deletes a specific table for a PosConfig.
    *
-   * @param {number} idRestaurant - The ID of the restaurant.
+   * @param {number} idPosConfig - The ID of the PosConfig.
    * @param {number} id - The ID of the table to delete.
    * @returns {Promise<UpdateResult>} The result of the delete operation.
    */
-  async deleteOne(idRestaurant: number, id: number): Promise<UpdateResult> {
+  async deleteOne(idPosConfig: number, id: number): Promise<UpdateResult> {
     const db = this.getDbConnection();
 
     return db
