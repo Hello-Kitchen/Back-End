@@ -9,6 +9,7 @@ on:
 jobs:
   deployEpitech:
     runs-on: ubuntu-latest
+    environment: epitech
     name: Deploy to EPITECH Repository
 
     steps:
@@ -40,8 +41,8 @@ jobs:
         git push origin main
   
   deployVPSCA:
-
     runs-on: ubuntu-latest
+    environment: production
 
     name: Deploy to VPS CA
 
@@ -78,9 +79,9 @@ jobs:
         SCRIPT_AFTER_REQUIRED: true
 
   deployVPSUK:
-
     runs-on: ubuntu-latest
-
+    environment: production
+    
     name: Deploy to VPS UK
 
     steps:
