@@ -121,12 +121,14 @@ export class OrdersService extends DB {
       .toArray();
 
     const filteredOrders = result[0].orders.filter((order) => {
-      console.log(order)
       const orderPart = order.part;
-      const relevantFoods = order.food_ordered.filter((food) => food.part === orderPart);
-      const allReady = relevantFoods.length > 0 && relevantFoods.every((food) => food.is_ready === true);
+      const relevantFoods = order.food_ordered.filter(
+        (food) => food.part === orderPart,
+      );
+      const allReady =
+        relevantFoods.length > 0 &&
+        relevantFoods.every((food) => food.is_ready === true);
 
-      console.log("allReady = ", allReady)
       return allReady;
     });
 
