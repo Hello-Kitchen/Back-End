@@ -40,11 +40,12 @@ jobs:
         git commit -m "Update from Back-End (Automation)"
         git push origin main
   
-  deployVPSCA:
+  deployVPS:
     runs-on: ubuntu-latest
-    environment: production-ca
-
-    name: Deploy to VPS CA
+    name: Deploy to VPS
+    strategy:
+        matrix:
+            environment: [production-ca, production-uk]
 
     steps:
     - name: Checkout code
@@ -64,54 +65,16 @@ jobs:
     - name: Deploy to VPS CA
       uses: easingthemes/ssh-deploy@main
       with:
-        SSH_PRIVATE_KEY: ${{ secrets.VPS_CA_SSH }}
+        SSH_PRIVATE_KEY: ${{ secrets.VPS_SSH }}
         ARGS: "-rlgoDzvc --delete"
-        REMOTE_HOST: ${{ secrets.VPS_CA_HOST }}
-        REMOTE_USER: ${{ secrets.VPS_CA_USERNAME }}
-        TARGET: ${{ secrets.VPS_CA_TARGET }}
+        REMOTE_HOST: ${{ secrets.VPS_HOST }}
+        REMOTE_USER: ${{ secrets.VPS_USERNAME }}
+        TARGET: ${{ secrets.VPS_TARGET }}
         EXCLUDE: "/node_modules/"
         SCRIPT_AFTER: |
-          echo "DB_NAME=\"${{ secrets.BACKEND_DB_NAME }}\"" >> ${{ secrets.VPS_CA_TARGET }}.env
-          echo "DB_URL=\"${{ secrets.BACKEND_DB_URL }}\"" >> ${{ secrets.VPS_CA_TARGET }}.env
-          echo "SALT_HASH=\"${{ secrets.BACKEND_SALT }}\"" >> ${{ secrets.VPS_CA_TARGET }}.env
-          sleep 2
-          ./restartBackend.sh
-        SCRIPT_AFTER_REQUIRED: true
-
-  deployVPSUK:
-    runs-on: ubuntu-latest
-    environment: production-uk
-    
-    name: Deploy to VPS UK
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Use Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18.X'
-    
-    - name: Install dependencies
-      run: npm install
-
-    - name: Build
-      run: npm run build
-
-    - name: Deploy to VPS CA
-      uses: easingthemes/ssh-deploy@main
-      with:
-        SSH_PRIVATE_KEY: ${{ secrets.VPS_UK_SSH }}
-        ARGS: "-rlgoDzvc --delete"
-        REMOTE_HOST: ${{ secrets.VPS_UK_HOST }}
-        REMOTE_USER: ${{ secrets.VPS_UK_USERNAME }}
-        TARGET: ${{ secrets.VPS_UK_TARGET }}
-        EXCLUDE: "/node_modules/"
-        SCRIPT_AFTER: |
-          echo "DB_NAME=\"${{ secrets.BACKEND_DB_NAME }}\"" >> ${{ secrets.VPS_UK_TARGET }}.env
-          echo "DB_URL=\"${{ secrets.BACKEND_DB_URL }}\"" >> ${{ secrets.VPS_UK_TARGET }}.env
-          echo "SALT_HASH=\"${{ secrets.BACKEND_SALT }}\"" >> ${{ secrets.VPS_UK_TARGET }}.env
+          echo "DB_NAME=\"${{ secrets.BACKEND_DB_NAME }}\"" >> ${{ secrets.VPS_TARGET }}.env
+          echo "DB_URL=\"${{ secrets.BACKEND_DB_URL }}\"" >> ${{ secrets.VPS_TARGET }}.env
+          echo "SALT_HASH=\"${{ secrets.BACKEND_SALT }}\"" >> ${{ secrets.VPS_TARGET }}.env
           sleep 2
           ./restartBackend.sh
         SCRIPT_AFTER_REQUIRED: true
