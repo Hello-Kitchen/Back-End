@@ -42,7 +42,7 @@ jobs:
   
   deployVPSCA:
     runs-on: ubuntu-latest
-    environment: production
+    environment: production-ca
 
     name: Deploy to VPS CA
 
@@ -80,7 +80,7 @@ jobs:
 
   deployVPSUK:
     runs-on: ubuntu-latest
-    environment: production
+    environment: production-uk
     
     name: Deploy to VPS UK
 
