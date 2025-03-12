@@ -47,6 +47,8 @@ jobs:
         matrix:
             environment: [production-ca, production-uk]
 
+    environment: ${{ matrix.environment }}
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
