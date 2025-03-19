@@ -33,7 +33,7 @@ export class User extends Document {
     description: 'Doit être une chaîne de caractères',
   })
   firstname: string;
-  
+
   @Prop({
     type: String,
     required: true,

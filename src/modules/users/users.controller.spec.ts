@@ -127,7 +127,7 @@ describe('UsersController', () => {
       username: 'updateduser',
       password: 'newpassword123',
       firstname: 'newfirst',
-      lastname: 'newlast';
+      lastname: 'newlast'
     };
 
     it('should update user successfully', async () => {
