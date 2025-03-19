@@ -45,10 +45,15 @@ describe('LoginController', () => {
       id: 1,
       username: 'testuser',
       role: 'user',
+      firstname: 'Test',
+      lastname: 'User',
     };
 
     const mockToken = {
       access_token: 'mock.jwt.token',
+      id: 1,
+      firstname: 'Test',
+      lastname: 'User',
     };
 
     it('should successfully authenticate and return a token', async () => {

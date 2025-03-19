@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { DB } from '../../db/db';
+import { User } from '../users/schemas/users.schema';
 
 @Injectable()
 /**
@@ -32,7 +33,7 @@ export class LoginService extends DB {
     idRestaurant: number,
     username: string,
     password: string,
-  ): Promise<string> {
+  ): Promise<User> {
     const db = this.getDbConnection();
 
     // Retrieve the user from the database based on the username
