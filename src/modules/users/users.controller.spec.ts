@@ -42,8 +42,20 @@ describe('UsersController', () => {
     it('should return all users', async () => {
       const mockUsers = {
         users: [
-          { id: 1, username: 'user1', password: 'pass1', firstname: 'first1', lastname: 'last1' },
-          { id: 2, username: 'user2', password: 'pass2', firstname: 'first2', lastname: 'last2' },
+          {
+            id: 1,
+            username: 'user1',
+            password: 'pass1',
+            firstname: 'first1',
+            lastname: 'last1',
+          },
+          {
+            id: 2,
+            username: 'user2',
+            password: 'pass2',
+            firstname: 'first2',
+            lastname: 'last2',
+          },
         ],
       };
       mockUsersService.findAll.mockResolvedValue(mockUsers);
@@ -92,7 +104,7 @@ describe('UsersController', () => {
       username: 'newuser',
       password: 'password123',
       firstname: 'first',
-      lastname: 'last'
+      lastname: 'last',
     };
 
     it('should create user successfully', async () => {
@@ -127,7 +139,7 @@ describe('UsersController', () => {
       username: 'updateduser',
       password: 'newpassword123',
       firstname: 'newfirst',
-      lastname: 'newlast'
+      lastname: 'newlast',
     };
 
     it('should update user successfully', async () => {
