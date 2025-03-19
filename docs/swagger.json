@@ -2534,6 +2534,15 @@
         "properties": {
           "access_token": {
             "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "firstname": {
+            "type": "string"
+          },
+          "lastname": {
+            "type": "string"
           }
         }
       },

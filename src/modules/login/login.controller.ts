@@ -31,7 +31,13 @@ export class LoginController {
         password,
       );
       const token = await this.loginService.login(auth);
-      return token; // Return the authentication result
+      // Return both the access token and the user's ID
+      return {
+        access_token: token.access_token,
+        id: auth.id,
+        firstname: auth.firstname,
+        lastname: auth.lastname,
+      };
     } catch (error) {
       // Handle authentication failure
       throw new BadRequestException(error);
