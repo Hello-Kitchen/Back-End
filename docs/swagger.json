@@ -2310,6 +2310,16 @@
             "type": "string",
             "description": "User's password hashed",
             "example": "$2a$10$uSADqxe22jNkrHd8mudiCOQpsWsvC2BW3jG.8.dmSLJxzsJJgpM5S"
+          },
+          "firstname": {
+            "type": "string",
+            "description": "User's firstname",
+            "example": "Etienne"
+          },
+          "lastname": {
+            "type": "string",
+            "description": "User's lastname",
+            "example": "Tasse"
           }
         }
       },
