@@ -20,6 +20,7 @@ import { PositiveNumberPipe } from '../../shared/pipe/positive-number.pipe';
 import { StatusPipe } from './pipe/status.pipe';
 import { SortPipe } from './pipe/sort.pipe';
 import { ForKDSPipe } from './pipe/forKDS.pipe';
+import { ChannelPipe } from './pipe/channel.pipe';
 
 @Controller('api/:idRestaurant/orders')
 export class OrdersController {
@@ -98,6 +99,37 @@ export class OrdersController {
       const result = await queryFunc(Number(idRestaurant));
 
       return result;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  /**
+   * Return the id of the channel ask.
+   *
+   * @param {string} channel - The channel asking.
+   * @param {number} idRestaurant - The ID of the restaurant.
+   * @returns {Promise<any>} The next id of the channel.
+   * @throws {InternalServerErrorException} If an error occurs while fetching id.
+   */
+  @UseGuards(JwtAuthGuard)
+  @Get('number')
+  async getIdChannel(
+    @Query('channel', ChannelPipe) channel: string,
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+  ) {
+    try {
+      const result = await this.ordersService.newIdOrder(
+        Number(idRestaurant),
+        channel,
+      );
+      return result.sequence_value;
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
