@@ -554,7 +554,7 @@ export class OrdersService extends DB {
     const id = await db
       .collection<Counter>('counter')
       .findOneAndUpdate(
-        { _id: channel === 'A emporter' ? 'orderOutId' : 'orderInId' },
+        { _id: channel === 'togo' ? 'orderOutId' : 'orderInId' },
         { $inc: { sequence_value: 1 } },
         { returnDocument: ReturnDocument.AFTER },
       );

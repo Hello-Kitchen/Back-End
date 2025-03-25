@@ -1370,6 +1370,65 @@
         ]
       }
     },
+    "/{restaurant_id}/orders/number": {
+      "summary": "Restaurant's orders paths",
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Return new number order",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "description": "Choose the channel",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "togo",
+                "eatin"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull operation"
+          },
+          "400": {
+            "description": "Restaurant's ID, orders' ID, querry param or body syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
     "/{restaurant_id}/orders/{id}": {
       "summary": "Restaurant's orders paths",
       "get": {
