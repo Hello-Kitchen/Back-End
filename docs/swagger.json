@@ -2424,6 +2424,11 @@
             "type": "string",
             "description": "Note added to the food ordered",
             "example": "Fries without salt"
+          },
+          "price": {
+            "type": "string",
+            "description": "The price of the food",
+            "example": "1"
           }
         }
       },
