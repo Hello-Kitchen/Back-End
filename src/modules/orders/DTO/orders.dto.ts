@@ -46,7 +46,7 @@ export class OrdersDto {
 
   @IsOptional()
   @IsNumber()
-  total?: number
+  total?: number;
 
   @IsOptional()
   @IsNumber()

@@ -367,7 +367,7 @@ export class OrdersService extends DB {
     body['id'] = id.sequence_value;
     body['served'] = false;
     for (const food of body['food_ordered']) {
-      total += Number(food.price)
+      total += Number(food.price);
       const id = await db
         .collection<Counter>('counter')
         .findOneAndUpdate(
@@ -403,6 +403,9 @@ export class OrdersService extends DB {
   ): Promise<UpdateResult> {
     const db = this.getDbConnection();
 
+    let total = 0;
+    for (const food of body['food_ordered']) total += Number(food.price);
+    body['total'] = total;
     return db.collection('restaurant').updateOne(
       { id: idRestaurant, 'orders.id': id },
       {
@@ -413,6 +416,7 @@ export class OrdersService extends DB {
           'orders.$.part': body['part'],
           'orders.$.date': body['date'],
           'orders.$.served': body['served'],
+          'orders.$.total': body['total'],
         },
       },
     );
