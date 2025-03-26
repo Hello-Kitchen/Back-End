@@ -1407,7 +1407,16 @@
         ],
         "responses": {
           "200": {
-            "description": "Successfull operation"
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                  "schema": {
+                      "type": "integer",
+                      "description": "ID to use for the order",
+                      "example": 23
+                  }
+              }
+            }
           },
           "400": {
             "description": "Restaurant's ID, orders' ID, querry param or body syntax error"
