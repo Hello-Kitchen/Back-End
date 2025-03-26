@@ -31,6 +31,10 @@ export class FoodOrderedDto {
   @IsNotEmpty()
   food: number;
 
+  @IsString()
+  @IsOptional()
+  price?: string;
+
   @IsBoolean()
   @IsNotEmpty()
   is_ready: boolean;

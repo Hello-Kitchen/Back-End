@@ -46,5 +46,9 @@ export class OrdersDto {
 
   @IsOptional()
   @IsNumber()
+  total?: number
+
+  @IsOptional()
+  @IsNumber()
   id?: number;
 }
