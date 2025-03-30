@@ -41,7 +41,7 @@ export class UsersController {
         throw new NotFoundException();
       }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      return users.map(({ password, ...user }) => user);
+      return users.users.map(({ password, ...user }) => user);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
