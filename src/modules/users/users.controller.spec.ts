@@ -19,6 +19,7 @@ describe('UsersController', () => {
     createOne: jest.fn(),
     updateOne: jest.fn(),
     deleteOne: jest.fn(),
+    updatePassword: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -211,6 +212,44 @@ describe('UsersController', () => {
       await expect(controller.deleteOneUser(1, 1)).rejects.toThrow(
         HttpException,
       );
+    });
+
+    describe('updatePassword', () => {
+      const updatePasswordDto = {
+        oldPassword: 'oldpassword123',
+        newPassword: 'newpassword123',
+      };
+
+      it('should update the password successfully', async () => {
+        const mockResponse = { message: 'Mot de passe modifié avec succès' };
+        mockUsersService.updatePassword.mockResolvedValue(mockResponse);
+
+        const result = await controller.updatePassword(1, 1, updatePasswordDto);
+        expect(result).toEqual(mockResponse);
+        expect(mockUsersService.updatePassword).toHaveBeenCalledWith(
+          1,
+          1,
+          updatePasswordDto,
+        );
+      });
+
+      it('should throw NotFoundException if user is not found', async () => {
+        mockUsersService.updatePassword.mockResolvedValue(null);
+
+        await expect(
+          controller.updatePassword(1, 1, updatePasswordDto),
+        ).rejects.toThrow(NotFoundException);
+      });
+
+      it('should handle service error', async () => {
+        mockUsersService.updatePassword.mockRejectedValue(
+          new Error('Database error'),
+        );
+
+        await expect(
+          controller.updatePassword(1, 1, updatePasswordDto),
+        ).rejects.toThrow(HttpException);
+      });
     });
   });
 });
