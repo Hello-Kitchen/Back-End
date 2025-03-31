@@ -111,7 +111,6 @@ export class FoodCategoryService extends DB {
       {
         $set: {
           'food_category.$.name': body['name'],
-          'food_category.$.id_restaurant': body['id_restaurant'],
         },
       },
     );

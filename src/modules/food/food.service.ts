@@ -161,10 +161,8 @@ export class FoodService extends DB {
         $set: {
           'foods.$.name': body['name'], // Update the name of the food item
           'foods.$.price': body['price'], // Update the price of the food item
-          'foods.$.id_restaurant': body['id_restaurant'], // Update the restaurant ID
           'foods.$.id_category': body['id_category'], // Update the category ID
           'foods.$.details': body['details'], // Update the details of the food item
-          'foods.$.foods': body['foods'], // Update the foods array if applicable
         },
       },
     );

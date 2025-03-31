@@ -109,7 +109,6 @@ export class DetailsService extends DB {
         $set: {
           'details.$.name': body['name'], // Update the name of the detail.
           'details.$.multiple': body['multiple'], // Update the multiple field.
-          'details.$.id_restaurant': body['id_restaurant'], // Update the restaurant ID.
           'details.$.data': body['data'], // Update the detail data.
         },
       },
