@@ -204,8 +204,6 @@ export class UsersController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Put(':id/password')
   /**
    * Updates the password of a user in a specific restaurant.
    *
@@ -216,6 +214,8 @@ export class UsersController {
    * @throws {NotFoundException} If the user is not found.
    * @throws {HttpException} If an internal server error occurs or another HTTP-related error is encountered.
    */
+  @UseGuards(JwtAuthGuard)
+  @Put(':id/password')
   async updatePassword(
     @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
     @Param('id', PositiveNumberPipe) id: number,
@@ -230,10 +230,10 @@ export class UsersController {
       );
 
       if (!user) {
-        throw new NotFoundException('Utilisateur non trouvé');
+        throw new NotFoundException('User not found');
       }
 
-      return { message: 'Mot de passe modifié avec succès' };
+      return;
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;

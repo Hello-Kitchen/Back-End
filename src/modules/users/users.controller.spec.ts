@@ -221,11 +221,10 @@ describe('UsersController', () => {
       };
 
       it('should update the password successfully', async () => {
-        const mockResponse = { message: 'Mot de passe modifié avec succès' };
+        const mockResponse = { status: 200 };
         mockUsersService.updatePassword.mockResolvedValue(mockResponse);
 
-        const result = await controller.updatePassword(1, 1, updatePasswordDto);
-        expect(result).toEqual(mockResponse);
+        await controller.updatePassword(1, 1, updatePasswordDto);
         expect(mockUsersService.updatePassword).toHaveBeenCalledWith(
           1,
           1,

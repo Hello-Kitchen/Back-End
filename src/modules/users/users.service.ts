@@ -165,15 +165,12 @@ export class UsersService extends DB {
     const user = await this.findById(restaurantId, id);
 
     if (!user) {
-      throw new NotFoundException('Utilisateur non trouvé');
+      throw new NotFoundException('User not found');
     }
-
-    console.log('user', user);
-    console.log('oldPassword', oldPassword);
 
     const isOldPasswordValid = oldPassword === user.password ? true : false;
     if (!isOldPasswordValid) {
-      throw new BadRequestException('Ancien mot de passe incorrect');
+      throw new BadRequestException('Old password is incorrect');
     }
 
     return await this.updateOne(restaurantId, user.id, {
