@@ -210,7 +210,6 @@ export class UsersController {
    * @param idRestaurant - The ID of the restaurant to which the user belongs. Must be a positive number.
    * @param id - The ID of the user whose password is being updated. Must be a positive number.
    * @param updatePasswordDto - The data transfer object containing the new password and any related information.
-   * @returns An object containing a success message if the password was updated successfully.
    * @throws {NotFoundException} If the user is not found.
    * @throws {HttpException} If an internal server error occurs or another HTTP-related error is encountered.
    */
