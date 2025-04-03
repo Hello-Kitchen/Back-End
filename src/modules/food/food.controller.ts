@@ -187,9 +187,6 @@ export class FoodController {
       if (result.matchedCount === 0) {
         throw new NotFoundException();
       }
-      if (result.modifiedCount === 0) {
-        throw new NotFoundException();
-      }
       return;
     } catch (error) {
       if (error instanceof HttpException) {

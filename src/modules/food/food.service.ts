@@ -163,6 +163,7 @@ export class FoodService extends DB {
           'foods.$.price': body['price'], // Update the price of the food item
           'foods.$.id_category': body['id_category'], // Update the category ID
           'foods.$.details': body['details'], // Update the details of the food item
+          'foods.$.ingredients': body['ingredients'], // Update the ingredients of the food item
         },
       },
     );
