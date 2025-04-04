@@ -5,6 +5,7 @@ import { DB } from '../../db/db';
 import { Counter } from '../../shared/interfaces/counter.interface';
 import { Restaurant } from '../../shared/interfaces/restaurant.interface';
 import { OrdersDto } from './DTO/orders.dto';
+import { PaymentDto } from './DTO/payment.dto';
 
 @Injectable()
 export class OrdersService extends DB {
@@ -566,5 +567,19 @@ export class OrdersService extends DB {
         { returnDocument: ReturnDocument.AFTER },
       );
     return id;
+  }
+
+  async addPayment(
+    idRestaurant: number,
+    idOrder: number,
+    payment: PaymentDto,
+  ): Promise<mongoose.mongo.UpdateResult<mongoose.AnyObject>> {
+    const db = this.getDbConnection();
+    return await db
+      .collection('restaurant')
+      .updateOne(
+        { id: idRestaurant, 'orders.id': idOrder },
+        { $set: { 'orders.$.payment': payment } },
+      );
   }
 }
