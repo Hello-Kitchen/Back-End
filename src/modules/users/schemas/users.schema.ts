@@ -24,6 +24,7 @@ export class User extends Document {
     type: String,
     required: true,
     description: 'Doit être une chaîne de caractères',
+    select: false,
   })
   password: string;
 

@@ -40,7 +40,7 @@ describe('UsersController', () => {
   });
 
   describe('getAllUser', () => {
-    it('should return all users', async () => {
+    it('should return all users without passwords', async () => {
       const mockUsers = {
         users: [
           {
@@ -62,7 +62,10 @@ describe('UsersController', () => {
       mockUsersService.findAll.mockResolvedValue(mockUsers);
 
       const result = await controller.getAllUser(1);
-      expect(result).toEqual(mockUsers);
+      expect(result).toEqual([
+        { id: 1, username: 'user1', firstname: 'first1', lastname: 'last1' },
+        { id: 2, username: 'user2', firstname: 'first2', lastname: 'last2' },
+      ]);
       expect(mockUsersService.findAll).toHaveBeenCalledWith(1);
     });
 
@@ -79,7 +82,12 @@ describe('UsersController', () => {
 
   describe('getOneUser', () => {
     it('should return a single user', async () => {
-      const mockUser = { id: 1, username: 'user1', password: 'pass1' };
+      const mockUser = {
+        id: 1,
+        username: 'user1',
+        firstname: 'first1',
+        lastname: 'last1',
+      };
       mockUsersService.findById.mockResolvedValue(mockUser);
 
       const result = await controller.getOneUser(1, 1);
