@@ -569,17 +569,27 @@ export class OrdersService extends DB {
     return id;
   }
 
+  /**
+   * @brief Adds a payment to a specific order in a restaurant.
+   *
+   * This method updates the `payment` field of an order identified by `idOrder` in the restaurant
+   * specified by `idRestaurant`. It uses the `payment` object from the `PaymentDto` to update the  
+   * 
+   * @param {number} idRestaurant The ID of the restaurant where the order is located.
+   * @param {number} idOrder The ID of the order that will be modified.
+   * @param {PaymentDto} paymentDTO - The request object containing updated payment details.
+   * @returns {Promise<mongoose.mongo.UpdateResult<mongoose.AnyObject>>} A promise that resolves to the result of the update operation.
+   */
+  
   async addPayment(
     idRestaurant: number,
     idOrder: number,
     payment: PaymentDto,
   ): Promise<mongoose.mongo.UpdateResult<mongoose.AnyObject>> {
     const db = this.getDbConnection();
-    return await db
-      .collection('restaurant')
-      .updateOne(
-        { id: idRestaurant, 'orders.id': idOrder },
-        { $set: { 'orders.$.payment': payment } },
-      );
+    return await db.collection('restaurant').updateOne(
+      { id: idRestaurant, 'orders.id': idOrder },
+      { $set: { 'orders.$.payment': payment } },
+    );
   }
 }
