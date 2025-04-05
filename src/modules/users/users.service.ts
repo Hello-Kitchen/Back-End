@@ -1,10 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import mongoose from 'mongoose';
 import { UpdateResult, ReturnDocument } from 'mongodb';
 import { DB } from '../../db/db';
 import { Restaurant } from '../../shared/interfaces/restaurant.interface';
 import { Counter } from '../../shared/interfaces/counter.interface';
 import { UsersDto } from './DTO/users.dto';
+import { UpdatePasswordDto } from './DTO/updatepassword.dto';
 
 @Injectable()
 export class UsersService extends DB {
@@ -138,5 +143,41 @@ export class UsersService extends DB {
     return db
       .collection<Restaurant>('restaurant')
       .updateOne({ id: idRestaurant }, { $pull: { users: { id: id } } });
+  }
+
+  /**
+   * Updates the password of a user within a specific restaurant.
+   *
+   * @param restaurantId - The ID of the restaurant to which the user belongs.
+   * @param id - The ID of the user whose password is being updated.
+   * @param updatePasswordDto - An object containing the old password and the new password.
+   * @returns A promise that resolves to an `UpdateResult` indicating the outcome of the update operation.
+   * @throws {NotFoundException} If the user is not found.
+   * @throws {BadRequestException} If the provided old password does not match the user's current password.
+   */
+  async updatePassword(
+    restaurantId: number,
+    id: number,
+    updatePasswordDto: UpdatePasswordDto,
+  ): Promise<UpdateResult> {
+    const { oldPassword, newPassword } = updatePasswordDto;
+
+    const user = await this.findById(restaurantId, id);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const isOldPasswordValid = oldPassword === user.password ? true : false;
+    if (!isOldPasswordValid) {
+      throw new BadRequestException('Old password is incorrect');
+    }
+
+    return await this.updateOne(restaurantId, user.id, {
+      username: user.username,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      password: newPassword,
+    });
   }
 }

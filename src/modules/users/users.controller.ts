@@ -16,6 +16,7 @@ import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { UsersDto } from './DTO/users.dto';
 import { PositiveNumberPipe } from '../../shared/pipe/positive-number.pipe';
+import { UpdatePasswordDto } from './DTO/updatepassword.dto';
 
 @Controller('api/:idRestaurant/users')
 export class UsersController {
@@ -191,6 +192,46 @@ export class UsersController {
       if (result.modifiedCount === 0) {
         throw new NotFoundException();
       }
+      return;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  /**
+   * Updates the password of a user in a specific restaurant.
+   *
+   * @param idRestaurant - The ID of the restaurant to which the user belongs. Must be a positive number.
+   * @param id - The ID of the user whose password is being updated. Must be a positive number.
+   * @param updatePasswordDto - The data transfer object containing the new password and any related information.
+   * @throws {NotFoundException} If the user is not found.
+   * @throws {HttpException} If an internal server error occurs or another HTTP-related error is encountered.
+   */
+  @UseGuards(JwtAuthGuard)
+  @Put(':id/password')
+  async updatePassword(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
+    @Body() updatePasswordDto: UpdatePasswordDto,
+  ) {
+    try {
+      // Appel au service pour vérifier et modifier le mot de passe
+      const user = await this.usersService.updatePassword(
+        idRestaurant,
+        id,
+        updatePasswordDto,
+      );
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
       return;
     } catch (error) {
       if (error instanceof HttpException) {

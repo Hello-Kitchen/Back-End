@@ -2279,6 +2279,63 @@
         ]
       }
     },
+    "/{restaurant_id}/users/{id}/password": {
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Change the password of an existing user",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the user",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ChangePassword"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SuccessfullOperation"
+          },
+          "400": {
+            "description": "Old password is incorrect or syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
     "/ping": {
       "summary": "Check if the back-end respond",
       "get": {
@@ -2804,6 +2861,31 @@
           }
         },
         "description": "Food categories containing foods"
+      }
+    },
+    "requestBodies": {
+      "ChangePassword": {
+        "description": "Change the password of an existing user",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "oldPassword": {
+                  "type": "string",
+                  "description": "User's old password",
+                  "example": "123456"
+                },
+                "newPassword": {
+                  "type": "string",
+                  "description": "User's new password",
+                  "example": "654321"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "responses": {
