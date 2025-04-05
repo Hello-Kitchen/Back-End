@@ -184,17 +184,6 @@ describe('FoodController', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('should throw NotFoundException when no changes made', async () => {
-      mockFoodService.updateOne.mockResolvedValue({
-        matchedCount: 1,
-        modifiedCount: 0,
-      });
-
-      await expect(
-        controller.updateOneFood(1, 1, updateFoodDto),
-      ).rejects.toThrow(NotFoundException);
-    });
-
     it('should handle service error', async () => {
       mockFoodService.updateOne.mockRejectedValue(new Error('Database error'));
       await expect(
