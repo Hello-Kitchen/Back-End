@@ -10,6 +10,7 @@ import {
 } from 'class-validator';
 import { FoodOrderedDto } from './food_ordered.dto';
 import { Type } from 'class-transformer';
+import { PaymentDto } from './payment.dto';
 
 enum Channel {
   TYPE1 = 'Sur place',
@@ -47,6 +48,12 @@ export class OrdersDto {
   @IsOptional()
   @IsNumber()
   total?: number;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => PaymentDto)
+  payment?: PaymentDto[];
 
   @IsOptional()
   @IsNumber()

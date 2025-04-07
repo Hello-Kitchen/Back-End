@@ -21,6 +21,7 @@ import { StatusPipe } from './pipe/status.pipe';
 import { SortPipe } from './pipe/sort.pipe';
 import { ForKDSPipe } from './pipe/forKDS.pipe';
 import { ChannelPipe } from './pipe/channel.pipe';
+import { PaymentDto } from './DTO/payment.dto';
 
 @Controller('api/:idRestaurant/orders')
 export class OrdersController {
@@ -440,6 +441,50 @@ export class OrdersController {
       const result = await this.ordersService.changeValueServed(
         Number(idRestaurant),
         Number(id),
+      );
+
+      if (result.modifiedCount === 0) {
+        throw new NotFoundException();
+      }
+      return;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  /**
+   * @brief Add the fields 'payment' for a order.
+   *
+   * This method is responsible for handling HTTP PUT requests to add the `payment` of an order,
+   * identified by the `idRestaurant` and `id` parameters. It uses the `ordersService` to perform
+   * the update and ensures that the operation was successful.
+   *
+   * @param {number} idRestaurant The ID of the restaurant where the order is located.
+   * @param {number} id The ID of the order that will be modified.
+   * @param {PaymentDto} paymentDTO - The request object containing updated payment details.
+   * @returns {Promise<void>} Returns nothing on success, throws an exception if the order is not found or if there is a server error.
+   *
+   * @throws {NotFoundException} If the order to update was not found.
+   * @throws {HttpException} For other errors, such as internal server issues.
+   */
+  @UseGuards(JwtAuthGuard)
+  @Put('payment/:id')
+  async AddPayment(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('id', PositiveNumberPipe) id: number,
+    @Body() paymentDTO: PaymentDto,
+  ): Promise<void> {
+    try {
+      const result = await this.ordersService.addPayment(
+        Number(idRestaurant),
+        Number(id),
+        paymentDTO,
       );
 
       if (result.modifiedCount === 0) {
