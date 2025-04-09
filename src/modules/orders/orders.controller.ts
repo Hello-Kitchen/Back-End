@@ -246,12 +246,6 @@ export class OrdersController {
         Number(idRestaurant),
         createOrderDTO,
       );
-      if (createdOrder.modifiedCount === 0) {
-        throw new NotFoundException();
-      }
-      if (createdOrder.matchedCount === 0) {
-        throw new NotFoundException();
-      }
       return createdOrder;
     } catch (error) {
       if (error instanceof HttpException) {
