@@ -240,11 +240,13 @@ export class OrdersController {
   async createOrder(
     @Body() createOrderDTO: OrdersDto,
     @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Param('idTable', PositiveNumberPipe) idTable: number,
   ) {
     try {
       const createdOrder = await this.ordersService.createOne(
         Number(idRestaurant),
         createOrderDTO,
+        Number(idTable),
       );
       if (createdOrder.modifiedCount === 0) {
         throw new NotFoundException();

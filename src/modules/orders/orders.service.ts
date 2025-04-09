@@ -354,6 +354,7 @@ export class OrdersService extends DB {
   async createOne(
     idRestaurant: number,
     body: OrdersDto,
+    idTable: number,
   ): Promise<UpdateResult> {
     const db = this.getDbConnection();
     const id = await db
@@ -380,6 +381,14 @@ export class OrdersService extends DB {
       food['id'] = id.sequence_value;
     }
     body['total'] = total;
+    await db.collection('restaurant').updateOne(
+      { id: idRestaurant, 'pos_config.tables.id': idTable },
+      {
+        $set: {
+          'pos_config.tables.$.orderId': id.sequence_value,
+        },
+      },
+    );
     return db
       .collection('restaurant')
       .updateOne({ id: idRestaurant }, { $addToSet: { orders: body } });
