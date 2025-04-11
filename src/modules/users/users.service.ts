@@ -10,6 +10,7 @@ import { Restaurant } from '../../shared/interfaces/restaurant.interface';
 import { Counter } from '../../shared/interfaces/counter.interface';
 import { UsersDto } from './DTO/users.dto';
 import { UpdatePasswordDto } from './DTO/updatepassword.dto';
+import { UsersUpdateDto } from './DTO/usersupdate.dto';
 
 @Injectable()
 export class UsersService extends DB {
@@ -115,7 +116,7 @@ export class UsersService extends DB {
   async updateOne(
     idRestaurant: number,
     id: number,
-    body: UsersDto,
+    body: UsersUpdateDto,
   ): Promise<UpdateResult> {
     const db = this.getDbConnection();
 
@@ -124,7 +125,8 @@ export class UsersService extends DB {
       {
         $set: {
           'users.$.username': body['username'],
-          'users.$.password': body['password'],
+          'users.$.firstname': body['firstname'],
+          'users.$.lastname': body['lastname'],
         },
       },
     );
@@ -173,11 +175,15 @@ export class UsersService extends DB {
       throw new BadRequestException('Old password is incorrect');
     }
 
-    return await this.updateOne(restaurantId, user.id, {
-      username: user.username,
-      firstname: user.firstname,
-      lastname: user.lastname,
-      password: newPassword,
-    });
+    const db = this.getDbConnection();
+
+    return db.collection('restaurant').updateOne(
+      { id: restaurantId, 'users.id': id }, // Corrected the filter field
+      {
+        $set: {
+          'users.$.password': newPassword,
+        },
+      },
+    );
   }
 }
