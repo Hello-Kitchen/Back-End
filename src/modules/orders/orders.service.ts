@@ -349,12 +349,12 @@ export class OrdersService extends DB {
    *
    * @param {number} idRestaurant The unique identifier of the restaurant to which the order will be added.
    * @param {OrdersDto} body A stream containing the order details, including the food items ordered.
-   * @return {Promise<WithId<Counter>>} A promise that resolves to the result of the update operation.
+   * @return {Promise<AnyObject>} A promise that resolves to the result of the update operation.
    */
   async createOne(
     idRestaurant: number,
     body: OrdersDto,
-  ): Promise<WithId<Counter>> {
+  ): Promise<AnyObject> {
     const db = this.getDbConnection();
     const id = await db
       .collection<Counter>('counter')
@@ -383,7 +383,7 @@ export class OrdersService extends DB {
     await db
       .collection('restaurant')
       .updateOne({ id: idRestaurant }, { $addToSet: { orders: body } });
-    return id;
+    return { orderId: id.sequence_value };
   }
 
   /**

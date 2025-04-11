@@ -1350,7 +1350,21 @@
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/SuccessfullCreation"
+            "description": "Successfull operation",
+            "content":{
+              "application/json":{
+                "schema":{
+                  "type":"object",
+                  "properties":{
+                    "orderId":{
+                      "type": "integer",
+                      "description": "ID of the order",
+                      "example": 23
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
             "description": "Restaurant's ID or body syntax error"
