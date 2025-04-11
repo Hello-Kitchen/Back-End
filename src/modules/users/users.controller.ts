@@ -17,6 +17,7 @@ import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { UsersDto } from './DTO/users.dto';
 import { PositiveNumberPipe } from '../../shared/pipe/positive-number.pipe';
 import { UpdatePasswordDto } from './DTO/updatepassword.dto';
+import { UsersUpdateDto } from './DTO/usersupdate.dto';
 
 @Controller('api/:idRestaurant/users')
 export class UsersController {
@@ -145,7 +146,7 @@ export class UsersController {
   async updateOneUser(
     @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
     @Param('id', PositiveNumberPipe) id: number,
-    @Body() updateUsersDto: UsersDto,
+    @Body() updateUsersDto: UsersUpdateDto,
   ) {
     try {
       const result = await this.usersService.updateOne(
@@ -155,9 +156,6 @@ export class UsersController {
       );
       if (result.matchedCount === 0) {
         throw new NotFoundException();
-      }
-      if (result.modifiedCount === 0) {
-        throw new BadRequestException();
       }
       return;
     } catch (error) {

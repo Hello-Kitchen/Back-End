@@ -176,17 +176,6 @@ describe('UsersController', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('should throw BadRequestException when no changes made', async () => {
-      mockUsersService.updateOne.mockResolvedValue({
-        matchedCount: 1,
-        modifiedCount: 0,
-      });
-
-      await expect(
-        controller.updateOneUser(1, 1, updateUserDto),
-      ).rejects.toThrow(BadRequestException);
-    });
-
     it('should handle service error', async () => {
       mockUsersService.updateOne.mockRejectedValue(new Error('Database error'));
       await expect(
