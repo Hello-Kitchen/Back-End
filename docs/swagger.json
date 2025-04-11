@@ -2553,7 +2553,7 @@
             "readOnly": true,
             "example": 4
           },
-          "mod_ingredients": {
+          "mods_ingredients": {
             "type": "array",
             "description": "Modifications required for an ingredient",
             "items": {
@@ -2673,6 +2673,11 @@
             "type": "integer",
             "description": "Part of the order to display",
             "example": 1
+          },
+          "served": {
+            "type": "boolean",
+            "description": "Is the order served",
+            "example": false
           }
         }
       },
