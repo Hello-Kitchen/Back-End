@@ -351,10 +351,7 @@ export class OrdersService extends DB {
    * @param {OrdersDto} body A stream containing the order details, including the food items ordered.
    * @return {Promise<AnyObject>} A promise that resolves to the result of the update operation.
    */
-  async createOne(
-    idRestaurant: number,
-    body: OrdersDto,
-  ): Promise<AnyObject> {
+  async createOne(idRestaurant: number, body: OrdersDto): Promise<AnyObject> {
     const db = this.getDbConnection();
     const id = await db
       .collection<Counter>('counter')
