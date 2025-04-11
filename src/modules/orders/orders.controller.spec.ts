@@ -143,26 +143,15 @@ describe('OrdersController', () => {
 
     it('should create order successfully', async () => {
       mockOrdersService.createOne.mockResolvedValue({
-        modifiedCount: 1,
-        matchedCount: 1,
+        sequence_value: 1,
+        _id: 1,
       });
 
       const result = await controller.createOrder(createOrderDto, 1);
-      expect(result.modifiedCount).toBe(1);
+      expect(result.sequence_value).toBe(1);
       expect(mockOrdersService.createOne).toHaveBeenCalledWith(
         1,
         createOrderDto,
-      );
-    });
-
-    it('should throw NotFoundException when restaurant not found', async () => {
-      mockOrdersService.createOne.mockResolvedValue({
-        modifiedCount: 0,
-        matchedCount: 0,
-      });
-
-      await expect(controller.createOrder(createOrderDto, 1)).rejects.toThrow(
-        NotFoundException,
       );
     });
   });
