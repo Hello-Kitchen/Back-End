@@ -22,6 +22,7 @@ import { SortPipe } from './pipe/sort.pipe';
 import { ForKDSPipe } from './pipe/forKDS.pipe';
 import { ChannelPipe } from './pipe/channel.pipe';
 import { PaymentDto } from './DTO/payment.dto';
+import { TableIDPipe } from './pipe/tableID.pipe';
 
 @Controller('api/:idRestaurant/orders')
 export class OrdersController {
@@ -91,15 +92,25 @@ export class OrdersController {
   async getOrders(
     @Query('status', StatusPipe) status: string,
     @Query('sort', SortPipe) sort: string,
+    @Query('tableID', TableIDPipe) tableID: number,
     @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
   ) {
     try {
-      const queryKey = `${status || ''}${sort || ''}`.trim() || 'default';
-      const queryFunc =
-        this.queryMapping[queryKey] || this.queryMapping['default'];
-      const result = await queryFunc(Number(idRestaurant));
+      if (tableID) {
+        const result = await this.ordersService.findByTableID(
+          Number(idRestaurant),
+          tableID,
+        );
+        return result;
+      } else {
+        const queryKey = `${status || ''}${sort || ''}`.trim() || 'default';
+        const queryFunc =
+            this.queryMapping[queryKey] || this.queryMapping['default'];
+        const result = await queryFunc(Number(idRestaurant));
 
-      return result;
+        return result;
+      }
+      
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
