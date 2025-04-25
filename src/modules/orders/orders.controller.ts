@@ -105,12 +105,11 @@ export class OrdersController {
       } else {
         const queryKey = `${status || ''}${sort || ''}`.trim() || 'default';
         const queryFunc =
-            this.queryMapping[queryKey] || this.queryMapping['default'];
+          this.queryMapping[queryKey] || this.queryMapping['default'];
         const result = await queryFunc(Number(idRestaurant));
 
         return result;
       }
-      
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;

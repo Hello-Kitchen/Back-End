@@ -355,14 +355,18 @@ export class OrdersService extends DB {
     tableID: number,
   ): Promise<mongoose.mongo.BSON.Document> {
     const db = this.getDbConnection();
-    const id = await db.collection('restaurant').findOne(
-      { id: idRestaurant, 'pos_config.tables.id': tableID },
-      { projection: { _id: 0, orderId: 1 } },
-    );
-    return db.collection('restaurant').findOne(
-      { id: idRestaurant, 'orders.id': id.orderId },
-      { projection: { _id: 0 } },
-    );
+    const id = await db
+      .collection('restaurant')
+      .findOne(
+        { id: idRestaurant, 'pos_config.tables.id': tableID },
+        { projection: { _id: 0, orderId: 1 } },
+      );
+    return db
+      .collection('restaurant')
+      .findOne(
+        { id: idRestaurant, 'orders.id': id.orderId },
+        { projection: { _id: 0 } },
+      );
   }
 
   /**
