@@ -380,7 +380,7 @@ export class OrdersService extends DB {
     idRestaurant: number,
     body: OrdersDto,
     idTable: number,
-  ): Promise<UpdateResult> {
+  ): Promise<AnyObject> {
     const db = this.getDbConnection();
     const id = await db
       .collection<Counter>('counter')
