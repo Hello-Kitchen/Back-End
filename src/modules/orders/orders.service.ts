@@ -374,7 +374,7 @@ export class OrdersService extends DB {
    *
    * @param {number} idRestaurant The unique identifier of the restaurant to which the order will be added.
    * @param {OrdersDto} body A stream containing the order details, including the food items ordered.
-   * @return {Promise<UpdateResult>} A promise that resolves to the result of the update operation.
+   * @return {Promise<AnyObject>} A promise that resolves to the result of the update operation.
    */
   async createOne(
     idRestaurant: number,
@@ -414,9 +414,10 @@ export class OrdersService extends DB {
         },
       },
     );
-    return db
+    await db
       .collection('restaurant')
       .updateOne({ id: idRestaurant }, { $addToSet: { orders: body } });
+    return { orderId: id.sequence_value };
   }
 
   /**
