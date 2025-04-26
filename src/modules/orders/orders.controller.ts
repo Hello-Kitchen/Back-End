@@ -97,12 +97,11 @@ export class OrdersController {
   ) {
     try {
       if (tableID) {
-        console.log(tableID);
-        // const result = await this.ordersService.findByTableID(
-        //   Number(idRestaurant),
-        //   tableID,
-        // );
-        // return result;
+        const result = await this.ordersService.findByTableID(
+          Number(idRestaurant),
+          tableID,
+        );
+        return result;
       } else {
         const queryKey = `${status || ''}${sort || ''}`.trim() || 'default';
         const queryFunc =
