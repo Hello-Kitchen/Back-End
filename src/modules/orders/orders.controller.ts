@@ -250,7 +250,7 @@ export class OrdersController {
   async createOrder(
     @Body() createOrderDTO: OrdersDto,
     @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
-    @Param('idTable', PositiveNumberPipe) idTable: number,
+    @Query('idTable', PositiveNumberPipe) idTable: number,
   ) {
     try {
       const createdOrder = await this.ordersService.createOne(

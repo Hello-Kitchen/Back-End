@@ -410,6 +410,7 @@ export class OrdersService extends DB {
       food['id'] = id.sequence_value;
     }
     body['total'] = total;
+    if (idTable) {
     await db.collection('restaurant').updateOne(
       { id: idRestaurant, 'pos_config.tables.id': idTable },
       {
@@ -417,7 +418,8 @@ export class OrdersService extends DB {
           'pos_config.tables.$.orderId': id.sequence_value,
         },
       },
-    );
+      );
+    }
     await db
       .collection('restaurant')
       .updateOne({ id: idRestaurant }, { $addToSet: { orders: body } });

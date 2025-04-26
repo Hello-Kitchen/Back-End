@@ -1346,6 +1346,17 @@
             "schema": {
               "type": "integer"
             }
+          },
+          {
+            "name": "idTable",
+            "in": "query",
+            "description": "ID of the table",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "number"
+            }
           }
         ],
         "requestBody": {
