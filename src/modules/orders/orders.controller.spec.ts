@@ -52,7 +52,7 @@ describe('OrdersController', () => {
       const mockOrders = [{ id: 1 }, { id: 2 }];
       mockOrdersService.findAll.mockResolvedValue(mockOrders);
 
-      const result = await controller.getOrders('', '', 1);
+      const result = await controller.getOrders('', '', undefined, 1);
       expect(result).toEqual(mockOrders);
     });
 
@@ -60,7 +60,7 @@ describe('OrdersController', () => {
       const mockPendingOrders = [{ id: 1, status: 'pending' }];
       mockOrdersService.findPending.mockResolvedValue(mockPendingOrders);
 
-      const result = await controller.getOrders('pending', '', 1);
+      const result = await controller.getOrders('pending', '', undefined, 1);
       expect(result).toEqual(mockPendingOrders);
     });
 
@@ -70,7 +70,7 @@ describe('OrdersController', () => {
         mockReadyOrders,
       );
 
-      const result = await controller.getOrders('ready', 'time', 1);
+      const result = await controller.getOrders('ready', 'time', undefined, 1);
       expect(result).toEqual(mockReadyOrders);
     });
 
@@ -80,13 +80,13 @@ describe('OrdersController', () => {
       ];
       mockOrdersService.findOrderWithParam.mockResolvedValue(mockReadyOrders);
 
-      const result = await controller.getOrders('served', '', 1);
+      const result = await controller.getOrders('served', '', undefined, 1);
       expect(result).toEqual(mockReadyOrders);
     });
 
     it('should handle service error', async () => {
       mockOrdersService.findAll.mockRejectedValue(new Error('Database error'));
-      await expect(controller.getOrders('', '', 1)).rejects.toThrow(
+      await expect(controller.getOrders('', '', undefined, 1)).rejects.toThrow(
         HttpException,
       );
     });
@@ -147,11 +147,12 @@ describe('OrdersController', () => {
         _id: 1,
       });
 
-      const result = await controller.createOrder(createOrderDto, 1);
+      const result = await controller.createOrder(createOrderDto, 1, 1);
       expect(result.sequence_value).toBe(1);
       expect(mockOrdersService.createOne).toHaveBeenCalledWith(
         1,
         createOrderDto,
+        1,
       );
     });
   });
