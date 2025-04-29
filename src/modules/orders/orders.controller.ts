@@ -196,8 +196,7 @@ export class OrdersController {
                 JSON.stringify(item.mods_ingredients) &&
               JSON.stringify(el.is_ready) === JSON.stringify(item.is_ready) &&
               JSON.stringify(el.note) === JSON.stringify(item.note) &&
-              JSON.stringify(el.details) === JSON.stringify(item.details) &&
-              JSON.stringify(el.price) === JSON.stringify(item.price),
+              JSON.stringify(el.details) === JSON.stringify(item.details),
           );
           // Increment quantity if item already exists in the accumulator
           if (foundItem) foundItem.quantity += 1;
