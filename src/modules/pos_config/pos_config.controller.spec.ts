@@ -13,11 +13,8 @@ describe('PosConfigController', () => {
   let controller: PosConfigController;
 
   const mockPosConfigService = {
-    findAll: jest.fn(),
-    findById: jest.fn(),
-    createOne: jest.fn(),
+    findOne: jest.fn(),
     updateOne: jest.fn(),
-    deleteOne: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -37,175 +34,100 @@ describe('PosConfigController', () => {
     controller = module.get<PosConfigController>(PosConfigController);
   });
 
-  describe('getAllPosConfig', () => {
-    it('should return all pos_configs', async () => {
-      const mockPosConfig = [
-        { id: 1, name: 'PosConfig 1' },
-        { id: 2, name: 'PosConfig 2' },
-      ];
-      mockPosConfigService.findAll.mockResolvedValue(mockPosConfig);
-
-      const result = await controller.getAllPosConfig();
-      expect(result).toEqual(mockPosConfig);
-    });
-
-    it('should throw NotFoundException when no pos_configs found', async () => {
-      mockPosConfigService.findAll.mockResolvedValue([]);
-      await expect(controller.getAllPosConfig()).rejects.toThrow(
-        NotFoundException,
-      );
-    });
-
-    it('should handle service error', async () => {
-      mockPosConfigService.findAll.mockRejectedValue(
-        new Error('Database error'),
-      );
-      await expect(controller.getAllPosConfig()).rejects.toThrow(HttpException);
-    });
-  });
-
-  describe('getOnePosConfig', () => {
-    it('should return a single pos_config', async () => {
-      const mockPosConfig = { id: 1, name: 'PosConfig 1' };
-      mockPosConfigService.findById.mockResolvedValue(mockPosConfig);
-
-      const result = await controller.getOnePosConfig(1);
-      expect(result).toEqual(mockPosConfig);
-    });
-
-    it('should throw NotFoundException when pos_config not found', async () => {
-      mockPosConfigService.findById.mockResolvedValue(null);
-      await expect(controller.getOnePosConfig(1)).rejects.toThrow(
-        NotFoundException,
-      );
-    });
-
-    it('should handle service error', async () => {
-      mockPosConfigService.findById.mockRejectedValue(
-        new Error('Database error'),
-      );
-      await expect(controller.getOnePosConfig(1)).rejects.toThrow(
-        HttpException,
-      );
-    });
-  });
-
-  describe('createPosConfig', () => {
-    const createPosConfigDto: PosConfigDto = {
-      location: 'location',
-      tables: [],
-      width: 0,
-      height: 0,
-    };
-
-    it('should create pos_config successfully', async () => {
-      const mockCreatedPosConfig = {
-        insertedId: 'some-id',
-        acknowledged: true,
+  describe('getPosConfig', () => {
+    it('should return the pos_config of a restaurant', async () => {
+      const mockConfig = {
+        tables: [
+          {
+            id: 0,
+            x: 0,
+            y: 0,
+            name: '0',
+            type: 'circle',
+            plates: 2,
+            time: "00:00",
+          },
+          {
+            id: 1,
+            x: 500,
+            y: 500,
+            name: '1',
+            type: 'rectangle',
+            plates: 4,
+            time: "00:00",
+          },
+        ],
+        width: 1920,
+        height: 1080,
       };
-      mockPosConfigService.createOne.mockResolvedValue(mockCreatedPosConfig);
+      mockPosConfigService.findOne.mockResolvedValue({ pos_config: mockConfig });
 
-      const result = await controller.createPosConfig(createPosConfigDto);
-      expect(result).toEqual(mockCreatedPosConfig);
+      const result = await controller.getPosConfig(1);
+      expect(result).toEqual(mockConfig);
+      expect(mockPosConfigService.findOne).toHaveBeenCalledWith(1);
     });
 
-    it('should throw BadRequestException when creation fails', async () => {
-      mockPosConfigService.createOne.mockResolvedValue(null);
-      await expect(
-        controller.createPosConfig(createPosConfigDto),
-      ).rejects.toThrow(BadRequestException);
+    it('should throw NotFoundException if config not found', async () => {
+      mockPosConfigService.findOne.mockResolvedValue(null);
+
+      await expect(controller.getPosConfig(1)).rejects.toThrow(NotFoundException);
     });
 
     it('should handle service error', async () => {
-      mockPosConfigService.createOne.mockRejectedValue(
-        new Error('Database error'),
-      );
-      await expect(
-        controller.createPosConfig(createPosConfigDto),
-      ).rejects.toThrow(HttpException);
+      mockPosConfigService.findOne.mockRejectedValue(new Error('Database error'));
+
+      await expect(controller.getPosConfig(1)).rejects.toThrow(HttpException);
     });
   });
 
-  describe('updateOnePosConfig', () => {
-    const updatePosConfigDto: PosConfigDto = {
-      location: 'location',
-      tables: [],
-      width: 0,
-      height: 0,
+  describe('updatePosConfig', () => {
+    const updateDto: PosConfigDto = {
+      tables: [
+        {
+          id: 0,
+          x: 0,
+          y: 0,
+          name: '0',
+          type: 'circle',
+          plates: 2,
+          time: "00:00",
+        },
+        {
+          id: 1,
+          x: 500,
+          y: 500,
+          name: '1',
+          type: 'rectangle',
+          plates: 4,
+          time: "00:00",
+        },
+      ],
+      width: 1920,
+      height: 1080,
     };
 
-    it('should update pos_config successfully', async () => {
-      mockPosConfigService.updateOne.mockResolvedValue({
-        matchedCount: 1,
-        modifiedCount: 1,
-      });
+    it('should update the pos_config successfully', async () => {
+      mockPosConfigService.updateOne.mockResolvedValue({ modifiedCount: 1 });
 
-      await controller.updateOnePosConfig(1, updatePosConfigDto);
-      expect(mockPosConfigService.updateOne).toHaveBeenCalledWith(
-        1,
-        updatePosConfigDto,
-      );
+      const result = await controller.updatePosConfig(1, updateDto);
+      expect(result).toEqual(true);
+      expect(mockPosConfigService.updateOne).toHaveBeenCalledWith(1, updateDto);
     });
 
-    it('should throw NotFoundException when pos_config not found', async () => {
-      mockPosConfigService.updateOne.mockResolvedValue({
-        matchedCount: 0,
-        modifiedCount: 0,
-      });
+    it('should throw BadRequestException if no changes made', async () => {
+      mockPosConfigService.updateOne.mockResolvedValue({ modifiedCount: 0 });
 
       await expect(
-        controller.updateOnePosConfig(1, updatePosConfigDto),
-      ).rejects.toThrow(NotFoundException);
-    });
-
-    it('should throw BadRequestException when no changes made', async () => {
-      mockPosConfigService.updateOne.mockResolvedValue({
-        matchedCount: 1,
-        modifiedCount: 0,
-      });
-
-      await expect(
-        controller.updateOnePosConfig(1, updatePosConfigDto),
+        controller.updatePosConfig(1, updateDto),
       ).rejects.toThrow(BadRequestException);
     });
 
     it('should handle service error', async () => {
-      mockPosConfigService.updateOne.mockRejectedValue(
-        new Error('Database error'),
-      );
+      mockPosConfigService.updateOne.mockRejectedValue(new Error('Database error'));
+
       await expect(
-        controller.updateOnePosConfig(1, updatePosConfigDto),
+        controller.updatePosConfig(1, updateDto),
       ).rejects.toThrow(HttpException);
-    });
-  });
-
-  describe('deleteOnePosConfig', () => {
-    it('should delete pos_config successfully', async () => {
-      mockPosConfigService.deleteOne.mockResolvedValue({
-        deletedCount: 1,
-      });
-
-      await controller.deleteOnePosConfig(1);
-      expect(mockPosConfigService.deleteOne).toHaveBeenCalledWith(1);
-    });
-
-    it('should throw NotFoundException when pos_config not found', async () => {
-      mockPosConfigService.deleteOne.mockResolvedValue({
-        deletedCount: 0,
-      });
-
-      await expect(controller.deleteOnePosConfig(1)).rejects.toThrow(
-        NotFoundException,
-      );
-    });
-
-    it('should handle service error', async () => {
-      mockPosConfigService.deleteOne.mockRejectedValue(
-        new Error('Database error'),
-      );
-      await expect(controller.deleteOnePosConfig(1)).rejects.toThrow(
-        HttpException,
-      );
     });
   });
 });

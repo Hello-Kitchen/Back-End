@@ -1,40 +1,51 @@
 import {
   Controller,
   Get,
-  Param,
-  Post,
   Put,
-  Delete,
+  Param,
+  Body,
+  UseGuards,
   NotFoundException,
   BadRequestException,
   HttpException,
   HttpStatus,
-  UseGuards,
-  Body,
 } from '@nestjs/common';
 import { PosConfigService } from './pos_config.service';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { PositiveNumberPipe } from '../../shared/pipe/positive-number.pipe';
 import { PosConfigDto } from './DTO/pos_config.dto';
 
-@Controller('api/pos_config')
+/**
+ * Controller for managing the pos_config of a restaurant.
+ *
+ * The `PosConfigController` class handles incoming requests related
+ * to the table configuration for a specific restaurant. It defines routes for
+ * retrieving and updating the table configuration.
+ */
+@Controller('api/:idRestaurant/pos_config')
 export class PosConfigController {
   constructor(private readonly posConfigService: PosConfigService) {}
 
-  /**
-   * Fetches all pos_config from the service.
+
+    /**
+   * Retrieves the pos_config of a specific restaurant.
    *
-   * @returns {Promise<any>} An array of pos_config.
+   * @param {number} idRestaurant - The ID of the restaurant.
+   * @returns {Promise<any>} The pos_config.
+   * @throws {NotFoundException} If no config is found.
+   * @throws {HttpException} If there's an error fetching the config.
    */
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getAllPosConfig() {
+  async getPosConfig(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+  ) {
     try {
-      const pos_config = await this.posConfigService.findAll();
-      if (!pos_config || pos_config.length === 0) {
+      const config = await this.posConfigService.findOne(Number(idRestaurant));
+      if (!config) {
         throw new NotFoundException();
       }
-      return pos_config;
+      return config.pos_config; // Return the config of the restaurant
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -46,110 +57,30 @@ export class PosConfigController {
     }
   }
 
-  /**
-   * Fetches a specific pos_config by its ID.
+    /**
+   * Updates an existing pos_config or create a pos_config for a specific restaurant.
    *
-   * @param {number} id - The ID of the pos_config.
-   * @returns {Promise<any>} The pos_config if found.
-   */
-  @UseGuards(JwtAuthGuard)
-  @Get(':id')
-  async getOnePosConfig(@Param('id', PositiveNumberPipe) id: number) {
-    try {
-      const pos_config = await this.posConfigService.findById(Number(id));
-      if (!pos_config) {
-        throw new NotFoundException();
-      }
-      return pos_config;
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new HttpException(
-        'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
-  /**
-   * Creates a new pos_config.
-   *
-   * @param {PosConfigDto} createPosConfigDto - The incoming request containing the pos_config data.
-   * @returns {Promise<any>} The created pos_config.
-   */
-  @UseGuards(JwtAuthGuard)
-  @Post()
-  async createPosConfig(@Body() createPosConfigDto: PosConfigDto) {
-    try {
-      const createdPosConfig =
-        await this.posConfigService.createOne(createPosConfigDto);
-      if (!createdPosConfig) {
-        throw new BadRequestException();
-      }
-      return createdPosConfig;
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new HttpException(
-        'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
-  /**
-   * Updates an existing pos_config by its ID.
-   *
-   * @param {number} id - The ID of the pos_config to update.
-   * @param {PosConfigDto} updatePosConfigDto - The incoming request containing the updated pos_config data.
+   * @param {number} idRestaurant - The ID of the restaurant.
+   * @param {PosConfigDto} updatePosConfigDto - The HTTP request containing the informations of the pos_config, such as tables.
    * @returns {Promise<any>} A success message.
+   * @throws {BadRequestException} If no changes were made to the config.
+   * @throws {HttpException} If there's an error updating or creating the config.
    */
   @UseGuards(JwtAuthGuard)
-  @Put(':id')
-  async updateOnePosConfig(
-    @Param('id', PositiveNumberPipe) id: number,
+  @Put()
+  async updatePosConfig(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
     @Body() updatePosConfigDto: PosConfigDto,
   ) {
     try {
       const result = await this.posConfigService.updateOne(
-        Number(id),
+        Number(idRestaurant),
         updatePosConfigDto,
       );
-      if (result.matchedCount === 0) {
-        throw new NotFoundException();
-      }
       if (result.modifiedCount === 0) {
         throw new BadRequestException();
       }
-      return;
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new HttpException(
-        'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
-  /**
-   * Deletes a pos_config by its ID.
-   *
-   * @param {number} id - The ID of the pos_config to delete.
-   * @returns {Promise<any>} A success message.
-   */
-  @UseGuards(JwtAuthGuard)
-  @Delete(':id')
-  async deleteOnePosConfig(@Param('id', PositiveNumberPipe) id: number) {
-    try {
-      const result = await this.posConfigService.deleteOne(Number(id));
-      if (result.deletedCount === 0) {
-        throw new NotFoundException();
-      }
-      return;
+      return true;
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;

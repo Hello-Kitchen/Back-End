@@ -13,6 +13,19 @@ export class TableDto {
   @IsNotEmpty()
   name: string;
 
+  @IsString()
+  @IsNotEmpty()
+  type: string;
+
+  @IsNumber()
+  @IsOptional()
+  plates: number;
+
+  @IsString()
+  @IsOptional()
+  @IsNotEmpty()
+  time: string;
+
   @IsOptional()
   @IsNumber()
   id?: number;

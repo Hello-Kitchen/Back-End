@@ -1,5 +1,4 @@
 import {
-  IsString,
   IsNotEmpty,
   IsNumber,
   IsArray,
@@ -10,10 +9,6 @@ import { TableDto } from '../../table/DTO/table.dto';
 import { Type } from 'class-transformer';
 
 export class PosConfigDto {
-  @IsString()
-  @IsNotEmpty()
-  location: string;
-
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => TableDto)

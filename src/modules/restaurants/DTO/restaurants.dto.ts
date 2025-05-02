@@ -12,6 +12,7 @@ import { FoodCategoryDto } from '../../../modules/food_category/DTO/food_categor
 import { FoodDto } from '../../../modules/food/DTO/food.dto';
 import { OrdersDto } from '../../../modules/orders/DTO/orders.dto';
 import { UsersDto } from '../../../modules/users/DTO/users.dto';
+import { PosConfigDto } from '../../../modules/pos_config/DTO/pos_config.dto';
 import { Type } from 'class-transformer';
 
 export class RestaurantDto {
@@ -52,6 +53,11 @@ export class RestaurantDto {
   @ValidateNested({ each: true })
   @Type(() => UsersDto)
   users: UsersDto[];
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => PosConfigDto)
+  pos_config?: PosConfigDto;
 
   @IsOptional()
   @IsNumber()

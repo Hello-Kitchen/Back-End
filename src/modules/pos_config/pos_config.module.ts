@@ -7,7 +7,7 @@ import { PosConfigService } from './pos_config.service';
  *
  * The `PosConfigModule` encapsulates the `PosConfigController` and `PosConfigService`
  * to handle operations related to pos_config items, including
- * creating, reading, updating, and deleting pos_config items.
+ * creating, reading and updating pos_config items.
  *
  * @module PosConfigModule
  */
@@ -20,4 +20,4 @@ import { PosConfigService } from './pos_config.service';
     PosConfigService /**< The service that contains the business logic for managing pos_config items */,
   ],
 })
-export class RestaurantsModule {}
+export class PosConfigModule {}

@@ -22,6 +22,7 @@ import { RestaurantsModule } from './modules/restaurants/restaurants.module';
 import { UsersModule } from './modules/users/users.module';
 import { PassportModule } from '@nestjs/passport';
 import { HealthModule } from './modules/health/health.module';
+import { PosConfigModule } from './modules/pos_config/pos_config.module';
 import { TableModule } from './modules/table/table.module';
 
 @Module({
@@ -41,6 +42,7 @@ import { TableModule } from './modules/table/table.module';
     RestaurantsModule /**< Manages restaurant information */,
     UsersModule /**< Manages users and their information */,
     HealthModule /**< Handles health functionality */,
+    PosConfigModule /**< Handles the table config of a restaurant */,
     TableModule /**< Handles table functionality */,
   ],
   controllers: [AppController] /**< Application controller */,
