@@ -12,7 +12,7 @@ import { PosConfigDto } from './DTO/pos_config.dto';
  */
 @Injectable()
 export class PosConfigService extends DB {
-    /**
+  /**
    * Retrieves the pos_config of a specific restaurant.
    *
    * @param {number} idRestaurant - The ID of the restaurant.
@@ -25,10 +25,7 @@ export class PosConfigService extends DB {
 
     return db
       .collection('restaurant')
-      .findOne(
-        { id: idRestaurant },
-        { projection: { _id: 0, pos_config: 1 } }
-      );
+      .findOne({ id: idRestaurant }, { projection: { _id: 0, pos_config: 1 } });
   }
 
   /**
@@ -46,9 +43,6 @@ export class PosConfigService extends DB {
 
     return db
       .collection('restaurant')
-      .updateOne(
-        { id: idRestaurant },
-        { $set: { pos_config: body } }
-      );
+      .updateOne({ id: idRestaurant }, { $set: { pos_config: body } });
   }
 }

@@ -48,7 +48,7 @@ describe('TableController', () => {
             name: 'name',
             type: 'circle',
             plates: 2,
-            time: "00:00",
+            time: '00:00',
           },
           {
             id: 1,
@@ -57,7 +57,7 @@ describe('TableController', () => {
             name: 'name',
             type: 'rectangle',
             plates: 4,
-            time: "00:00",
+            time: '00:00',
           },
         ],
       };
@@ -92,7 +92,7 @@ describe('TableController', () => {
             name: 'name',
             type: 'square',
             plates: 2,
-            time: "00:00",
+            time: '00:00',
           },
         ],
       };
@@ -124,7 +124,7 @@ describe('TableController', () => {
       name: 'table',
       type: 'square',
       plates: 2,
-      time: "00:00",
+      time: '00:00',
     };
 
     it('should create an table successfully', async () => {
@@ -164,7 +164,7 @@ describe('TableController', () => {
       name: 'table',
       type: 'square',
       plates: 2,
-      time: "00:00",
+      time: '00:00',
     };
 
     it('should update an table successfully', async () => {

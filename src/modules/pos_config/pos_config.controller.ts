@@ -26,8 +26,7 @@ import { PosConfigDto } from './DTO/pos_config.dto';
 export class PosConfigController {
   constructor(private readonly posConfigService: PosConfigService) {}
 
-
-    /**
+  /**
    * Retrieves the pos_config of a specific restaurant.
    *
    * @param {number} idRestaurant - The ID of the restaurant.
@@ -57,7 +56,7 @@ export class PosConfigController {
     }
   }
 
-    /**
+  /**
    * Updates an existing pos_config or create a pos_config for a specific restaurant.
    *
    * @param {number} idRestaurant - The ID of the restaurant.
