@@ -2662,9 +2662,9 @@
             "description": "Pos screen width on table config save",
             "example": 1920
           },
-          "heigth": {
+          "height": {
             "type": "integer",
-            "description": "Pos screen heigth on table config save",
+            "description": "Pos screen height on table config save",
             "example": 832
           },
           "tables": {
