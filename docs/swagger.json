@@ -2077,6 +2077,111 @@
         ]
       }
     },
+    "/{restaurant_id}/pos_config": {
+      "summary": "Restaurant's pos table configuration path",
+      "get": {
+        "tags": [
+          "Pos Config"
+        ],
+        "summary": "Get the pos_config of the given restaurant",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/pos_config"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Restaurant's ID syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Pos Config"
+        ],
+        "summary": "Create or update the pos_config of a given restaurant",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Pos config to create or update",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/pos_config"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/SuccessfullCreation"
+          },
+          "400": {
+            "description": "Restaurant's ID or body syntax error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Restaurant not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
     "/{restaurant_id}/users": {
       "summary": "Restaurant's users paths",
       "get": {
@@ -2548,6 +2653,65 @@
           }
         },
         "description": "Restaurant content"
+      },
+      "pos_config": {
+        "type": "object",
+        "properties": {
+          "width": {
+            "type": "integer",
+            "description": "Pos screen width on table config save",
+            "example": 1920
+          },
+          "height": {
+            "type": "integer",
+            "description": "Pos screen height on table config save",
+            "example": 832
+          },
+          "tables": {
+            "type": "array",
+            "description": "Restaurant's pos config tables",
+            "items": {
+              "$ref": "#/components/schemas/table"
+            }
+          }
+        },
+        "description": "Restaurant pos table configuration"
+      },
+      "table": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "integer",
+            "description": "X position of the table on the pos screen",
+            "example": 500
+          },
+          "y": {
+            "type": "integer",
+            "description": "Y position of the table on the pos screen",
+            "example": 366
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the table",
+            "example": "42"
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of the table for front rendering",
+            "example": "square"
+          },
+          "plates": {
+            "type": "integer",
+            "description": "Number of plates on the table",
+            "example": 2
+          },
+          "time": {
+            "type": "string",
+            "description": "Time since last order on the table",
+            "example": "00:00"
+          }
+        },
+        "description": "Restaurant pos config table"
       },
       "user": {
         "type": "object",

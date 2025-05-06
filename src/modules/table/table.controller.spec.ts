@@ -46,12 +46,18 @@ describe('TableController', () => {
             x: 0,
             y: 0,
             name: 'name',
+            type: 'circle',
+            plates: 2,
+            time: '00:00',
           },
           {
             id: 1,
             x: 0,
             y: 0,
             name: 'name',
+            type: 'rectangle',
+            plates: 4,
+            time: '00:00',
           },
         ],
       };
@@ -84,6 +90,9 @@ describe('TableController', () => {
             x: 0,
             y: 0,
             name: 'name',
+            type: 'square',
+            plates: 2,
+            time: '00:00',
           },
         ],
       };
@@ -113,6 +122,9 @@ describe('TableController', () => {
       x: 0,
       y: 0,
       name: 'table',
+      type: 'square',
+      plates: 2,
+      time: '00:00',
     };
 
     it('should create an table successfully', async () => {
@@ -150,6 +162,9 @@ describe('TableController', () => {
       x: 0,
       y: 0,
       name: 'table',
+      type: 'square',
+      plates: 2,
+      time: '00:00',
     };
 
     it('should update an table successfully', async () => {

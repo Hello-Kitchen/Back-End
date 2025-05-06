@@ -1,81 +1,48 @@
 import { Injectable } from '@nestjs/common';
 import mongoose from 'mongoose';
-import { UpdateResult, DeleteResult, ReturnDocument } from 'mongodb';
-import { Counter } from '../../shared/interfaces/counter.interface';
+import { UpdateResult } from 'mongodb';
 import { DB } from '../../db/db';
 import { PosConfigDto } from './DTO/pos_config.dto';
 
+/**
+ * Service for managing the table configuration of a restaurant.
+ *
+ * The `PosConfigService` class provides methods for CRUD operations
+ * related to the pos_config in the restaurant database.
+ */
 @Injectable()
 export class PosConfigService extends DB {
   /**
-   * Fetches all PosConfig from the database.
+   * Retrieves the pos_config of a specific restaurant.
    *
-   * @returns {Promise<mongoose.mongo.WithId<mongoose.AnyObject>[]>} An array of PosConfig.
+   * @param {number} idRestaurant - The ID of the restaurant.
+   * @returns {Promise<mongoose.mongo.WithId<mongoose.AnyObject>>} The pos_config.
    */
-  async findAll(): Promise<mongoose.mongo.WithId<mongoose.AnyObject>[]> {
+  async findOne(
+    idRestaurant: number,
+  ): Promise<mongoose.mongo.WithId<mongoose.AnyObject> | null> {
     const db = this.getDbConnection();
-    return db.collection('pos_config').find({}).toArray();
+
+    return db
+      .collection('restaurant')
+      .findOne({ id: idRestaurant }, { projection: { _id: 0, pos_config: 1 } });
   }
 
   /**
-   * Fetches a pos_config by its ID.
+   * Updates the existing pos_config or creates it for a specific restaurant.
    *
-   * @param {number} id - The ID of the pos_config.
-   * @returns {Promise<mongoose.mongo.WithId<mongoose.AnyObject>>} The pos_config if found.
-   */
-  async findById(
-    id: number,
-  ): Promise<mongoose.mongo.WithId<mongoose.AnyObject>> {
-    const db = this.getDbConnection();
-    return db.collection('pos_config').findOne({ id });
-  }
-
-  /**
-   * Creates a new pos_config in the database.
-   *
-   * @param {PosConfigDto} body - The pos_config data to be inserted.
-   * @returns {Promise<mongoose.mongo.InsertOneResult<mongoose.AnyObject>>} The result of the insert operation.
-   */
-  async createOne(
-    body: PosConfigDto, // Changed from ReadableStream<Uint8Array> to the correct type
-  ): Promise<mongoose.mongo.InsertOneResult<mongoose.AnyObject>> {
-    const db = this.getDbConnection();
-    const res = await db
-      .collection<Counter>('counter')
-      .findOneAndUpdate(
-        { _id: 'posConfigId' },
-        { $inc: { sequence_value: 1 } },
-        { returnDocument: ReturnDocument.AFTER },
-      );
-
-    body['id'] = res.sequence_value; // Assuming the body is mutable
-    return db.collection('pos_config').insertOne(body);
-  }
-
-  /**
-   * Updates a pos_config by its ID.
-   *
-   * @param {number} id - The ID of the pos_config to update.
+   * @param {number} idRestaurant - The ID of the restaurant.
    * @param {PosConfigDto} body - The updated pos_config data.
    * @returns {Promise<UpdateResult>} The result of the update operation.
    */
   async updateOne(
-    id: number,
-    body: PosConfigDto, // Changed from ReadableStream<Uint8Array> to the correct type
+    idRestaurant: number,
+    body: PosConfigDto,
   ): Promise<UpdateResult> {
     const db = this.getDbConnection();
 
-    return db.collection('pos_config').updateOne({ id }, { $set: body });
-  }
-
-  /**
-   * Deletes a pos_config by its ID.
-   *
-   * @param {number} id - The ID of the pos_config to delete.
-   * @returns {Promise<DeleteResult>} The result of the delete operation.
-   */
-  async deleteOne(id: number): Promise<DeleteResult> {
-    const db = this.getDbConnection();
-    return db.collection('pos_config').deleteOne({ id });
+    return db
+      .collection('restaurant')
+      .updateOne({ id: idRestaurant }, { $set: { pos_config: body } });
   }
 }
