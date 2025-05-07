@@ -341,6 +341,35 @@ export class OrdersService extends DB {
   }
 
   /**
+   * @brief Retrieves orders for a specific table in a restaurant.
+   *
+   * This asynchronous function retrieves all orders for the given `idRestaurant` and filters the results to include only
+   * those orders that are associated with the specified `tableID`.
+   *
+   * @param {number} idRestaurant The unique identifier of the restaurant to search in.
+   * @param {number} tableID The unique identifier of the table to retrieve orders from.
+   * @return {Promise<mongoose.mongo.BSON.Document>} A promise that resolves to an array of orders associated with the specified table.
+   */
+  async findByTableID(
+    idRestaurant: number,
+    tableID: number,
+  ): Promise<mongoose.mongo.BSON.Document> {
+    const db = this.getDbConnection();
+    const id = await db
+      .collection('restaurant')
+      .findOne(
+        { id: idRestaurant, 'pos_config.tables.id': tableID },
+        { projection: { _id: 0, orderId: 1 } },
+      );
+    return db
+      .collection('restaurant')
+      .findOne(
+        { id: idRestaurant, 'orders.id': id.orderId },
+        { projection: { _id: 0 } },
+      );
+  }
+
+  /**
    * @brief Creates a new order for a specified restaurant.
    *
    * This asynchronous function generates a unique ID for the order and each food item in the order
@@ -351,7 +380,11 @@ export class OrdersService extends DB {
    * @param {OrdersDto} body A stream containing the order details, including the food items ordered.
    * @return {Promise<AnyObject>} A promise that resolves to the result of the update operation.
    */
-  async createOne(idRestaurant: number, body: OrdersDto): Promise<AnyObject> {
+  async createOne(
+    idRestaurant: number,
+    body: OrdersDto,
+    idTable: number,
+  ): Promise<AnyObject> {
     const db = this.getDbConnection();
     const id = await db
       .collection<Counter>('counter')
@@ -377,6 +410,16 @@ export class OrdersService extends DB {
       food['id'] = id.sequence_value;
     }
     body['total'] = total;
+    if (idTable) {
+      await db.collection('restaurant').updateOne(
+        { id: idRestaurant, 'pos_config.tables.id': idTable },
+        {
+          $set: {
+            'pos_config.tables.$.orderId': id.sequence_value,
+          },
+        },
+      );
+    }
     await db
       .collection('restaurant')
       .updateOne({ id: idRestaurant }, { $addToSet: { orders: body } });
