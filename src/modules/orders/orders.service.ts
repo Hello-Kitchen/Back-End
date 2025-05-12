@@ -416,6 +416,7 @@ export class OrdersService extends DB {
         {
           $set: {
             'pos_config.tables.$.orderId': id.sequence_value,
+            'pos_config.tables.$.time': new Date().toISOString(),
           },
         },
       );
