@@ -632,7 +632,7 @@ export class OrdersService extends DB {
     await db.collection('restaurant').updateOne(
       { id: idRestaurant, 'pos_config.tables.orderId': idOrder },
       {
-        $unset: { 'pos_config.tables.$.orderId': "" },
+        $unset: { 'pos_config.tables.$.orderId': '' },
       },
     );
     return await db
