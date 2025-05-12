@@ -629,6 +629,13 @@ export class OrdersService extends DB {
     payment: PaymentDto,
   ): Promise<mongoose.mongo.UpdateResult<mongoose.AnyObject>> {
     const db = this.getDbConnection();
+
+    await db.collection('restaurant').updateOne(
+      { id: idRestaurant, 'pos_config.tables.orderId': idOrder },
+      {
+        $unset: { 'pos_config.tables.$.orderId': '' },
+      },
+    );
     return await db
       .collection('restaurant')
       .updateOne(
