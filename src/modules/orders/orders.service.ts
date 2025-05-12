@@ -410,7 +410,7 @@ export class OrdersService extends DB {
       food['id'] = id.sequence_value;
     }
     body['total'] = total;
-    if (idTable) {
+    if (!Number.isNaN(idTable)) {
       await db.collection('restaurant').updateOne(
         { id: idRestaurant, 'pos_config.tables.id': idTable },
         {
