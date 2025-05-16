@@ -29,4 +29,8 @@ export class TableDto {
   @IsOptional()
   @IsNumber()
   id?: number;
+
+  @IsOptional()
+  @IsNumber()
+  orderId?: number;
 }
