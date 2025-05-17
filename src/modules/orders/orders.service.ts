@@ -507,22 +507,48 @@ export class OrdersService extends DB {
 
     for (const order of res.orders) {
       for (const food of order.food_ordered) {
-        if (food.id === idFoodOrdered) value = !food.is_ready;
+        if (food.id === idFoodOrdered) {
+          value = !food.is_ready;
+          if (value) order.is_ready = false;
+        }
       }
     }
 
-    return await db.collection('restaurant').findOneAndUpdate(
-      {
-        id: idRestaurant,
-        'orders.food_ordered.id': idFoodOrdered,
-      },
-      {
-        $set: { 'orders.$[].food_ordered.$[food].is_ready': value },
-      },
-      {
-        arrayFilters: [{ 'food.id': idFoodOrdered }],
-      },
-    );
+    if (value) {
+      return await db.collection('restaurant').findOneAndUpdate(
+        {
+          id: idRestaurant,
+          'orders.food_ordered.id': idFoodOrdered,
+        },
+        {
+          $set: { 
+            'orders.$[].food_ordered.$[food].is_ready': value,
+            'orders.$[].food_ordered.$[food].time': new Date().toISOString()
+           },
+        },
+        {
+          arrayFilters: [{ 'food.id': idFoodOrdered }],
+        },
+      );
+    } else {
+      return await db.collection('restaurant').findOneAndUpdate(
+        {
+          id: idRestaurant,
+          'orders.food_ordered.id': idFoodOrdered,
+        },
+        {
+          $set: { 
+            'orders.$[].food_ordered.$[food].is_ready': value,
+           },
+           $unset: {
+            'orders.$[].food_ordered.$[food].time': '',
+           }
+        },
+        {
+          arrayFilters: [{ 'food.id': idFoodOrdered }],
+        },
+      );
+    }
   }
 
   /**
