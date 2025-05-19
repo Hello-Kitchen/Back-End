@@ -1,6 +1,6 @@
-import { Module } from "@nestjs/common";
-import { KpiController } from "./kpi.controller";
-import { KpiService } from "./kpi.service";
+import { Module } from '@nestjs/common';
+import { KpiController } from './kpi.controller';
+import { KpiService } from './kpi.service';
 
 /**
  * Module for managing Key Performance Indicators (KPIs).
@@ -17,5 +17,4 @@ import { KpiService } from "./kpi.service";
   controllers: [KpiController], // The KpiController is responsible for handling HTTP requests related to KPIs.
   providers: [KpiService], // The KpiService contains the business logic for managing KPIs.
 })
-
 export class KpiModule {}
