@@ -508,9 +508,7 @@ export class OrdersService extends DB {
     for (const order of res.orders) {
       for (const food of order.food_ordered) {
         if (food.id === idFoodOrdered) {
-          if (food.id === 1) console.log('order.id: ', order.id);
           value = !food.is_ready;
-          if (value) order.is_ready = false;
         }
       }
     }
@@ -524,7 +522,8 @@ export class OrdersService extends DB {
         {
           $set: {
             'orders.$[].food_ordered.$[food].is_ready': value,
-            'orders.$[].food_ordered.$[food].time': new Date().toISOString(),
+            'orders.$[].food_ordered.$[food].timeReady':
+              new Date().toISOString(),
           },
         },
         {
@@ -542,7 +541,7 @@ export class OrdersService extends DB {
             'orders.$[].food_ordered.$[food].is_ready': value,
           },
           $unset: {
-            'orders.$[].food_ordered.$[food].time': '',
+            'orders.$[].food_ordered.$[food].timeReady': '',
           },
         },
         {

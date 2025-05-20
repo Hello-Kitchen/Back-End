@@ -42,8 +42,8 @@ describe('KpiController', () => {
 
     it('should return average dish time when data exists', async () => {
       const mockResult = {
-        formattedTime: { value: 15, unit: 'minutes' },
-        totalOrders: 5,
+        time: { hours: 0, minutes: 15, seconds: 0 },
+        nbrOrders: 5,
       };
 
       mockKpiService.averageDishTime.mockResolvedValue(mockResult);
@@ -66,8 +66,8 @@ describe('KpiController', () => {
 
     it('should throw NotFoundException when no orders found', async () => {
       const mockResult = {
-        formattedTime: { value: 0, unit: 'minutes' },
-        totalOrders: 0,
+        time: { hours: 0, minutes: 0, seconds: 0 },
+        nbrOrders: 0,
       };
 
       mockKpiService.averageDishTime.mockResolvedValue(mockResult);
@@ -99,8 +99,8 @@ describe('KpiController', () => {
 
     it('should work without time parameters', async () => {
       const mockResult = {
-        formattedTime: { value: 15, unit: 'minutes' },
-        totalOrders: 5,
+        time: { hours: 0, minutes: 15, seconds: 0 },
+        nbrOrders: 5,
       };
 
       mockKpiService.averageDishTime.mockResolvedValue(mockResult);

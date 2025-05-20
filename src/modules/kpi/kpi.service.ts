@@ -82,7 +82,7 @@ export class KpiService extends DB {
       const orderDate = new Date(item.orders.date);
 
       item.orders.food_ordered.map((food) => {
-        const preparationTime = new Date(food.time);
+        const preparationTime = new Date(food.timeReady);
         const timeDiff = orderDate.getTime() - preparationTime.getTime();
         preparationTimes.push(timeDiff / (1000 * 60));
       });
@@ -94,11 +94,18 @@ export class KpiService extends DB {
           preparationTimes.length
         : 0;
 
-    const formattedTime = this.formatAverageTime(averageTime);
+    const totalSeconds = Math.round(averageTime * 60);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
 
     return {
-      formattedTime: formattedTime,
-      totalOrders: preparationTimes.length,
+      time: {
+        hours: hours,
+        minutes: minutes,
+        seconds: seconds,
+      },
+      nbrOrders: preparationTimes.length,
     };
   }
 }

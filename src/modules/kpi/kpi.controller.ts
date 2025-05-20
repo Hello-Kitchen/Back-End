@@ -47,7 +47,7 @@ export class KpiController {
         food,
       );
 
-      if (result.totalOrders === 0)
+      if (result.nbrOrders === 0)
         throw new NotFoundException(
           'No orders found for this dish in the specified period',
         );
