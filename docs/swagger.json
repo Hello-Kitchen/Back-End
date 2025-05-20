@@ -2643,25 +2643,18 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "formattedTime": {
+                    "time": {
                       "type": "object",
                       "properties": {
-                        "value": {
-                          "type": "number",
-                          "description": "The time value",
-                          "example": 15
-                        },
-                        "unit": {
-                          "type": "string",
-                          "description": "The time unit (seconds, minutes, or hours)",
-                          "example": "minutes"
-                        }
+                        "hours": { "type": "integer", "example": 0 },
+                        "minutes": { "type": "integer", "example": 0 },
+                        "seconds": { "type": "integer", "example": 0 }
                       }
                     },
-                    "totalOrders": {
+                    "nbrOrders": {
                       "type": "integer",
                       "description": "Total number of orders analyzed",
-                      "example": 50
+                      "example": 0
                     }
                   }
                 }
