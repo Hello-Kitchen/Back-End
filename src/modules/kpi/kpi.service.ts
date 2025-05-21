@@ -4,36 +4,6 @@ import { DB } from '../../db/db';
 @Injectable()
 export class KpiService extends DB {
   /**
-   * Formats average time into a readable structure with value and unit
-   * @param minutes - The time in minutes to format
-   * @returns An object containing the formatted value and appropriate time unit
-   * @example
-   * formatAverageTime(0.5) // returns { value: 30, unit: 'seconds' }
-   * formatAverageTime(45) // returns { value: 45, unit: 'minutes' }
-   * formatAverageTime(90) // returns { value: 1.5, unit: 'hours' }
-   */
-  private formatAverageTime(minutes: number): { value: number; unit: string } {
-    minutes = minutes * -1;
-    if (minutes < 1) {
-      return {
-        value: Math.round(minutes * 60),
-        unit: 'seconds',
-      };
-    } else if (minutes < 60) {
-      return {
-        value: Math.round(minutes),
-        unit: 'minutes',
-      };
-    } else {
-      const hours = minutes / 60;
-      return {
-        value: Number(hours.toFixed(1)),
-        unit: 'hours',
-      };
-    }
-  }
-
-  /**
    * Calculates the average preparation time for a specific dish in a restaurant
    * @param idRestaurant - The restaurant identifier
    * @param timeBegin - Start date of the analysis period (optional)
@@ -107,5 +77,77 @@ export class KpiService extends DB {
       },
       nbrOrders: preparationTimes.length,
     };
+  }
+
+  /**
+   * Calculates the average preparation time for all dishes in a restaurant
+   * @param idRestaurant - The restaurant identifier
+   * @param timeBegin - Start date of the analysis period (optional)
+   * @param timeEnd - End date of the analysis period (optional)
+   * @returns Array of objects: { food, time, nbrOrders }
+   */
+  async averageAllDishesTime(
+    idRestaurant: number,
+    timeBegin?: string,
+    timeEnd?: string,
+  ) {
+    const db = this.getDbConnection();
+    let result = await db
+      .collection('restaurant')
+      .aggregate([
+        { $match: { id: idRestaurant } },
+        { $unwind: '$orders' },
+        { $unwind: '$orders.food_ordered' },
+        {
+          $project: {
+            'orders.date': 1,
+            'orders.food_ordered.food': 1,
+            'orders.food_ordered.timeReady': 1,
+            _id: 0,
+          },
+        },
+      ])
+      .toArray();
+
+    console.log(result);
+    if (timeBegin && timeEnd) {
+      const beginDate = new Date(timeBegin);
+      const endDate = new Date(timeEnd);
+      result = result.filter((item) => {
+        const orderDate = new Date(item.orders.date);
+        return orderDate >= beginDate && orderDate <= endDate;
+      });
+    }
+
+    const dishMap = new Map();
+    result.forEach((item) => {
+      const food = item.orders.food_ordered.food;
+      const orderDate = new Date(item.orders.date);
+      const preparationTime = new Date(item.orders.food_ordered.timeReady);
+      const timeDiff = orderDate.getTime() - preparationTime.getTime();
+      const minutes = timeDiff / (1000 * 60);
+      if (!dishMap.has(food)) {
+        dishMap.set(food, []);
+      }
+      dishMap.get(food).push(minutes);
+    });
+
+    const resultArray = [];
+    for (const [food, times] of dishMap.entries()) {
+      const averageTime =
+        times.length > 0
+          ? times.reduce((acc, t) => acc + t, 0) / times.length
+          : 0;
+      const totalSeconds = Math.round(averageTime * 60);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      resultArray.push({
+        food,
+        time: { hours, minutes, seconds },
+        nbrOrders: times.length,
+      });
+    }
+    return resultArray;
   }
 }
