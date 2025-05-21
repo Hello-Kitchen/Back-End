@@ -24,6 +24,7 @@ import { PassportModule } from '@nestjs/passport';
 import { HealthModule } from './modules/health/health.module';
 import { PosConfigModule } from './modules/pos_config/pos_config.module';
 import { TableModule } from './modules/table/table.module';
+import { KpiModule } from './modules/kpi/kpi.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { TableModule } from './modules/table/table.module';
     HealthModule /**< Handles health functionality */,
     PosConfigModule /**< Handles the table config of a restaurant */,
     TableModule /**< Handles table functionality */,
+    KpiModule /**< Handles the kpi functionality */,
   ],
   controllers: [AppController] /**< Application controller */,
   providers: [AppService] /**< Core application service */,

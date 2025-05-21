@@ -2579,6 +2579,107 @@
           }
         }
       }
+    },
+    "/{restaurant_id}/kpi/averageTimeDish/{food}": {
+      "summary": "KPI endpoints",
+      "get": {
+        "tags": [
+          "KPI"
+        ],
+        "summary": "Get average preparation time for a specific dish",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "food",
+            "in": "path",
+            "description": "ID of the food to analyze",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "timeBegin",
+            "in": "query",
+            "description": "Start date of the analysis period (optional)",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "timeEnd",
+            "in": "query",
+            "description": "End date of the analysis period (optional)",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "time": {
+                      "type": "object",
+                      "properties": {
+                        "hours": { "type": "integer", "example": 0 },
+                        "minutes": { "type": "integer", "example": 0 },
+                        "seconds": { "type": "integer", "example": 0 }
+                      }
+                    },
+                    "nbrOrders": {
+                      "type": "integer",
+                      "description": "Total number of orders analyzed",
+                      "example": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid restaurant ID, food ID, or date format"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "No orders found for this dish in the specified period"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
