@@ -64,7 +64,11 @@ export class KpiService extends DB {
           },
         },
         {
-          $project: { 'orders.date': 1, 'orders.food_ordered.timeReady': 1, _id: 0 },
+          $project: {
+            'orders.date': 1,
+            'orders.food_ordered.timeReady': 1,
+            _id: 0,
+          },
         },
       ])
       .toArray();
