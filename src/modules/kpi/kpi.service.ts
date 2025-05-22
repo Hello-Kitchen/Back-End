@@ -64,7 +64,7 @@ export class KpiService extends DB {
           },
         },
         {
-          $project: { 'orders.date': 1, 'orders.food_ordered.time': 1, _id: 0 },
+          $project: { 'orders.date': 1, 'orders.food_ordered.timeReady': 1, _id: 0 },
         },
       ])
       .toArray();
@@ -94,7 +94,7 @@ export class KpiService extends DB {
           preparationTimes.length
         : 0;
 
-    const totalSeconds = Math.round(averageTime * 60);
+    const totalSeconds = Math.round(averageTime * 60) * -1;
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
