@@ -61,6 +61,7 @@ export class KpiService extends DB {
         {
           $match: {
             'orders.food_ordered.food': food,
+            'orders.food_ordered.is_ready': true,
           },
         },
         {
