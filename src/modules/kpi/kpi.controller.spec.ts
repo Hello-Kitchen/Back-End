@@ -154,7 +154,13 @@ describe('KpiController', () => {
     });
 
     it('should throw NotFoundException when no orders found', async () => {
-      mockKpiService.averageAllDishesTime.mockResolvedValue([]);
+      const mockResult = {
+        time: { hours: 0, minutes: 0, seconds: 0 },
+        nbrOrders: 0,
+      };
+
+      mockKpiService.averageAllDishesTime.mockResolvedValue(mockResult);
+
       await expect(
         controller.kpiAverageAllDishesTime(
           mockIdRestaurant,

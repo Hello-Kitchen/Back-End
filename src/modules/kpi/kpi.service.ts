@@ -97,12 +97,13 @@ export class KpiService extends DB {
     timeEnd?: string,
   ) {
     const db = this.getDbConnection();
+    const preparationTimes = [];
     let result = await db
       .collection('restaurant')
       .aggregate([
         { $match: { id: idRestaurant } },
         { $unwind: '$orders' },
-        { $unwind: '$orders.food_ordered' },
+        { $match: { 'orders.food_ordered.is_ready': true } },
         {
           $project: {
             'orders.date': 1,
@@ -124,35 +125,34 @@ export class KpiService extends DB {
       });
     }
 
-    const dishMap = new Map();
-    result.forEach((item) => {
-      const food = item.orders.food_ordered.food;
+    result.map((item) => {
       const orderDate = new Date(item.orders.date);
-      const preparationTime = new Date(item.orders.food_ordered.timeReady);
-      const timeDiff = orderDate.getTime() - preparationTime.getTime();
-      const minutes = timeDiff / (1000 * 60);
-      if (!dishMap.has(food)) {
-        dishMap.set(food, []);
-      }
-      dishMap.get(food).push(minutes);
+
+      item.orders.food_ordered.map((food) => {
+        const preparationTime = new Date(food.timeReady);
+        const timeDiff = orderDate.getTime() - preparationTime.getTime();
+        preparationTimes.push(timeDiff / (1000 * 60));
+      });
     });
 
-    const resultArray = [];
-    for (const [food, times] of dishMap.entries()) {
-      const averageTime =
-        times.length > 0
-          ? times.reduce((acc, t) => acc + t, 0) / times.length
-          : 0;
-      const totalSeconds = Math.round(averageTime * 60);
-      const hours = Math.floor(totalSeconds / 3600);
-      const minutes = Math.floor((totalSeconds % 3600) / 60);
-      const seconds = totalSeconds % 60;
-      resultArray.push({
-        food,
-        time: { hours, minutes, seconds },
-        nbrOrders: times.length,
-      });
-    }
-    return resultArray;
+    const averageTime =
+      preparationTimes.length > 0
+        ? preparationTimes.reduce((acc, time) => acc + time, 0) /
+          preparationTimes.length
+        : 0;
+
+    const totalSeconds = Math.round(averageTime * 60) * -1;
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    return {
+      time: {
+        hours: hours,
+        minutes: minutes,
+        seconds: seconds,
+      },
+      nbrOrders: preparationTimes.length,
+    };
   }
 }
