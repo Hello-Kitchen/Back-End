@@ -63,4 +63,34 @@ export class KpiController {
       throw new InternalServerErrorException('Server error');
     }
   }
+
+  @Get('averageTimeAllDishes')
+  async kpiAverageAllDishesTime(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Query('timeBegin', DatePipe) timeBegin: string,
+    @Query('timeEnd', DatePipe) timeEnd: string,
+  ) {
+    try {
+      const result = await this.kpiService.averageAllDishesTime(
+        idRestaurant,
+        timeBegin,
+        timeEnd,
+      );
+
+      if (result.nbrOrders === 0)
+        throw new NotFoundException(
+          'No orders found for this dish in the specified period',
+        );
+
+      return result;
+    } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Server error');
+    }
+  }
 }
