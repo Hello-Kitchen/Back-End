@@ -127,6 +127,7 @@ describe('KpiController', () => {
     const mockIdRestaurant = 1;
     const mockTimeBegin = '2024-03-01';
     const mockTimeEnd = '2024-03-31';
+    const mockBreakdown = false;
 
     beforeEach(() => {
       mockKpiService.averageAllDishesTime = jest.fn();
@@ -143,6 +144,7 @@ describe('KpiController', () => {
         mockIdRestaurant,
         mockTimeBegin,
         mockTimeEnd,
+        mockBreakdown,
       );
 
       expect(result).toEqual(mockResult);
@@ -150,14 +152,12 @@ describe('KpiController', () => {
         mockIdRestaurant,
         mockTimeBegin,
         mockTimeEnd,
+        mockBreakdown,
       );
     });
 
     it('should throw NotFoundException when no orders found', async () => {
-      const mockResult = {
-        time: { hours: 0, minutes: 0, seconds: 0 },
-        nbrOrders: 0,
-      };
+      const mockResult = null;
 
       mockKpiService.averageAllDishesTime.mockResolvedValue(mockResult);
 
@@ -166,6 +166,7 @@ describe('KpiController', () => {
           mockIdRestaurant,
           mockTimeBegin,
           mockTimeEnd,
+          mockBreakdown,
         ),
       ).rejects.toThrow(NotFoundException);
     });
@@ -179,6 +180,7 @@ describe('KpiController', () => {
           mockIdRestaurant,
           mockTimeBegin,
           mockTimeEnd,
+          mockBreakdown,
         ),
       ).rejects.toThrow('Server error');
     });
@@ -192,12 +194,14 @@ describe('KpiController', () => {
         mockIdRestaurant,
         undefined,
         undefined,
+        mockBreakdown,
       );
       expect(result).toEqual(mockResult);
       expect(service.averageAllDishesTime).toHaveBeenCalledWith(
         mockIdRestaurant,
         undefined,
         undefined,
+        mockBreakdown,
       );
     });
   });
