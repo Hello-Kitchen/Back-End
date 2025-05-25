@@ -13,6 +13,7 @@ import { KpiService } from './kpi.service';
 import { DatePipe } from './pipe/date.pipe';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { BreakdownPipe } from './pipe/breakdown.pipe';
+import { ChannelPipe } from './pipe/channel.pipe';
 
 @Controller('api/:idRestaurant/kpi')
 @UseGuards(JwtAuthGuard)
@@ -129,12 +130,14 @@ export class KpiController {
     @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
     @Query('timeBegin', DatePipe) timeBegin: string,
     @Query('timeEnd', DatePipe) timeEnd: string,
+    @Query('channel', ChannelPipe) channel: string,
   ) {
     try {
       const result = await this.kpiService.averageTimeOrders(
         idRestaurant,
         timeBegin,
         timeEnd,
+        channel,
       );
 
       return result;

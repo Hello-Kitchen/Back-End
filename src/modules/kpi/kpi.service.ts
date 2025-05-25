@@ -221,12 +221,14 @@ export class KpiService extends DB {
    * @param idRestaurant - The restaurant identifier
    * @param timeBegin - Start date of the analysis period (optional)
    * @param timeEnd - End date of the analysis period (optional)
+   * @param channel - The channel of orders to analyze (togo or eatin or undefined)
    * @returns An object containing the formatted average time and total number of orders
    */
   async averageTimeOrders(
     idRestaurant: number,
     timeBegin: string,
     timeEnd: string,
+    channel: string,
   ) {
     const db = this.getDbConnection();
     const preparationTimes = [];
@@ -236,17 +238,16 @@ export class KpiService extends DB {
         { $match: { id: idRestaurant } },
         { $unwind: '$orders' },
         { $match: { 'orders.served': true } },
+        { $match: { 'orders.channel': channel || { $exists: true } } },
         {
           $project: {
             'orders.date': 1,
-            'orders.food_ordered.timeServed': 1,
+            'orders.timeServed': 1,
             _id: 0,
           },
         },
       ])
       .toArray();
-
-    console.log(orders);
 
     if (timeBegin && timeEnd) {
       const beginDate = new Date(timeBegin);
@@ -259,7 +260,7 @@ export class KpiService extends DB {
 
     orders.map((item) => {
       const orderDate = new Date(item.orders.date);
-      const preparationTime = new Date(item.orders.food_ordered.timeServed);
+      const preparationTime = new Date(item.orders.timeServed);
       const timeDiff = orderDate.getTime() - preparationTime.getTime();
       preparationTimes.push(timeDiff / (1000 * 60));
     });

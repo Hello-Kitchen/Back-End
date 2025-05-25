@@ -211,6 +211,7 @@ describe('KpiController', () => {
     const mockIdRestaurant = 1;
     const mockTimeBegin = '2024-03-01';
     const mockTimeEnd = '2024-03-31';
+    const mockChannel = 'Sur place';
 
     beforeEach(() => {
       mockKpiService.averageTimeOrders = jest.fn();
@@ -228,6 +229,7 @@ describe('KpiController', () => {
         mockIdRestaurant,
         mockTimeBegin,
         mockTimeEnd,
+        mockChannel,
       );
 
       expect(result).toEqual(mockResult);
@@ -235,6 +237,7 @@ describe('KpiController', () => {
         mockIdRestaurant,
         mockTimeBegin,
         mockTimeEnd,
+        mockChannel,
       );
     });
 
@@ -248,11 +251,12 @@ describe('KpiController', () => {
           mockIdRestaurant,
           mockTimeBegin,
           mockTimeEnd,
+          mockChannel,
         ),
       ).rejects.toThrow('Server error');
     });
 
-    it('should work without time parameters', async () => {
+    it('should work without optional parameters', async () => {
       const mockResult = {
         time: { hours: 0, minutes: 42, seconds: 8 },
         nbrOrders: 50,
@@ -264,6 +268,7 @@ describe('KpiController', () => {
         mockIdRestaurant,
         undefined,
         undefined,
+        undefined,
       );
 
       expect(result).toEqual(mockResult);
@@ -271,6 +276,31 @@ describe('KpiController', () => {
         mockIdRestaurant,
         undefined,
         undefined,
+        undefined,
+      );
+    });
+
+    it('should work with only channel parameter', async () => {
+      const mockResult = {
+        time: { hours: 0, minutes: 42, seconds: 8 },
+        nbrOrders: 50,
+      };
+
+      mockKpiService.averageTimeOrders.mockResolvedValue(mockResult);
+
+      const result = await controller.kpiAverageTimeOrders(
+        mockIdRestaurant,
+        undefined,
+        undefined,
+        mockChannel,
+      );
+
+      expect(result).toEqual(mockResult);
+      expect(service.averageTimeOrders).toHaveBeenCalledWith(
+        mockIdRestaurant,
+        undefined,
+        undefined,
+        mockChannel,
       );
     });
   });
