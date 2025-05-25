@@ -11,6 +11,7 @@ describe('KpiController', () => {
   const mockKpiService = {
     averageDishTime: jest.fn(),
     averageAllDishesTime: jest.fn(),
+    averageTimeOrders: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -202,6 +203,74 @@ describe('KpiController', () => {
         undefined,
         undefined,
         mockBreakdown,
+      );
+    });
+  });
+
+  describe('kpiAverageTimeOrders', () => {
+    const mockIdRestaurant = 1;
+    const mockTimeBegin = '2024-03-01';
+    const mockTimeEnd = '2024-03-31';
+
+    beforeEach(() => {
+      mockKpiService.averageTimeOrders = jest.fn();
+    });
+
+    it('should return average time for orders when data exists', async () => {
+      const mockResult = {
+        time: { hours: 0, minutes: 42, seconds: 8 },
+        nbrOrders: 50,
+      };
+
+      mockKpiService.averageTimeOrders.mockResolvedValue(mockResult);
+
+      const result = await controller.kpiAverageTimeOrders(
+        mockIdRestaurant,
+        mockTimeBegin,
+        mockTimeEnd,
+      );
+
+      expect(result).toEqual(mockResult);
+      expect(service.averageTimeOrders).toHaveBeenCalledWith(
+        mockIdRestaurant,
+        mockTimeBegin,
+        mockTimeEnd,
+      );
+    });
+
+    it('should handle service errors', async () => {
+      mockKpiService.averageTimeOrders.mockRejectedValue(
+        new Error('Database error'),
+      );
+
+      await expect(
+        controller.kpiAverageTimeOrders(
+          mockIdRestaurant,
+          mockTimeBegin,
+          mockTimeEnd,
+        ),
+      ).rejects.toThrow('Server error');
+    });
+
+    it('should work without time parameters', async () => {
+      const mockResult = {
+        time: { hours: 0, minutes: 42, seconds: 8 },
+        nbrOrders: 50,
+      };
+
+      mockKpiService.averageTimeOrders.mockResolvedValue(mockResult);
+
+      const result = await controller.kpiAverageTimeOrders(
+        mockIdRestaurant,
+        undefined,
+        undefined,
+      );
+
+      expect(result).toEqual(mockResult);
+      expect(service.averageTimeOrders).toHaveBeenCalledWith(
+        mockIdRestaurant,
+        undefined,
+        undefined,
       );
     });
   });
