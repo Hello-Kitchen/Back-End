@@ -46,6 +46,7 @@ describe('PosConfigController', () => {
             type: 'circle',
             plates: 2,
             time: '00:00',
+            fused: [],
           },
           {
             id: 1,
@@ -55,6 +56,7 @@ describe('PosConfigController', () => {
             type: 'rectangle',
             plates: 4,
             time: '00:00',
+            fused: [],
           },
         ],
         width: 1920,
@@ -97,6 +99,7 @@ describe('PosConfigController', () => {
           type: 'circle',
           plates: 2,
           time: '00:00',
+          fused: [],
         },
         {
           id: 1,
@@ -106,6 +109,7 @@ describe('PosConfigController', () => {
           type: 'rectangle',
           plates: 4,
           time: '00:00',
+          fused: [],
         },
       ],
       width: 1920,
