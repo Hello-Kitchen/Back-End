@@ -11,6 +11,7 @@ describe('KpiController', () => {
   const mockKpiService = {
     averageDishTime: jest.fn(),
     averageAllDishesTime: jest.fn(),
+    popularDish: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -202,6 +203,68 @@ describe('KpiController', () => {
         undefined,
         undefined,
         mockBreakdown,
+      );
+    });
+  });
+
+  describe('kpiPopularDish', () => {
+    const mockIdRestaurant = 1;
+    const mockTimeBegin = '2024-03-01';
+    const mockTimeEnd = '2024-03-31';
+
+    beforeEach(() => {
+      mockKpiService.popularDish = jest.fn();
+    });
+
+    it('should return the most popular dish when data exists', async () => {
+      const mockResult = { food: 123, nbrOrders: 100 };
+      mockKpiService.popularDish.mockResolvedValue(mockResult);
+
+      const result = await controller.kpiPopularDish(
+        mockIdRestaurant,
+        mockTimeBegin,
+        mockTimeEnd,
+      );
+
+      expect(result).toEqual(mockResult);
+      expect(service.popularDish).toHaveBeenCalledWith(
+        mockIdRestaurant,
+        mockTimeBegin,
+        mockTimeEnd,
+      );
+    });
+
+    it('should throw NotFoundException when no orders found', async () => {
+      mockKpiService.popularDish.mockResolvedValue(null);
+
+      await expect(
+        controller.kpiPopularDish(mockIdRestaurant, mockTimeBegin, mockTimeEnd),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should handle service errors', async () => {
+      mockKpiService.popularDish.mockRejectedValue(new Error('Database error'));
+
+      await expect(
+        controller.kpiPopularDish(mockIdRestaurant, mockTimeBegin, mockTimeEnd),
+      ).rejects.toThrow('Server error');
+    });
+
+    it('should work without time parameters', async () => {
+      const mockResult = { food: 123, nbrOrders: 100 };
+      mockKpiService.popularDish.mockResolvedValue(mockResult);
+
+      const result = await controller.kpiPopularDish(
+        mockIdRestaurant,
+        undefined,
+        undefined,
+      );
+
+      expect(result).toEqual(mockResult);
+      expect(service.popularDish).toHaveBeenCalledWith(
+        mockIdRestaurant,
+        undefined,
+        undefined,
       );
     });
   });
