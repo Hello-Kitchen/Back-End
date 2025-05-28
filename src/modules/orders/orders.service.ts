@@ -600,15 +600,31 @@ export class OrdersService extends DB {
       if (order.id === idOrder) value = !order.served;
     }
 
-    return await db.collection('restaurant').findOneAndUpdate(
-      {
-        id: idRestaurant,
-        'orders.id': idOrder,
-      },
-      {
-        $set: { 'orders.$.served': value },
-      },
-    );
+    if (value) {
+      return await db.collection('restaurant').findOneAndUpdate(
+        {
+          id: idRestaurant,
+          'orders.id': idOrder,
+        },
+        {
+          $set: {
+            'orders.$.served': value,
+            'orders.$.timeServed': new Date().toISOString(),
+          },
+        },
+      );
+    } else {
+      return await db.collection('restaurant').findOneAndUpdate(
+        {
+          id: idRestaurant,
+          'orders.id': idOrder,
+        },
+        {
+          $set: { 'orders.$.served': value },
+          $unset: { 'orders.$.timeServed': '' },
+        },
+      );
+    }
   }
 
   /**
