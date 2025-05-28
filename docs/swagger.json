@@ -2942,6 +2942,13 @@
             "type": "string",
             "description": "Time since last order on the table",
             "example": "00:00"
+          },
+          "fused": {
+            "type": "array",
+            "description": "table fused array",
+            "items": {
+              "$ref": "#/components/schemas/table"
+            }
           }
         },
         "description": "Restaurant pos config table"
