@@ -217,6 +217,76 @@ export class KpiService extends DB {
   }
 
   /**
+   * Calculates the average time for orders to be served in a restaurant
+   * @param idRestaurant - The restaurant identifier
+   * @param timeBegin - Start date of the analysis period (optional)
+   * @param timeEnd - End date of the analysis period (optional)
+   * @param channel - The channel of orders to analyze (togo or eatin or undefined)
+   * @returns An object containing the formatted average time and total number of orders
+   */
+  async averageTimeOrders(
+    idRestaurant: number,
+    timeBegin: string,
+    timeEnd: string,
+    channel: string,
+  ) {
+    const db = this.getDbConnection();
+    const preparationTimes = [];
+    let orders = await db
+      .collection('restaurant')
+      .aggregate([
+        { $match: { id: idRestaurant } },
+        { $unwind: '$orders' },
+        { $match: { 'orders.served': true } },
+        { $match: { 'orders.channel': channel || { $exists: true } } },
+        {
+          $project: {
+            'orders.date': 1,
+            'orders.timeServed': 1,
+            _id: 0,
+          },
+        },
+      ])
+      .toArray();
+
+    if (timeBegin && timeEnd) {
+      const beginDate = new Date(timeBegin);
+      const endDate = new Date(timeEnd);
+      orders = orders.filter((item) => {
+        const orderDate = new Date(item.orders.date);
+        return orderDate >= beginDate && orderDate <= endDate;
+      });
+    }
+
+    orders.map((item) => {
+      const orderDate = new Date(item.orders.date);
+      const preparationTime = new Date(item.orders.timeServed);
+      const timeDiff = orderDate.getTime() - preparationTime.getTime();
+      preparationTimes.push(timeDiff / (1000 * 60));
+    });
+
+    const averageTime =
+      preparationTimes.length > 0
+        ? preparationTimes.reduce((acc, time) => acc + time, 0) /
+          preparationTimes.length
+        : 0;
+
+    const totalSeconds = Math.round(averageTime * 60) * -1;
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    return {
+      time: {
+        hours: hours,
+        minutes: minutes,
+        seconds: seconds,
+      },
+      nbrOrders: preparationTimes.length,
+    };
+  }
+
+  /**
    * Returns the most ordered dish for a restaurant in a given period
    * @param idRestaurant - The restaurant identifier
    * @param timeBegin - Start date of the analysis period (optional)

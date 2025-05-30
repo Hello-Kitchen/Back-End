@@ -11,6 +11,7 @@ describe('KpiController', () => {
   const mockKpiService = {
     averageDishTime: jest.fn(),
     averageAllDishesTime: jest.fn(),
+    averageTimeOrders: jest.fn(),
     popularDish: jest.fn(),
   };
 
@@ -203,6 +204,104 @@ describe('KpiController', () => {
         undefined,
         undefined,
         mockBreakdown,
+      );
+    });
+  });
+
+  describe('kpiAverageTimeOrders', () => {
+    const mockIdRestaurant = 1;
+    const mockTimeBegin = '2024-03-01';
+    const mockTimeEnd = '2024-03-31';
+    const mockChannel = 'Sur place';
+
+    beforeEach(() => {
+      mockKpiService.averageTimeOrders = jest.fn();
+    });
+
+    it('should return average time for orders when data exists', async () => {
+      const mockResult = {
+        time: { hours: 0, minutes: 42, seconds: 8 },
+        nbrOrders: 50,
+      };
+
+      mockKpiService.averageTimeOrders.mockResolvedValue(mockResult);
+
+      const result = await controller.kpiAverageTimeOrders(
+        mockIdRestaurant,
+        mockTimeBegin,
+        mockTimeEnd,
+        mockChannel,
+      );
+
+      expect(result).toEqual(mockResult);
+      expect(service.averageTimeOrders).toHaveBeenCalledWith(
+        mockIdRestaurant,
+        mockTimeBegin,
+        mockTimeEnd,
+        mockChannel,
+      );
+    });
+
+    it('should handle service errors', async () => {
+      mockKpiService.averageTimeOrders.mockRejectedValue(
+        new Error('Database error'),
+      );
+
+      await expect(
+        controller.kpiAverageTimeOrders(
+          mockIdRestaurant,
+          mockTimeBegin,
+          mockTimeEnd,
+          mockChannel,
+        ),
+      ).rejects.toThrow('Server error');
+    });
+
+    it('should work without optional parameters', async () => {
+      const mockResult = {
+        time: { hours: 0, minutes: 42, seconds: 8 },
+        nbrOrders: 50,
+      };
+
+      mockKpiService.averageTimeOrders.mockResolvedValue(mockResult);
+
+      const result = await controller.kpiAverageTimeOrders(
+        mockIdRestaurant,
+        undefined,
+        undefined,
+        undefined,
+      );
+
+      expect(result).toEqual(mockResult);
+      expect(service.averageTimeOrders).toHaveBeenCalledWith(
+        mockIdRestaurant,
+        undefined,
+        undefined,
+        undefined,
+      );
+    });
+
+    it('should work with only channel parameter', async () => {
+      const mockResult = {
+        time: { hours: 0, minutes: 42, seconds: 8 },
+        nbrOrders: 50,
+      };
+
+      mockKpiService.averageTimeOrders.mockResolvedValue(mockResult);
+
+      const result = await controller.kpiAverageTimeOrders(
+        mockIdRestaurant,
+        undefined,
+        undefined,
+        mockChannel,
+      );
+
+      expect(result).toEqual(mockResult);
+      expect(service.averageTimeOrders).toHaveBeenCalledWith(
+        mockIdRestaurant,
+        undefined,
+        undefined,
+        mockChannel,
       );
     });
   });

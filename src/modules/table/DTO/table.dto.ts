@@ -1,4 +1,12 @@
-import { IsString, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class TableDto {
   @IsNumber()
@@ -33,4 +41,10 @@ export class TableDto {
   @IsOptional()
   @IsNumber()
   orderId?: number;
+
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => TableDto)
+  fused: TableDto[];
 }
