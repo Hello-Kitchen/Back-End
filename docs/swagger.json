@@ -1839,6 +1839,60 @@
         ]
       }
     },
+    "/{restaurant_id}/orders/served/{id}": {
+      "put": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Mark an order as served",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the order to mark as served",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SuccessfullOperation"
+          },
+          "400": {
+            "description": "Invalid restaurant ID or order ID"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Order not found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
     "/pos/{id}": {
       "summary": "Restaurant's POS paths",
       "get": {
@@ -2791,6 +2845,108 @@
         ]
       }
     },
+    "/{restaurant_id}/kpi/averageOrders": {
+      "summary": "KPI endpoints",
+      "get": {
+        "tags": [
+          "KPI"
+        ],
+        "summary": "Get the average time for orders to be served in a restaurant",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "timeBegin",
+            "in": "query",
+            "description": "Start date of the analysis period (optional)",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "timeEnd",
+            "in": "query",
+            "description": "End date of the analysis period (optional)",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "description": "Channel type to filter orders (optional)",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "enum": ["togo", "eatin", "LAD"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "time": {
+                      "type": "object",
+                      "properties": {
+                        "hours": { "type": "integer", "example": 0 },
+                        "minutes": { "type": "integer", "example": 42 },
+                        "seconds": { "type": "integer", "example": 8 }
+                      }
+                    },
+                    "nbrOrders": {
+                      "type": "integer",
+                      "description": "Total number of orders analyzed",
+                      "example": 50
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid restaurant ID or date format"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "No orders found in the specified period"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
     "/{restaurant_id}/kpi/clientsCount": {
       "summary": "KPI endpoints",
       "get": {
@@ -3039,6 +3195,13 @@
             "type": "string",
             "description": "Time since last order on the table",
             "example": "00:00"
+          },
+          "fused": {
+            "type": "array",
+            "description": "table fused array",
+            "items": {
+              "$ref": "#/components/schemas/table"
+            }
           }
         },
         "description": "Restaurant pos config table"
