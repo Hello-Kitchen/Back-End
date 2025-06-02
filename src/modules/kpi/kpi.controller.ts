@@ -154,46 +154,6 @@ export class KpiController {
   }
 
   /**
-   * Get the average time for orders to be served in a restaurant
-   * @param idRestaurant - The restaurant identifier (must be positive)
-   * @param timeBegin - Start date of the analysis period (optional)
-   * @param timeEnd - End date of the analysis period (optional)
-   * @returns An object containing the formatted average time and total number of orders
-   * @throws {NotFoundException} When no orders are found for the specified period
-   * @throws {BadRequestException} When input parameters are invalid
-   * @throws {InternalServerErrorException} When server encounters an error
-   * @example
-   * GET /api/1/kpi/averageTimeOrders?timeBegin=2024-01-01&timeEnd=2024-01-31
-   * // returns { time: { "hours": 0, "minutes": 42, "seconds": 8 }, "nbrOrders": 50 }
-   */
-  @Get('averageOrders')
-  async kpiAverageTimeOrders(
-    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
-    @Query('timeBegin', DatePipe) timeBegin: string,
-    @Query('timeEnd', DatePipe) timeEnd: string,
-    @Query('channel', ChannelPipe) channel: string,
-  ) {
-    try {
-      const result = await this.kpiService.averageTimeOrders(
-        idRestaurant,
-        timeBegin,
-        timeEnd,
-        channel,
-      );
-
-      return result;
-    } catch (error) {
-      if (
-        error instanceof NotFoundException ||
-        error instanceof BadRequestException
-      ) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Server error');
-    }
-  }
-
-  /**
    * Get the number of clients for a specific period
    * @param idRestaurant - The restaurant identifier (must be positive)
    * @param timeBegin - Start date of the analysis period (optional)
