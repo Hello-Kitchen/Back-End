@@ -312,6 +312,7 @@ export class KpiService extends DB {
         {
           $match: {
             'orders.served': served === undefined ? { $exists: true } : served,
+            'orders.payment': { $exists: false },
           },
         },
         { $project: { _id: 1, 'orders.date': 1 } },
