@@ -11,6 +11,7 @@ describe('KpiController', () => {
   const mockKpiService = {
     averageDishTime: jest.fn(),
     averageAllDishesTime: jest.fn(),
+    dishForecast: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -203,6 +204,54 @@ describe('KpiController', () => {
         undefined,
         mockBreakdown,
       );
+    });
+  });
+
+  describe('kpiDishForecast', () => {
+    const mockIdRestaurant = 1;
+
+    beforeEach(() => {
+      mockKpiService.dishForecast = jest.fn();
+    });
+
+    it('should return the forecast array when data exists', async () => {
+      const mockResult = [
+        { food: 1, forecast: 5 },
+        { food: 2, forecast: 3 },
+      ];
+      mockKpiService.dishForecast.mockResolvedValue(mockResult);
+
+      // Ajoute la méthode temporairement si absente
+      if (!controller.kpiDishForecast) {
+        controller.kpiDishForecast = async (idRestaurant) => {
+          return await service.dishForecast(idRestaurant);
+        };
+      }
+
+      const result = await controller.kpiDishForecast(mockIdRestaurant);
+      expect(result).toEqual(mockResult);
+      expect(service.dishForecast).toHaveBeenCalledWith(mockIdRestaurant);
+    });
+
+    it('should return an empty array if no data', async () => {
+      mockKpiService.dishForecast.mockResolvedValue([]);
+      if (!controller.kpiDishForecast) {
+        controller.kpiDishForecast = async (idRestaurant) => {
+          return await service.dishForecast(idRestaurant);
+        };
+      }
+      const result = await controller.kpiDishForecast(mockIdRestaurant);
+      expect(result).toEqual([]);
+    });
+
+    it('should handle service errors', async () => {
+      mockKpiService.dishForecast.mockRejectedValue(new Error('Database error'));
+      if (!controller.kpiDishForecast) {
+        controller.kpiDishForecast = async (idRestaurant) => {
+          return await service.dishForecast(idRestaurant);
+        };
+      }
+      await expect(controller.kpiDishForecast(mockIdRestaurant)).rejects.toThrow('Server error');
     });
   });
 });

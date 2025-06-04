@@ -110,4 +110,30 @@ export class KpiController {
       throw new InternalServerErrorException('Server error');
     }
   }
+
+  /**
+   * Forecast daily sales for each dish
+   * @param idRestaurant - The restaurant identifier (must be positive)
+   * @param date - (optionnel) Date cible au format ISO (ex: 2025-05-28T20:58:53.621Z)
+   * @returns Array of objects: { food, forecast } (forecast = moyenne/jour)
+   * @throws {NotFoundException} When no orders are found for any dish
+   * @throws {BadRequestException} When input parameters are invalid
+   * @throws {InternalServerErrorException} When server encounters an error
+   * @example
+   * GET /api/1/kpi/dishForecast?date=2025-05-28T20:58:53.621Z
+   * // returns [ { food: 12, forecast: 15 }, { food: 13, forecast: 8 } ]
+   */
+  @Get('dishForecast')
+  async kpiDishForecast(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Query('date') date?: string,
+  ) {
+    try {
+      const result = await this.kpiService.dishForecast(idRestaurant, date);
+      return result;
+    } catch (error) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException) throw error;
+      throw new InternalServerErrorException('Server error');
+    }
+  }
 }
