@@ -2946,6 +2946,93 @@
           }
         ]
       }
+    },
+    "/{restaurant_id}/kpi/popularDish": {
+      "summary": "KPI endpoints",
+      "get": {
+        "tags": [
+          "KPI"
+        ],
+        "summary": "Récupérer le plat le plus populaire sur une période donnée",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID du restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "timeBegin",
+            "in": "query",
+            "description": "Date de début de la période d'analyse (optionnel)",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "timeEnd",
+            "in": "query",
+            "description": "Date de fin de la période d'analyse (optionnel)",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Succès - Plat le plus populaire retourné",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "food": {
+                      "type": "integer",
+                      "description": "ID du plat le plus commandé",
+                      "example": 123
+                    },
+                    "nbrOrders": {
+                      "type": "integer",
+                      "description": "Nombre total de commandes pour ce plat",
+                      "example": 100
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Paramètres invalides"
+          },
+          "401": {
+            "description": "Authentification requise"
+          },
+          "404": {
+            "description": "Aucun plat commandé sur la période spécifiée"
+          },
+          "5XX": {
+            "description": "Erreur interne du serveur"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
