@@ -285,4 +285,63 @@ export class KpiService extends DB {
       nbrOrders: preparationTimes.length,
     };
   }
+
+  /**
+   * Returns the most ordered dish for a restaurant in a given period
+   * @param idRestaurant - The restaurant identifier
+   * @param timeBegin - Start date of the analysis period (optional)
+   * @param timeEnd - End date of the analysis period (optional)
+   * @returns Object containing the food id and the number of orders
+   */
+  async popularDish(
+    idRestaurant: number,
+    timeBegin?: string,
+    timeEnd?: string,
+  ): Promise<{ food: number; nbrOrders: number } | null> {
+    const db = this.getDbConnection();
+    let result = await db
+      .collection('restaurant')
+      .aggregate([
+        { $match: { id: idRestaurant } },
+        { $unwind: '$orders' },
+        { $unwind: '$orders.food_ordered' },
+        { $match: { 'orders.food_ordered.is_ready': true } },
+        {
+          $project: {
+            'orders.date': 1,
+            'orders.food_ordered.food': 1,
+            _id: 0,
+          },
+        },
+      ])
+      .toArray();
+
+    if (timeBegin && timeEnd) {
+      const beginDate = new Date(timeBegin);
+      const endDate = new Date(timeEnd);
+      result = result.filter((item) => {
+        const orderDate = new Date(item.orders.date);
+        return orderDate >= beginDate && orderDate <= endDate;
+      });
+    }
+
+    const foodCount = new Map<number, number>();
+    result.forEach((item) => {
+      const foodId = item.orders.food_ordered.food;
+      foodCount.set(foodId, (foodCount.get(foodId) || 0) + 1);
+    });
+
+    if (foodCount.size === 0) return null;
+
+    let maxFood = null;
+    let maxCount = 0;
+    for (const [food, count] of foodCount.entries()) {
+      if (count > maxCount) {
+        maxFood = food;
+        maxCount = count;
+      }
+    }
+
+    return { food: maxFood, nbrOrders: maxCount };
+  }
 }

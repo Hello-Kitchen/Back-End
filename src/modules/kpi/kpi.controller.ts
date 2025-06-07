@@ -151,4 +151,44 @@ export class KpiController {
       throw new InternalServerErrorException('Server error');
     }
   }
+
+  /**
+   * Get the most popular dish for a specific period
+   * @param idRestaurant - The restaurant identifier (must be positive)
+   * @param timeBegin - Start date of the analysis period (optional)
+   * @param timeEnd - End date of the analysis period (optional)
+   * @returns The most popular dish for the specified period
+   * @throws {NotFoundException} When no orders are found for any dish in the specified period
+   * @throws {BadRequestException} When input parameters are invalid
+   * @throws {InternalServerErrorException} When server encounters an error
+   * @example
+   * GET /api/1/kpi/popularDish?timeBegin=2024-01-01&timeEnd=2024-01-31
+   * // returns { food: 123, nbrOrders: 100 }
+   */
+  @Get('popularDish')
+  async kpiPopularDish(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Query('timeBegin', DatePipe) timeBegin: string,
+    @Query('timeEnd', DatePipe) timeEnd: string,
+  ) {
+    try {
+      const result = await this.kpiService.popularDish(
+        idRestaurant,
+        timeBegin,
+        timeEnd,
+      );
+      if (!result)
+        throw new NotFoundException(
+          'No orders found for any dish in the specified period',
+        );
+      return result;
+    } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      )
+        throw error;
+      throw new InternalServerErrorException('Server error');
+    }
+  }
 }
