@@ -2790,6 +2790,89 @@
           }
         ]
       }
+    },
+    "/{restaurant_id}/kpi/dishForecast": {
+      "summary": "KPI endpoints",
+      "get": {
+        "tags": [
+          "KPI"
+        ],
+        "summary": "Prévision des ventes journalières pour chaque plat",
+        "description": "Retourne, pour chaque plat, une prévision du nombre de ventes par jour sur la période analysée. La date cible est optionnelle et permet d'obtenir une prévision pour un jour spécifique.",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID du restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "description": "Date cible au format ISO (optionnel, ex: 2025-05-28T20:58:53.621Z)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Prévision des ventes par plat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "food": {
+                        "type": "integer",
+                        "description": "ID du plat"
+                      },
+                      "forecast": {
+                        "type": "number",
+                        "description": "Prévision du nombre de ventes par jour"
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "Prévision": {
+                    "value": [
+                      { "food": 12, "forecast": 15 },
+                      { "food": 13, "forecast": 8 }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Paramètres invalides (ID restaurant ou date)"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Aucune commande trouvée pour un plat"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {

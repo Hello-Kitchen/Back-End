@@ -221,7 +221,6 @@ describe('KpiController', () => {
       ];
       mockKpiService.dishForecast.mockResolvedValue(mockResult);
 
-      // Ajoute la méthode temporairement si absente
       if (!controller.kpiDishForecast) {
         controller.kpiDishForecast = async (idRestaurant) => {
           return await service.dishForecast(idRestaurant, undefined);
