@@ -398,7 +398,7 @@ export class KpiService extends DB {
    */
   async dishForecast(
     idRestaurant: number,
-    dateStr?: string
+    dateStr?: string,
   ): Promise<{ food: number; forecast: number }[]> {
     const db = this.getDbConnection();
     const result = await db
@@ -424,7 +424,8 @@ export class KpiService extends DB {
     const targetDay = targetDate.getDate();
     const lastYear = targetDate.getFullYear() - 1;
 
-    const salesByFoodWeekday: Record<number, { date: Date; count: number }[]> = {};
+    const salesByFoodWeekday: Record<number, { date: Date; count: number }[]> =
+      {};
     const salesByFoodLastYear: Record<number, number> = {};
 
     result.forEach((item) => {
@@ -456,7 +457,9 @@ export class KpiService extends DB {
         : undefined;
       let trend = 0;
       if (weekdayArr.length > 1) {
-        const sorted = weekdayArr.sort((a, b) => a.date.getTime() - b.date.getTime());
+        const sorted = weekdayArr.sort(
+          (a, b) => a.date.getTime() - b.date.getTime(),
+        );
         const n = sorted.length;
         const sumX = (n * (n - 1)) / 2;
         const sumY = sorted.reduce((acc, v) => acc + v.count, 0);

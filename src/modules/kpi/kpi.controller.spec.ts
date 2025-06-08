@@ -458,7 +458,10 @@ describe('KpiController', () => {
 
       const result = await controller.kpiDishForecast(mockIdRestaurant);
       expect(result).toEqual(mockResult);
-      expect(service.dishForecast).toHaveBeenCalledWith(mockIdRestaurant, undefined);
+      expect(service.dishForecast).toHaveBeenCalledWith(
+        mockIdRestaurant,
+        undefined,
+      );
     });
 
     it('should return an empty array if no data', async () => {
@@ -473,13 +476,17 @@ describe('KpiController', () => {
     });
 
     it('should handle service errors', async () => {
-      mockKpiService.dishForecast.mockRejectedValue(new Error('Database error'));
+      mockKpiService.dishForecast.mockRejectedValue(
+        new Error('Database error'),
+      );
       if (!controller.kpiDishForecast) {
         controller.kpiDishForecast = async (idRestaurant) => {
           return await service.dishForecast(idRestaurant, undefined);
         };
       }
-      await expect(controller.kpiDishForecast(mockIdRestaurant)).rejects.toThrow('Server error');
+      await expect(
+        controller.kpiDishForecast(mockIdRestaurant),
+      ).rejects.toThrow('Server error');
     });
   });
 });

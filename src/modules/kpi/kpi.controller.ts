@@ -250,7 +250,11 @@ export class KpiController {
       const result = await this.kpiService.dishForecast(idRestaurant, date);
       return result;
     } catch (error) {
-      if (error instanceof NotFoundException || error instanceof BadRequestException) throw error;
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      )
+        throw error;
       throw new InternalServerErrorException('Server error');
     }
   }
