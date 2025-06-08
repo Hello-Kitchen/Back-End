@@ -13,6 +13,7 @@ describe('KpiController', () => {
     averageAllDishesTime: jest.fn(),
     averageTimeOrders: jest.fn(),
     popularDish: jest.fn(),
+    clientsCount: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -365,6 +366,72 @@ describe('KpiController', () => {
         undefined,
         undefined,
       );
+    });
+  });
+
+  describe('kpiClientsCount', () => {
+    const mockIdRestaurant = 1;
+    const mockTimeBegin = '2024-03-01';
+    const mockTimeEnd = '2024-03-31';
+    const mockChannel = 'togo';
+    const mockServed = true;
+
+    beforeEach(() => {
+      mockKpiService.clientsCount = jest.fn();
+    });
+
+    it('should return the number of clients for the specified period', async () => {
+      const mockResult = 100;
+      mockKpiService.clientsCount.mockResolvedValue(mockResult);
+
+      const result = await controller.kpiClientsCount(
+        mockIdRestaurant,
+        mockTimeBegin,
+        mockTimeEnd,
+        mockChannel,
+        mockServed,
+      );
+
+      expect(result).toEqual(mockResult);
+      expect(service.clientsCount).toHaveBeenCalledWith(
+        mockIdRestaurant,
+        mockTimeBegin,
+        mockTimeEnd,
+        mockChannel,
+        mockServed,
+      );
+    });
+
+    it('should handle BadRequestException from the service', async () => {
+      mockKpiService.clientsCount.mockImplementation(() => {
+        throw new Error('BadRequestException');
+      });
+
+      await expect(
+        controller.kpiClientsCount(
+          mockIdRestaurant,
+          mockTimeBegin,
+          mockTimeEnd,
+          mockChannel,
+          mockServed,
+        ),
+      ).rejects.toThrow('Server error');
+    });
+
+    it('should handle server errors', async () => {
+      mockKpiService.clientsCount.mockImplementation(() => {
+        throw new Error('Database error');
+      });
+
+      await expect(
+        controller.kpiClientsCount(
+          mockIdRestaurant,
+          mockTimeBegin,
+          mockTimeEnd,
+          mockChannel,
+          mockServed,
+        ),
+      ).rejects.toThrow('Server error');
     });
   });
 });

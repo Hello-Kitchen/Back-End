@@ -3033,6 +3033,103 @@
           }
         ]
       }
+    },
+    "/{restaurant_id}/kpi/clientsCount": {
+      "summary": "KPI endpoints",
+      "get": {
+        "tags": [
+          "KPI"
+        ],
+        "summary": "Get the number of clients for a specific period",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "timeBegin",
+            "in": "query",
+            "description": "Start date of the analysis period (optional, format: YYYY-MM-DD)",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "timeEnd",
+            "in": "query",
+            "description": "End date of the analysis period (optional, format: YYYY-MM-DD)",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "description": "The channel of the orders (optional)",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "enum": ["togo", "eatin", "LAD"]
+            }
+          },
+          {
+            "name": "served",
+            "in": "query",
+            "description": "Whether the orders are served (optional)",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "description": "The number of clients for the specified period",
+                  "example": 100
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid restaurant ID or date format"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {

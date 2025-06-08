@@ -14,6 +14,7 @@ import { DatePipe } from './pipe/date.pipe';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { BreakdownPipe } from './pipe/breakdown.pipe';
 import { ChannelPipe } from './pipe/channel.pipe';
+import { ServedPipe } from './pipe/served.pipe';
 
 @Controller('api/:idRestaurant/kpi')
 @UseGuards(JwtAuthGuard)
@@ -188,6 +189,42 @@ export class KpiController {
         error instanceof BadRequestException
       )
         throw error;
+      throw new InternalServerErrorException('Server error');
+    }
+  }
+
+  /**
+   * Get the number of clients for a specific period
+   * @param idRestaurant - The restaurant identifier (must be positive)
+   * @param timeBegin - Start date of the analysis period (optional)
+   * @param timeEnd - End date of the analysis period (optional)
+   * @param channel - The channel of the orders (optional)
+   * @param served - Whether the orders are served (optional)
+   * @returns The number of clients for the specified period
+   * @throws {BadRequestException} When input parameters are invalid
+   * @throws {InternalServerErrorException} When server encounters an error
+   * @example
+   * GET /api/1/kpi/clientsCount?timeBegin=2024-01-01&timeEnd=2024-01-31&channel=togo&served=true
+   * // returns 100
+   */
+  @Get('clientsCount')
+  async kpiClientsCount(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Query('timeBegin', DatePipe) timeBegin: string,
+    @Query('timeEnd', DatePipe) timeEnd: string,
+    @Query('channel', ChannelPipe) channel: string,
+    @Query('served', ServedPipe) served: boolean,
+  ) {
+    try {
+      return this.kpiService.clientsCount(
+        idRestaurant,
+        timeBegin,
+        timeEnd,
+        channel,
+        served,
+      );
+    } catch (error) {
+      if (error instanceof BadRequestException) throw error;
       throw new InternalServerErrorException('Server error');
     }
   }

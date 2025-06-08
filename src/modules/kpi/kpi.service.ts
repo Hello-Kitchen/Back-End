@@ -344,4 +344,49 @@ export class KpiService extends DB {
 
     return { food: maxFood, nbrOrders: maxCount };
   }
+
+  /**
+   * Get the number of clients for a specific period
+   * @param idRestaurant - The restaurant identifier (must be positive)
+   * @param timeBegin - Start date of the analysis period (optional)
+   * @param timeEnd - End date of the analysis period (optional)
+   * @param channel - The channel of the orders (optional)
+   * @param served - Whether the orders are served (optional)
+   * @returns The number of clients for the specified period
+   */
+  async clientsCount(
+    idRestaurant: number,
+    timeBegin: string,
+    timeEnd: string,
+    channel: string,
+    served: boolean,
+  ) {
+    const db = this.getDbConnection();
+    let clientsCount = await db
+      .collection('restaurant')
+      .aggregate([
+        { $match: { id: idRestaurant } },
+        { $unwind: '$orders' },
+        { $match: { 'orders.channel': channel || { $exists: true } } },
+        {
+          $match: {
+            'orders.served': served === undefined ? { $exists: true } : served,
+            'orders.payment': { $exists: false },
+          },
+        },
+        { $project: { _id: 1, 'orders.date': 1 } },
+      ])
+      .toArray();
+
+    if (timeBegin && timeEnd) {
+      const beginDate = new Date(timeBegin);
+      const endDate = new Date(timeEnd);
+      clientsCount = clientsCount.filter((item) => {
+        const orderDate = new Date(item.orders.date);
+        return orderDate >= beginDate && orderDate <= endDate;
+      });
+    }
+
+    return clientsCount.length;
+  }
 }
