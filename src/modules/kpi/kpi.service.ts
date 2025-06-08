@@ -217,6 +217,180 @@ export class KpiService extends DB {
   }
 
   /**
+   * Calculates the average time for orders to be served in a restaurant
+   * @param idRestaurant - The restaurant identifier
+   * @param timeBegin - Start date of the analysis period (optional)
+   * @param timeEnd - End date of the analysis period (optional)
+   * @param channel - The channel of orders to analyze (togo or eatin or undefined)
+   * @returns An object containing the formatted average time and total number of orders
+   */
+  async averageTimeOrders(
+    idRestaurant: number,
+    timeBegin: string,
+    timeEnd: string,
+    channel: string,
+  ) {
+    const db = this.getDbConnection();
+    const preparationTimes = [];
+    let orders = await db
+      .collection('restaurant')
+      .aggregate([
+        { $match: { id: idRestaurant } },
+        { $unwind: '$orders' },
+        { $match: { 'orders.served': true } },
+        { $match: { 'orders.channel': channel || { $exists: true } } },
+        {
+          $project: {
+            'orders.date': 1,
+            'orders.timeServed': 1,
+            _id: 0,
+          },
+        },
+      ])
+      .toArray();
+
+    if (timeBegin && timeEnd) {
+      const beginDate = new Date(timeBegin);
+      const endDate = new Date(timeEnd);
+      orders = orders.filter((item) => {
+        const orderDate = new Date(item.orders.date);
+        return orderDate >= beginDate && orderDate <= endDate;
+      });
+    }
+
+    orders.map((item) => {
+      const orderDate = new Date(item.orders.date);
+      const preparationTime = new Date(item.orders.timeServed);
+      const timeDiff = orderDate.getTime() - preparationTime.getTime();
+      preparationTimes.push(timeDiff / (1000 * 60));
+    });
+
+    const averageTime =
+      preparationTimes.length > 0
+        ? preparationTimes.reduce((acc, time) => acc + time, 0) /
+          preparationTimes.length
+        : 0;
+
+    const totalSeconds = Math.round(averageTime * 60) * -1;
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    return {
+      time: {
+        hours: hours,
+        minutes: minutes,
+        seconds: seconds,
+      },
+      nbrOrders: preparationTimes.length,
+    };
+  }
+
+  /**
+   * Returns the most ordered dish for a restaurant in a given period
+   * @param idRestaurant - The restaurant identifier
+   * @param timeBegin - Start date of the analysis period (optional)
+   * @param timeEnd - End date of the analysis period (optional)
+   * @returns Object containing the food id and the number of orders
+   */
+  async popularDish(
+    idRestaurant: number,
+    timeBegin?: string,
+    timeEnd?: string,
+  ): Promise<{ food: number; nbrOrders: number } | null> {
+    const db = this.getDbConnection();
+    let result = await db
+      .collection('restaurant')
+      .aggregate([
+        { $match: { id: idRestaurant } },
+        { $unwind: '$orders' },
+        { $unwind: '$orders.food_ordered' },
+        { $match: { 'orders.food_ordered.is_ready': true } },
+        {
+          $project: {
+            'orders.date': 1,
+            'orders.food_ordered.food': 1,
+            _id: 0,
+          },
+        },
+      ])
+      .toArray();
+
+    if (timeBegin && timeEnd) {
+      const beginDate = new Date(timeBegin);
+      const endDate = new Date(timeEnd);
+      result = result.filter((item) => {
+        const orderDate = new Date(item.orders.date);
+        return orderDate >= beginDate && orderDate <= endDate;
+      });
+    }
+
+    const foodCount = new Map<number, number>();
+    result.forEach((item) => {
+      const foodId = item.orders.food_ordered.food;
+      foodCount.set(foodId, (foodCount.get(foodId) || 0) + 1);
+    });
+
+    if (foodCount.size === 0) return null;
+
+    let maxFood = null;
+    let maxCount = 0;
+    for (const [food, count] of foodCount.entries()) {
+      if (count > maxCount) {
+        maxFood = food;
+        maxCount = count;
+      }
+    }
+
+    return { food: maxFood, nbrOrders: maxCount };
+  }
+
+  /**
+   * Get the number of clients for a specific period
+   * @param idRestaurant - The restaurant identifier (must be positive)
+   * @param timeBegin - Start date of the analysis period (optional)
+   * @param timeEnd - End date of the analysis period (optional)
+   * @param channel - The channel of the orders (optional)
+   * @param served - Whether the orders are served (optional)
+   * @returns The number of clients for the specified period
+   */
+  async clientsCount(
+    idRestaurant: number,
+    timeBegin: string,
+    timeEnd: string,
+    channel: string,
+    served: boolean,
+  ) {
+    const db = this.getDbConnection();
+    let clientsCount = await db
+      .collection('restaurant')
+      .aggregate([
+        { $match: { id: idRestaurant } },
+        { $unwind: '$orders' },
+        { $match: { 'orders.channel': channel || { $exists: true } } },
+        {
+          $match: {
+            'orders.served': served === undefined ? { $exists: true } : served,
+            'orders.payment': { $exists: false },
+          },
+        },
+        { $project: { _id: 1, 'orders.date': 1 } },
+      ])
+      .toArray();
+
+    if (timeBegin && timeEnd) {
+      const beginDate = new Date(timeBegin);
+      const endDate = new Date(timeEnd);
+      clientsCount = clientsCount.filter((item) => {
+        const orderDate = new Date(item.orders.date);
+        return orderDate >= beginDate && orderDate <= endDate;
+      });
+    }
+
+    return clientsCount.length;
+  }
+
+  /**
    * Forecast daily dish sales for a restaurant for the current weekday and same day last year, adjusted for trend
    * @param idRestaurant - The restaurant identifier
    * @param dateStr - (optionnel) Date cible au format ISO (ex: 2025-05-28T20:58:53.621Z)
