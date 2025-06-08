@@ -224,20 +224,20 @@ describe('KpiController', () => {
       // Ajoute la méthode temporairement si absente
       if (!controller.kpiDishForecast) {
         controller.kpiDishForecast = async (idRestaurant) => {
-          return await service.dishForecast(idRestaurant);
+          return await service.dishForecast(idRestaurant, undefined);
         };
       }
 
       const result = await controller.kpiDishForecast(mockIdRestaurant);
       expect(result).toEqual(mockResult);
-      expect(service.dishForecast).toHaveBeenCalledWith(mockIdRestaurant);
+      expect(service.dishForecast).toHaveBeenCalledWith(mockIdRestaurant, undefined);
     });
 
     it('should return an empty array if no data', async () => {
       mockKpiService.dishForecast.mockResolvedValue([]);
       if (!controller.kpiDishForecast) {
         controller.kpiDishForecast = async (idRestaurant) => {
-          return await service.dishForecast(idRestaurant);
+          return await service.dishForecast(idRestaurant, undefined);
         };
       }
       const result = await controller.kpiDishForecast(mockIdRestaurant);
@@ -248,7 +248,7 @@ describe('KpiController', () => {
       mockKpiService.dishForecast.mockRejectedValue(new Error('Database error'));
       if (!controller.kpiDishForecast) {
         controller.kpiDishForecast = async (idRestaurant) => {
-          return await service.dishForecast(idRestaurant);
+          return await service.dishForecast(idRestaurant, undefined);
         };
       }
       await expect(controller.kpiDishForecast(mockIdRestaurant)).rejects.toThrow('Server error');
