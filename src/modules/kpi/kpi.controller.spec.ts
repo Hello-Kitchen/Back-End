@@ -14,6 +14,7 @@ describe('KpiController', () => {
     averageTimeOrders: jest.fn(),
     popularDish: jest.fn(),
     clientsCount: jest.fn(),
+    dishForecast: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -431,6 +432,60 @@ describe('KpiController', () => {
           mockChannel,
           mockServed,
         ),
+      ).rejects.toThrow('Server error');
+    });
+  });
+
+  describe('kpiDishForecast', () => {
+    const mockIdRestaurant = 1;
+
+    beforeEach(() => {
+      mockKpiService.dishForecast = jest.fn();
+    });
+
+    it('should return the forecast array when data exists', async () => {
+      const mockResult = [
+        { food: 1, forecast: 5 },
+        { food: 2, forecast: 3 },
+      ];
+      mockKpiService.dishForecast.mockResolvedValue(mockResult);
+
+      if (!controller.kpiDishForecast) {
+        controller.kpiDishForecast = async (idRestaurant) => {
+          return await service.dishForecast(idRestaurant, undefined);
+        };
+      }
+
+      const result = await controller.kpiDishForecast(mockIdRestaurant);
+      expect(result).toEqual(mockResult);
+      expect(service.dishForecast).toHaveBeenCalledWith(
+        mockIdRestaurant,
+        undefined,
+      );
+    });
+
+    it('should return an empty array if no data', async () => {
+      mockKpiService.dishForecast.mockResolvedValue([]);
+      if (!controller.kpiDishForecast) {
+        controller.kpiDishForecast = async (idRestaurant) => {
+          return await service.dishForecast(idRestaurant, undefined);
+        };
+      }
+      const result = await controller.kpiDishForecast(mockIdRestaurant);
+      expect(result).toEqual([]);
+    });
+
+    it('should handle service errors', async () => {
+      mockKpiService.dishForecast.mockRejectedValue(
+        new Error('Database error'),
+      );
+      if (!controller.kpiDishForecast) {
+        controller.kpiDishForecast = async (idRestaurant) => {
+          return await service.dishForecast(idRestaurant, undefined);
+        };
+      }
+      await expect(
+        controller.kpiDishForecast(mockIdRestaurant),
       ).rejects.toThrow('Server error');
     });
   });

@@ -389,4 +389,98 @@ export class KpiService extends DB {
 
     return clientsCount.length;
   }
+
+  /**
+   * Forecast daily dish sales for a restaurant for the current weekday and same day last year, adjusted for trend
+   * @param idRestaurant - The restaurant identifier
+   * @param dateStr - (optionnel) Date cible au format ISO (ex: 2025-05-28T20:58:53.621Z)
+   * @returns Array of objects: { food, forecast } (forecast = moyenne pour ce jour de la semaine et valeur du même jour l'an passé, ajustée par la tendance)
+   */
+  async dishForecast(
+    idRestaurant: number,
+    dateStr?: string,
+  ): Promise<{ food: number; forecast: number }[]> {
+    const db = this.getDbConnection();
+    const result = await db
+      .collection('restaurant')
+      .aggregate([
+        { $match: { id: idRestaurant } },
+        { $unwind: '$orders' },
+        { $unwind: '$orders.food_ordered' },
+        { $match: { 'orders.food_ordered.is_ready': true } },
+        {
+          $project: {
+            'orders.date': 1,
+            'orders.food_ordered.food': 1,
+            _id: 0,
+          },
+        },
+      ])
+      .toArray();
+
+    const targetDate = dateStr ? new Date(dateStr) : new Date();
+    const targetWeekday = targetDate.getDay();
+    const targetMonth = targetDate.getMonth();
+    const targetDay = targetDate.getDate();
+    const lastYear = targetDate.getFullYear() - 1;
+
+    const salesByFoodWeekday: Record<number, { date: Date; count: number }[]> =
+      {};
+    const salesByFoodLastYear: Record<number, number> = {};
+
+    result.forEach((item) => {
+      const foodId = item.orders.food_ordered.food;
+      const date = new Date(item.orders.date);
+      if (date.getDay() === targetWeekday) {
+        if (!salesByFoodWeekday[foodId]) salesByFoodWeekday[foodId] = [];
+        salesByFoodWeekday[foodId].push({ date, count: 1 });
+      }
+      if (
+        date.getFullYear() === lastYear &&
+        date.getMonth() === targetMonth &&
+        date.getDate() === targetDay
+      ) {
+        if (!salesByFoodLastYear[foodId]) salesByFoodLastYear[foodId] = 0;
+        salesByFoodLastYear[foodId]++;
+      }
+    });
+
+    const allFoodIds = new Set([
+      ...Object.keys(salesByFoodWeekday).map(Number),
+      ...Object.keys(salesByFoodLastYear).map(Number),
+    ]);
+    const forecasts = Array.from(allFoodIds).map((foodId) => {
+      const weekdayArr = salesByFoodWeekday[foodId] || [];
+      const lastYearVal = salesByFoodLastYear[foodId];
+      const weekdayAvg = weekdayArr.length
+        ? weekdayArr.reduce((a, b) => a + b.count, 0) / weekdayArr.length
+        : undefined;
+      let trend = 0;
+      if (weekdayArr.length > 1) {
+        const sorted = weekdayArr.sort(
+          (a, b) => a.date.getTime() - b.date.getTime(),
+        );
+        const n = sorted.length;
+        const sumX = (n * (n - 1)) / 2;
+        const sumY = sorted.reduce((acc, v) => acc + v.count, 0);
+        const sumXY = sorted.reduce((acc, v, i) => acc + i * v.count, 0);
+        const sumX2 = (n * (n - 1) * (2 * n - 1)) / 6;
+        const denominator = n * sumX2 - sumX * sumX;
+        if (denominator !== 0) {
+          trend = (n * sumXY - sumX * sumY) / denominator;
+        }
+      }
+      const values = [];
+      if (weekdayAvg !== undefined) values.push(weekdayAvg);
+      if (lastYearVal !== undefined) values.push(lastYearVal);
+      let forecast = values.length
+        ? values.reduce((a, b) => a + b, 0) / values.length
+        : 0;
+      forecast += trend;
+      forecast = Math.max(0, Math.round(forecast));
+      return { food: foodId, forecast };
+    });
+
+    return forecasts;
+  }
 }
