@@ -260,7 +260,7 @@ export class KpiController {
   }
 
   /**
-   * Get the number of clients for a specific period
+   * Get the average basket value for a specific period
    * @param idRestaurant - The restaurant identifier (must be positive)
    * @param timeBegin - Start date of the analysis period (optional)
    * @param timeEnd - End date of the analysis period (optional)
@@ -269,7 +269,7 @@ export class KpiController {
    * @throws {BadRequestException} When input parameters are invalid
    * @throws {InternalServerErrorException} When server encounters an error
    * @example
-   * GET /api/1/kpi/clientsCount?timeBegin=2024-01-01&timeEnd=2024-01-31&channel=togo
+   * GET /api/1/kpi/averageBasket?timeBegin=2024-01-01&timeEnd=2024-01-31&channel=togo
    * // returns {"Average value": 23,"Nbr orders": 26}
    */
   @Get('averageBasket')
