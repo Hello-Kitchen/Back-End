@@ -483,4 +483,47 @@ export class KpiService extends DB {
 
     return forecasts;
   }
+
+  /**
+   * Get the average basket value for a specific period
+   * @param idRestaurant - The restaurant identifier (must be positive)
+   * @param timeBegin - Start date of the analysis period (optional)
+   * @param timeEnd - End date of the analysis period (optional)
+   * @param channel - The channel of the orders (optional)
+   * @returns The average basket value for the specified period and the number of orders
+   */
+  async averageBasket(
+    idRestaurant: number,
+    timeBegin: string,
+    timeEnd: string,
+    channel: string,
+  ) {
+    const db = this.getDbConnection();
+    let orders = await db
+    .collection('restaurant')
+    .aggregate([
+      { $match: { id: idRestaurant } },
+      { $unwind: '$orders' },
+      { $match: channel ? { 'orders.channel': channel } : {} },
+      { $project: { _id: 0, 'orders.date': 1, 'orders.total': 1 } },
+    ])
+    .toArray();
+
+    if (timeBegin && timeEnd) {
+      const beginDate = new Date(timeBegin);
+      const endDate = new Date(timeEnd);
+      orders = orders.filter((item) => {
+        const orderDate = new Date(item.orders.date);
+        return orderDate >= beginDate && orderDate <= endDate;
+      });
+    }
+
+    const totalAmount = orders.reduce((sum, item) => {
+      return sum + parseFloat(item.orders.total);
+    }, 0);
+
+    const average = orders.length > 0 ? totalAmount / orders.length : 0;
+
+    return {"Average value":average, "Nbr orders":orders.length};
+  }
 }
