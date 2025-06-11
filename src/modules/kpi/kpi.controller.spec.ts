@@ -502,7 +502,7 @@ describe('KpiController', () => {
     });
 
     it('should return the average value for the specified period', async () => {
-      const mockResult = {"Average value": 23,"Nbr orders": 26};
+      const mockResult = { 'Average value': 23, 'Nbr orders': 26 };
       mockKpiService.averageBasket.mockResolvedValue(mockResult);
 
       const result = await controller.kpiAverageBasket(

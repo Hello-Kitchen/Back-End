@@ -500,14 +500,14 @@ export class KpiService extends DB {
   ) {
     const db = this.getDbConnection();
     let orders = await db
-    .collection('restaurant')
-    .aggregate([
-      { $match: { id: idRestaurant } },
-      { $unwind: '$orders' },
-      { $match: channel ? { 'orders.channel': channel } : {} },
-      { $project: { _id: 0, 'orders.date': 1, 'orders.total': 1 } },
-    ])
-    .toArray();
+      .collection('restaurant')
+      .aggregate([
+        { $match: { id: idRestaurant } },
+        { $unwind: '$orders' },
+        { $match: { 'orders.channel': channel || { $exists: true } } },
+        { $project: { _id: 0, 'orders.date': 1, 'orders.total': 1 } },
+      ])
+      .toArray();
 
     if (timeBegin && timeEnd) {
       const beginDate = new Date(timeBegin);
@@ -524,6 +524,6 @@ export class KpiService extends DB {
 
     const average = orders.length > 0 ? totalAmount / orders.length : 0;
 
-    return {"Average value":average, "Nbr orders":orders.length};
+    return { 'Average value': average, 'Nbr orders': orders.length };
   }
 }
