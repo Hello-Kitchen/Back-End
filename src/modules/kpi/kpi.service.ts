@@ -533,17 +533,19 @@ export class KpiService extends DB {
    * @param forecast - The forecast for the dishes
    * @returns The forecast for the ingredients
    */
-  async ingredientsForecast(idRestaurant: number, forecast: { food: number; forecast: number }[]) {
+  async ingredientsForecast(
+    idRestaurant: number,
+    forecast: { food: number; forecast: number }[],
+  ) {
     const db = this.getDbConnection();
-    const foodIds = forecast.map(f => f.food);
+    const foodIds = forecast.map((f) => f.food);
 
-    const restaurant = await db.collection('restaurant').findOne(
-      { id: idRestaurant },
-      { projection: { _id: 0, foods: 1 } }
-    );
+    const restaurant = await db
+      .collection('restaurant')
+      .findOne({ id: idRestaurant }, { projection: { _id: 0, foods: 1 } });
     if (!restaurant || !restaurant.foods) return {};
 
-    const forecastMap = new Map(forecast.map(f => [f.food, f.forecast]));
+    const forecastMap = new Map(forecast.map((f) => [f.food, f.forecast]));
 
     const ingredientCount: Record<number, number> = {};
 
@@ -552,10 +554,14 @@ export class KpiService extends DB {
       .forEach((food: any) => {
         const forecastQty = forecastMap.get(food.id) || 0;
         if (food.ingredients && Array.isArray(food.ingredients)) {
-          food.ingredients.forEach((ingredient: { id: number, quantity: number }) => {
-            if (!ingredientCount[ingredient.id]) ingredientCount[ingredient.id] = 0;
-            ingredientCount[ingredient.id] += (ingredient.quantity || 1) * forecastQty;
-          });
+          food.ingredients.forEach(
+            (ingredient: { id: number; quantity: number }) => {
+              if (!ingredientCount[ingredient.id])
+                ingredientCount[ingredient.id] = 0;
+              ingredientCount[ingredient.id] +=
+                (ingredient.quantity || 1) * forecastQty;
+            },
+          );
         }
       });
 

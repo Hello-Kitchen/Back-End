@@ -311,8 +311,11 @@ export class KpiController {
   ) {
     try {
       const forecast = await this.kpiService.dishForecast(idRestaurant, date);
-      const ingredients = await this.kpiService.ingredientsForecast(idRestaurant, forecast);
-      return ingredients
+      const ingredients = await this.kpiService.ingredientsForecast(
+        idRestaurant,
+        forecast,
+      );
+      return ingredients;
     } catch (error) {
       if (
         error instanceof NotFoundException ||
