@@ -258,4 +258,37 @@ export class KpiController {
       throw new InternalServerErrorException('Server error');
     }
   }
+
+  /**
+   * Get the average basket value for a specific period
+   * @param idRestaurant - The restaurant identifier (must be positive)
+   * @param timeBegin - Start date of the analysis period (optional)
+   * @param timeEnd - End date of the analysis period (optional)
+   * @param channel - The channel of the orders (optional)
+   * @returns The average basket value for the specified period and channel and the number of orders
+   * @throws {BadRequestException} When input parameters are invalid
+   * @throws {InternalServerErrorException} When server encounters an error
+   * @example
+   * GET /api/1/kpi/averageBasket?timeBegin=2024-01-01&timeEnd=2024-01-31&channel=togo
+   * // returns {"Average value": 23,"Nbr orders": 26}
+   */
+  @Get('averageBasket')
+  async kpiAverageBasket(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Query('timeBegin', DatePipe) timeBegin: string,
+    @Query('timeEnd', DatePipe) timeEnd: string,
+    @Query('channel', ChannelPipe) channel: string,
+  ) {
+    try {
+      return this.kpiService.averageBasket(
+        idRestaurant,
+        timeBegin,
+        timeEnd,
+        channel,
+      );
+    } catch (error) {
+      if (error instanceof BadRequestException) throw error;
+      throw new InternalServerErrorException('Server error');
+    }
+  }
 }

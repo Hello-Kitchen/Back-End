@@ -15,6 +15,7 @@ describe('KpiController', () => {
     popularDish: jest.fn(),
     clientsCount: jest.fn(),
     dishForecast: jest.fn(),
+    averageBasket: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -486,6 +487,67 @@ describe('KpiController', () => {
       }
       await expect(
         controller.kpiDishForecast(mockIdRestaurant),
+      ).rejects.toThrow('Server error');
+    });
+  });
+
+  describe('kpiAverageBasketValue', () => {
+    const mockIdRestaurant = 1;
+    const mockTimeBegin = '2024-03-01';
+    const mockTimeEnd = '2024-03-31';
+    const mockChannel = 'togo';
+
+    beforeEach(() => {
+      mockKpiService.averageBasket = jest.fn();
+    });
+
+    it('should return the average value for the specified period', async () => {
+      const mockResult = { 'Average value': 23, 'Nbr orders': 26 };
+      mockKpiService.averageBasket.mockResolvedValue(mockResult);
+
+      const result = await controller.kpiAverageBasket(
+        mockIdRestaurant,
+        mockTimeBegin,
+        mockTimeEnd,
+        mockChannel,
+      );
+
+      expect(result).toEqual(mockResult);
+      expect(service.averageBasket).toHaveBeenCalledWith(
+        mockIdRestaurant,
+        mockTimeBegin,
+        mockTimeEnd,
+        mockChannel,
+      );
+    });
+
+    it('should handle BadRequestException from the service', async () => {
+      mockKpiService.averageBasket.mockImplementation(() => {
+        throw new Error('BadRequestException');
+      });
+
+      await expect(
+        controller.kpiAverageBasket(
+          mockIdRestaurant,
+          mockTimeBegin,
+          mockTimeEnd,
+          mockChannel,
+        ),
+      ).rejects.toThrow('Server error');
+    });
+
+    it('should handle server errors', async () => {
+      mockKpiService.averageBasket.mockImplementation(() => {
+        throw new Error('Database error');
+      });
+
+      await expect(
+        controller.kpiAverageBasket(
+          mockIdRestaurant,
+          mockTimeBegin,
+          mockTimeEnd,
+          mockChannel,
+        ),
       ).rejects.toThrow('Server error');
     });
   });
