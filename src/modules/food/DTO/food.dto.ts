@@ -6,6 +6,16 @@ import {
   IsOptional,
 } from 'class-validator';
 
+export class IngredientDto {
+  @IsNumber()
+  @IsNotEmpty()
+  id_ingredient: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  quantity: number;
+}
+
 export class FoodDto {
   @IsString()
   @IsNotEmpty()
@@ -22,7 +32,7 @@ export class FoodDto {
   @IsOptional()
   @IsArray()
   @IsNumber({}, { each: true })
-  ingredients?: number[];
+  ingredients?: IngredientDto[];
 
   @IsOptional()
   @IsArray()

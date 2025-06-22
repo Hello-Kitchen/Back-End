@@ -102,9 +102,13 @@ export class FoodService extends DB {
               ingredients: {
                 $map: {
                   input: '$foods.ingredients',
-                  as: 'ingredientId',
+                  as: 'ingredient',
                   in: {
-                    $arrayElemAt: ['$ingredients.name', '$$ingredientId'],
+                    id_ingredient: '$$ingredient.id_ingredient',
+                    quantity: '$$ingredient.quantity',
+                    name: {
+                      $arrayElemAt: ['$ingredients.name', '$$ingredient.id_ingredient'] // Assuming 'ingredients' is the array of ingredients
+                    }
                   },
                 },
               },

@@ -98,7 +98,7 @@ export class FoodController {
         if (!food) {
           throw new NotFoundException();
         }
-        return food[0].food; // Assuming food.foods is of type any[]
+        return food[0].food; 
       } else {
         const food = await this.foodService.findById(
           Number(idRestaurant),
@@ -107,7 +107,7 @@ export class FoodController {
         if (!food) {
           throw new NotFoundException();
         }
-        return food.foods[0]; // Assuming food.foods is of type any[]
+        return food.foods[0]; 
       }
     } catch (error) {
       if (error instanceof HttpException) {
