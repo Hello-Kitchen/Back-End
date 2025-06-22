@@ -117,7 +117,11 @@ describe('FoodController', () => {
       name: 'New Pizza',
       price: 12,
       id_category: 1,
-      ingredients: [1, 2, 3],
+      ingredients: [
+        { id_ingredient: 1, quantity: 1 },
+        { id_ingredient: 2, quantity: 2 },
+        { id_ingredient: 3, quantity: 3 },
+      ],
       details: [1, 2],
     };
 
@@ -155,7 +159,11 @@ describe('FoodController', () => {
       name: 'Updated Pizza',
       price: 15,
       id_category: 1,
-      ingredients: [1, 2, 3],
+      ingredients: [
+        { id_ingredient: 1, quantity: 1 },
+        { id_ingredient: 2, quantity: 2 },
+        { id_ingredient: 3, quantity: 3 },
+      ],
       details: [1, 2],
     };
 
