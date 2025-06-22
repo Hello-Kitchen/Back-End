@@ -107,8 +107,11 @@ export class FoodService extends DB {
                     id_ingredient: '$$ingredient.id_ingredient',
                     quantity: '$$ingredient.quantity',
                     name: {
-                      $arrayElemAt: ['$ingredients.name', '$$ingredient.id_ingredient'] // Assuming 'ingredients' is the array of ingredients
-                    }
+                      $arrayElemAt: [
+                        '$ingredients.name',
+                        '$$ingredient.id_ingredient',
+                      ], // Assuming 'ingredients' is the array of ingredients
+                    },
                   },
                 },
               },
