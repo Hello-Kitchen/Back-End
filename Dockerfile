@@ -14,6 +14,6 @@ RUN npm install --omit=dev
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/docs ./docs
-COPY ./dist/docs ./docs
+COPY --from=builder /app/docs ./docs
 EXPOSE 3000
 CMD ["npm", "run", "start:prod"]
