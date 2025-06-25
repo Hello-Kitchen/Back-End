@@ -1,4 +1,5 @@
-# Pour production
+version: "3.8"
+
 services:
   backend:
     image: julesgresset/hellokitchen-backend:${BACKEND_IMAGE_TAG}
