@@ -88,7 +88,7 @@ jobs:
             echo "DB_NAME=\"${{ secrets.BACKEND_DB_NAME }}\"" > ${{ secrets.VPS_TARGET }}.env
             echo "DB_URL=\"${{ secrets.BACKEND_DB_URL }}\"" >> ${{ secrets.VPS_TARGET }}.env
             echo "SALT_HASH=\"${{ secrets.BACKEND_SALT }}\"" >> ${{ secrets.VPS_TARGET }}.env
-            echo "BACKEND_IMAGE_TAG=${{ env.IMAGE_TAG }}" > ${{ secrets.VPS_TARGET }}.env
+            echo "BACKEND_IMAGE_TAG=${{ env.IMAGE_TAG }}" >> ${{ secrets.VPS_TARGET }}.env
             sleep 2
             echo "Pull and restart Backend container"
             cd ${{ secrets.VPS_TARGET }}
