@@ -1,12 +1,11 @@
 version: "3.8"
+
 services:
   backend:
+    image: julesgresset/hellokitchen-backend:${BACKEND_IMAGE_TAG}
     container_name: backend
-    build: .
     ports:
       - "3000:3000"
     restart: always
-    volumes:
-      - .:/app
-      - /app/node_modules
-    command: npm run start:prod
+    env_file:
+      - .env

@@ -37,9 +37,8 @@ async function bootstrap() {
   );
 
   // Loading Swagger file
-  const swaggerDocument = JSON.parse(
-    fs.readFileSync(path.join('docs', 'swagger.json'), 'utf-8'),
-  );
+  const swaggerPath = path.resolve(__dirname, '..', 'docs', 'swagger.json');
+  const swaggerDocument = JSON.parse(fs.readFileSync(swaggerPath, 'utf-8'));
 
   // Served documentation with SwaggerUI
   app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
