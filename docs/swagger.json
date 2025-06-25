@@ -7,11 +7,11 @@
   },
   "servers": [
     {
-      "url": "http://vps-8a0c228a.vps.ovh.ca:3000/api",
+      "url": "https://api.ca.hellokitchen.fr",
       "description": "Canadian VPS"
     },
     {
-      "url": "http://vps-e98b74b5.vps.ovh.net:3000/api",
+      "url": "http://api.hellokitchen.fr",
       "description": "UK VPS"
     },
     {
