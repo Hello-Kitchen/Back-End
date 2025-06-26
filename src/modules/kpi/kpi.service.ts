@@ -555,10 +555,10 @@ export class KpiService extends DB {
         const forecastQty = forecastMap.get(food.id) || 0;
         if (food.ingredients && Array.isArray(food.ingredients)) {
           food.ingredients.forEach(
-            (ingredient: { id: number; quantity: number }) => {
-              if (!ingredientCount[ingredient.id])
-                ingredientCount[ingredient.id] = 0;
-              ingredientCount[ingredient.id] +=
+            (ingredient: { id_ingredient: number; quantity: number }) => {
+              if (!ingredientCount[ingredient.id_ingredient])
+                ingredientCount[ingredient.id_ingredient] = 0;
+              ingredientCount[ingredient.id_ingredient] +=
                 (ingredient.quantity || 1) * forecastQty;
             },
           );
