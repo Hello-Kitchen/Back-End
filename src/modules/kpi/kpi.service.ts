@@ -536,35 +536,79 @@ export class KpiService extends DB {
   async ingredientsForecast(
     idRestaurant: number,
     forecast: { food: number; forecast: number }[],
+    useCase: string = undefined,
   ) {
     const db = this.getDbConnection();
     const foodIds = forecast.map((f) => f.food);
 
     const restaurant = await db
       .collection('restaurant')
-      .findOne({ id: idRestaurant }, { projection: { _id: 0, foods: 1 } });
-    if (!restaurant || !restaurant.foods) return {};
+      .findOne(
+        { id: idRestaurant },
+        { projection: { _id: 0, foods: 1, ingredients: 1 } },
+      );
+    if (!restaurant || !restaurant.foods) return [];
 
     const forecastMap = new Map(forecast.map((f) => [f.food, f.forecast]));
 
-    const ingredientCount: Record<number, number> = {};
+    if (useCase === 'POS') {
+      const ingredientCount: Record<
+        number,
+        { id: number; name: string; quantity: number; unit: string }
+      > = {};
 
-    restaurant.foods
-      .filter((food: any) => foodIds.includes(food.id))
-      .forEach((food: any) => {
-        const forecastQty = forecastMap.get(food.id) || 0;
-        if (food.ingredients && Array.isArray(food.ingredients)) {
-          food.ingredients.forEach(
-            (ingredient: { id_ingredient: number; quantity: number }) => {
-              if (!ingredientCount[ingredient.id_ingredient])
-                ingredientCount[ingredient.id_ingredient] = 0;
-              ingredientCount[ingredient.id_ingredient] +=
-                (ingredient.quantity || 1) * forecastQty;
-            },
-          );
-        }
-      });
+      restaurant.foods
+        .filter((food: any) => foodIds.includes(food.id))
+        .forEach((food: any) => {
+          const forecastQty = forecastMap.get(food.id) || 0;
+          if (Array.isArray(food.ingredients)) {
+            food.ingredients.forEach(
+              (ingredient: { id_ingredient: number; quantity: number }) => {
+                const id = ingredient.id_ingredient;
+                const base =
+                  restaurant.ingredients?.find((ing: any) => ing.id === id) ||
+                  {};
 
-    return ingredientCount;
+                if (!ingredientCount[id]) {
+                  ingredientCount[id] = {
+                    id,
+                    name: base.name || '',
+                    quantity: 0,
+                    unit: base.unit || '',
+                  };
+                }
+                ingredientCount[id].quantity +=
+                  (ingredient.quantity || 1) * forecastQty;
+              },
+            );
+          }
+        });
+
+      return Object.values(ingredientCount);
+    } else {
+      const ingredientCount: Record<number, number> = {};
+
+      restaurant.foods
+        .filter((food: any) => foodIds.includes(food.id))
+        .forEach((food: any) => {
+          const forecastQty = forecastMap.get(food.id) || 0;
+          if (Array.isArray(food.ingredients)) {
+            food.ingredients.forEach(
+              (ingredient: { id_ingredient: number; quantity: number }) => {
+                const id = ingredient.id_ingredient;
+                if (!ingredientCount[id]) {
+                  ingredientCount[id] = 0;
+                }
+                ingredientCount[id] += (ingredient.quantity || 1) * forecastQty;
+              },
+            );
+          }
+        });
+
+      return Object.entries(ingredientCount).map(([id, quantity]) => ({
+        id: parseInt(id, 10),
+        quantity,
+      }));
+    }
   }
 }
