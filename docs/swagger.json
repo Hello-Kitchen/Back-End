@@ -3339,6 +3339,20 @@
               "type": "string",
               "format": "date-time"
             }
+          },
+          {
+            "name": "useCase",
+            "in": "query",
+            "description": "specific return for POS or KDS",
+            "required": false,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "POS"
+              ]
+            }
           }
         ],
         "responses": {
@@ -3347,38 +3361,54 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "ingredients": {
-                      "type": "array",
-                      "description": "List of ingredients and required quantities",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "integer",
-                            "description": "Ingredient ID",
-                            "example": 12
-                          },
-                          "name": {
-                            "type": "string",
-                            "description": "Ingredient name",
-                            "example": "Steak"
-                          },
-                          "quantity": {
-                            "type": "number",
-                            "description": "Total quantity required",
-                            "example": 42
-                          },
-                          "unit": {
-                            "type": "string",
-                            "description": "Ingredient unit",
-                            "example": "Slice"
-                          }
+                  "oneOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                        "type": "integer",
+                        "description": "Ingredient ID",
+                        "example": 12
+                        },
+                        "name": {
+                        "type": "string",
+                        "description": "Ingredient name",
+                        "example": "Steak"
+                        },
+                        "quantity": {
+                        "type": "number",
+                        "description": "Total quantity required",
+                        "example": 42
+                        },
+                        "unit": {
+                        "type": "string",
+                        "description": "Ingredient unit",
+                        "example": "Slice"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                        "type": "integer",
+                        "description": "Ingredient ID",
+                        "example": 12
+                        },
+                        "quantity": {
+                        "type": "number",
+                        "description": "Total quantity required",
+                        "example": 42
                         }
                       }
                     }
                   }
+                  ]
                 }
               }
             }
