@@ -15,6 +15,7 @@ import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { BreakdownPipe } from './pipe/breakdown.pipe';
 import { ChannelPipe } from './pipe/channel.pipe';
 import { ServedPipe } from './pipe/served.pipe';
+import { UseCasePipe } from './pipe/useCase.pipe';
 
 @Controller('api/:idRestaurant/kpi')
 @UseGuards(JwtAuthGuard)
@@ -289,6 +290,49 @@ export class KpiController {
     } catch (error) {
       if (error instanceof BadRequestException) throw error;
       throw new InternalServerErrorException('Server error');
+    }
+  }
+
+  /**
+   * Get the KPIs for a specific use case
+   * @param idRestaurant - The restaurant identifier (must be positive)
+   * @param useCase - The use case (POS or KDS)
+   * @returns The KPIs for the specified use case
+   * @throws {BadRequestException} When input parameters are invalid
+   * @throws {InternalServerErrorException} When server encounters an error
+   * @example
+   * GET /api/1/kpi/displayKpi?useCase=POS
+   * // returns { ordersInProgress: 100, clientsCount: 100, averageWaitingTime1h: 100, averageWaitingTime15m: 100, averagePrepTime1h: 100, averagePrepTime15m: 100 }
+   */
+  @Get('displayKpi')
+  async kpiDisplayKpi(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Query('useCase', UseCasePipe) useCase: string,
+  ) {
+    let today = new Date().toISOString();
+    let oneHourAgo = new Date(new Date().getTime() - 1 * 60 * 60 * 1000).toISOString();
+    let fifteenMinutesAgo = new Date(new Date().getTime() - 15 * 60 * 1000).toISOString();
+    if (useCase === "POS") {
+      let res = {
+        ordersInProgress: await this.kpiService.clientsCount(idRestaurant, today.split('T')[0], today.split('T')[0], undefined, false), 
+        clientsCount: await this.kpiService.clientsCount(idRestaurant, today.split('T')[0], today.split('T')[0], "Sur place", false), 
+        averageWaitingTime1h: await this.kpiService.averageAllDishesTime(idRestaurant, oneHourAgo, today, true), 
+        averageWaitingTime15m: await this.kpiService.averageAllDishesTime(idRestaurant, fifteenMinutesAgo, today, true), 
+        averagePrepTime1h: await this.kpiService.averageTimeOrders(idRestaurant, oneHourAgo, today, undefined), 
+        averagePrepTime15m: await this.kpiService.averageTimeOrders(idRestaurant, fifteenMinutesAgo, today, undefined), 
+      };
+      return res;
+    }
+    else {
+      let res = {
+        last15mOrders: await this.kpiService.clientsCount(idRestaurant, fifteenMinutesAgo, today, undefined, false),
+        clientsCount: await this.kpiService.clientsCount(idRestaurant, today.split('T')[0], today.split('T')[0], "Sur place", false),
+        averageWaitingTime1h: await this.kpiService.averageAllDishesTime(idRestaurant, oneHourAgo, today, true), 
+        averageWaitingTime15m: await this.kpiService.averageAllDishesTime(idRestaurant, fifteenMinutesAgo, today, true), 
+        averagePrepTime1h: await this.kpiService.averageTimeOrders(idRestaurant, oneHourAgo, today, undefined), 
+        averagePrepTime15m: await this.kpiService.averageTimeOrders(idRestaurant, fifteenMinutesAgo, today, undefined), 
+      };
+      return res;
     }
   }
 }
