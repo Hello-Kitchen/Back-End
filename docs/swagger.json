@@ -3312,6 +3312,96 @@
           }
         ]
       }
+    },
+    "/{restaurant_id}/kpi/ingredientForecast": {
+      "get": {
+        "tags": [
+          "KPI"
+        ],
+        "summary": "Ingredient needs forecast for a day",
+        "description": "Returns, for each ingredient, the total quantity required based on the sales forecast for each dish for the target day.",
+        "parameters": [
+          {
+            "name": "idRestaurant",
+            "in": "path",
+            "required": true,
+            "description": "Restaurant ID",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "required": false,
+            "description": "Target date in ISO format (e.g., 2025-05-28T20:58:53.621Z)",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ingredient needs forecast",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ingredients": {
+                      "type": "array",
+                      "description": "List of ingredients and required quantities",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "Ingredient ID",
+                            "example": 12
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Ingredient name",
+                            "example": "Steak"
+                          },
+                          "quantity": {
+                            "type": "number",
+                            "description": "Total quantity required",
+                            "example": 42
+                          },
+                          "unit": {
+                            "type": "string",
+                            "description": "Ingredient unit",
+                            "example": "Slice"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameters (restaurant ID or date)"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "No forecast found"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
