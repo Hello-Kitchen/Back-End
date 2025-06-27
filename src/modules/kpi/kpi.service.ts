@@ -137,10 +137,7 @@ export class KpiService extends DB {
       });
     }
 
-    console.log(breakdown);
-
     if (breakdown) {
-      console.log('breakdown');
       result.map((item) => {
         const orderDate = new Date(item.orders.date);
 
@@ -152,7 +149,14 @@ export class KpiService extends DB {
       });
 
       if (preparationTimes.length === 0) {
-        return null;
+        return {
+          time: {
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+          },
+          nbrOrders: 0,
+        };
       }
 
       const averageTime =
@@ -188,8 +192,6 @@ export class KpiService extends DB {
           dishMap.get(food.food).push(minutes);
         });
       });
-
-      console.log(dishMap);
 
       const resultArray = [];
       for (const [food, times] of dishMap.entries()) {
