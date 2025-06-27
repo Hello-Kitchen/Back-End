@@ -291,4 +291,52 @@ export class KpiController {
       throw new InternalServerErrorException('Server error');
     }
   }
+
+  /**
+   * Compte le nombre de commandes dans un intervalle donné, avec possibilité de regroupement par tranche de minutes.
+   * @param idRestaurant - L'identifiant du restaurant (doit être positif)
+   * @param timeBegin - Date/heure de début de l'intervalle (obligatoire)
+   * @param timeEnd - Date/heure de fin de l'intervalle (obligatoire)
+   * @param breakdown - (optionnel) Durée de la tranche en minutes pour le regroupement
+   * @returns Soit le nombre total de commandes, soit un objet groupé par tranche de temps
+   * @throws {BadRequestException} Si les paramètres sont invalides
+   * @throws {InternalServerErrorException} En cas d'erreur serveur
+   * @example
+   * GET /api/1/kpi/ordersCount?timeBegin=2024-01-01T00:00:00Z&timeEnd=2024-01-01T01:00:00Z&breakdown=15
+   * // retourne { "00:00": 5, "00:15": 8, ... }
+   * GET /api/1/kpi/ordersCount?timeBegin=2024-01-01T00:00:00Z&timeEnd=2024-01-01T01:00:00Z
+   * // retourne 23
+   */
+  @Get('ordersCount')
+  async kpiOrdersCount(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Query('timeBegin', DatePipe) timeBegin: string,
+    @Query('timeEnd', DatePipe) timeEnd: string,
+    @Query('breakdown') breakdown?: string,
+  ) {
+    try {
+      if (breakdown) {
+        // On attend un nombre entier positif pour breakdown (minutes)
+        const breakdownMinutes = parseInt(breakdown, 10);
+        if (isNaN(breakdownMinutes) || breakdownMinutes <= 0) {
+          throw new BadRequestException('Le paramètre breakdown doit être un entier positif (minutes)');
+        }
+        return await this.kpiService.ordersCountGrouped(
+          idRestaurant,
+          timeBegin,
+          timeEnd,
+          breakdownMinutes,
+        );
+      } else {
+        return await this.kpiService.ordersCount(
+          idRestaurant,
+          timeBegin,
+          timeEnd,
+        );
+      }
+    } catch (error) {
+      if (error instanceof BadRequestException) throw error;
+      throw new InternalServerErrorException('Erreur serveur');
+    }
+  }
 }

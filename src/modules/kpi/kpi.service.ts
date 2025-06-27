@@ -526,4 +526,98 @@ export class KpiService extends DB {
 
     return { 'Average value': average, 'Nbr orders': orders.length };
   }
+
+  /**
+   * Retourne le nombre total de commandes pour un restaurant dans un intervalle donné.
+   * @param idRestaurant - L'identifiant du restaurant
+   * @param timeBegin - Date/heure de début de l'intervalle (obligatoire)
+   * @param timeEnd - Date/heure de fin de l'intervalle (obligatoire)
+   * @returns Le nombre total de commandes
+   */
+  async ordersCount(
+    idRestaurant: number,
+    timeBegin: string,
+    timeEnd: string,
+  ): Promise<number> {
+    const db = this.getDbConnection();
+    let orders = await db
+      .collection('restaurant')
+      .aggregate([
+        { $match: { id: idRestaurant } },
+        { $unwind: '$orders' },
+        {
+          $project: {
+            'orders.date': 1,
+            _id: 0,
+          },
+        },
+      ])
+      .toArray();
+
+    if (timeBegin && timeEnd) {
+      const beginDate = new Date(timeBegin);
+      const endDate = new Date(timeEnd);
+      orders = orders.filter((item) => {
+        const orderDate = new Date(item.orders.date);
+        return orderDate >= beginDate && orderDate <= endDate;
+      });
+    }
+    return orders.length;
+  }
+
+  /**
+   * Retourne le nombre de commandes groupées par tranche de minutes à partir de timeBegin jusqu'à timeEnd.
+   * @param idRestaurant - L'identifiant du restaurant
+   * @param timeBegin - Date/heure de début de l'intervalle (obligatoire)
+   * @param timeEnd - Date/heure de fin de l'intervalle (obligatoire)
+   * @param breakdownMinutes - Durée de la tranche en minutes
+   * @returns Un objet dont les clés sont les heures de début de tranche (HH:mm) et les valeurs le nombre de commandes dans la tranche
+   */
+  async ordersCountGrouped(
+    idRestaurant: number,
+    timeBegin: string,
+    timeEnd: string,
+    breakdownMinutes: number,
+  ): Promise<Record<string, number>> {
+    const db = this.getDbConnection();
+    let orders = await db
+      .collection('restaurant')
+      .aggregate([
+        { $match: { id: idRestaurant } },
+        { $unwind: '$orders' },
+        {
+          $project: {
+            'orders.date': 1,
+            _id: 0,
+          },
+        },
+      ])
+      .toArray();
+
+    const beginDate = new Date(timeBegin);
+    const endDate = new Date(timeEnd);
+    orders = orders.filter((item) => {
+      const orderDate = new Date(item.orders.date);
+      return orderDate >= beginDate && orderDate <= endDate;
+    });
+
+    // Préparer les tranches
+    const result: Record<string, number> = {};
+    let current = new Date(beginDate);
+    while (current < endDate) {
+      const next = new Date(current.getTime() + breakdownMinutes * 60000);
+      // Format HH:mm
+      const label = current.toISOString().substr(11, 5);
+      result[label] = 0;
+      // Compter les commandes dans la tranche
+      orders.forEach((item) => {
+        const orderDate = new Date(item.orders.date);
+        if (orderDate >= current && orderDate < next) {
+          result[label]++;
+        }
+      });
+      current = next;
+    }
+    return result;
+  }
 }
