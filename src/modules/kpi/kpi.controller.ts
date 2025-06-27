@@ -312,31 +312,38 @@ export class KpiController {
     @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
     @Query('timeBegin', DatePipe) timeBegin: string,
     @Query('timeEnd', DatePipe) timeEnd: string,
-    @Query('breakdown') breakdown?: string,
+    @Query('breakdown') breakdown?: number,
   ) {
-    try {
-      if (breakdown) {
-        // On attend un nombre entier positif pour breakdown (minutes)
-        const breakdownMinutes = parseInt(breakdown, 10);
-        if (isNaN(breakdownMinutes) || breakdownMinutes <= 0) {
-          throw new BadRequestException('Le paramètre breakdown doit être un entier positif (minutes)');
-        }
-        return await this.kpiService.ordersCountGrouped(
+    if (breakdown) {
+      const slots: { timeBegin: string; timeEnd: string }[] = [];
+      let current = new Date(timeBegin);
+      const end = new Date(timeEnd);
+      const orders = {};
+
+      while (current < end) {
+        const slotStart = new Date(current);
+        const slotEnd = new Date(current.getTime() + breakdown * 60000);
+        slots.push({
+          timeBegin: slotStart.toISOString(),
+          timeEnd: (slotEnd < end ? slotEnd : end).toISOString(),
+        });
+        current = slotEnd;
+      }
+      for (const slot of slots) {
+        const date = new Date(slot.timeBegin);
+        const hours = date.getUTCHours().toString().padStart(2, '0');
+        const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+        orders[`${hours}:${minutes}`] = await this.kpiService.clientsCount(
           idRestaurant,
-          timeBegin,
-          timeEnd,
-          breakdownMinutes,
-        );
-      } else {
-        return await this.kpiService.ordersCount(
-          idRestaurant,
-          timeBegin,
-          timeEnd,
+          slot.timeBegin,
+          slot.timeEnd,
+          undefined,
+          undefined
         );
       }
-    } catch (error) {
-      if (error instanceof BadRequestException) throw error;
-      throw new InternalServerErrorException('Erreur serveur');
+      return orders;
+    } else {
+      return this.kpiService.clientsCount(idRestaurant, timeBegin, timeEnd, undefined, undefined);
     }
   }
 }
