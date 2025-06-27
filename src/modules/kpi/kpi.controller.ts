@@ -15,6 +15,7 @@ import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { BreakdownPipe } from './pipe/breakdown.pipe';
 import { ChannelPipe } from './pipe/channel.pipe';
 import { ServedPipe } from './pipe/served.pipe';
+import { UseCasePipe } from './pipe/useCase.pipe';
 
 @Controller('api/:idRestaurant/kpi')
 @UseGuards(JwtAuthGuard)
@@ -308,12 +309,14 @@ export class KpiController {
   async kpiIngredientForecast(
     @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
     @Query('date', DatePipe) date?: string,
+    @Query('useCase', UseCasePipe) useCase?: string,
   ) {
     try {
       const forecast = await this.kpiService.dishForecast(idRestaurant, date);
       const ingredients = await this.kpiService.ingredientsForecast(
         idRestaurant,
         forecast,
+        useCase,
       );
       return ingredients;
     } catch (error) {
