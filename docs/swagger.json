@@ -3432,6 +3432,103 @@
           }
         ]
       }
+    },
+    "/{restaurant_id}/kpi/displayKpi": {
+      "summary": "KPI endpoints",
+      "get": {
+        "tags": [
+          "KPI"
+        ],
+        "summary": "Récupérer les KPIs pour un cas d'usage spécifique (POS ou KDS)",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID du restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "useCase",
+            "in": "query",
+            "description": "Cas d'usage (POS ou KDS)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["POS", "KDS"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "KPIs pour le cas d'usage demandé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "ordersInProgress": { "type": "integer", "description": "Nombre de commandes en cours" },
+                        "clientsCount": { "type": "integer", "description": "Nombre de clients sur place aujourd'hui" },
+                        "averageWaitingTime1h": { "type": "object", "description": "Temps d'attente moyen sur 1h", "properties": { "hours": { "type": "integer" }, "minutes": { "type": "integer" }, "seconds": { "type": "integer" } } },
+                        "averageWaitingTime15m": { "type": "object", "description": "Temps d'attente moyen sur 15min", "properties": { "hours": { "type": "integer" }, "minutes": { "type": "integer" }, "seconds": { "type": "integer" } } },
+                        "averagePrepTime1h": { "type": "object", "description": "Temps de préparation moyen sur 1h", "properties": { "hours": { "type": "integer" }, "minutes": { "type": "integer" }, "seconds": { "type": "integer" } } },
+                        "averagePrepTime15m": { "type": "object", "description": "Temps de préparation moyen sur 15min", "properties": { "hours": { "type": "integer" }, "minutes": { "type": "integer" }, "seconds": { "type": "integer" } } }
+                      },
+                      "example": {
+                        "ordersInProgress": 100,
+                        "clientsCount": 100,
+                        "averageWaitingTime1h": { "hours": 0, "minutes": 10, "seconds": 0 },
+                        "averageWaitingTime15m": { "hours": 0, "minutes": 8, "seconds": 30 },
+                        "averagePrepTime1h": { "hours": 0, "minutes": 12, "seconds": 0 },
+                        "averagePrepTime15m": { "hours": 0, "minutes": 9, "seconds": 45 }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "last15mOrders": { "type": "integer", "description": "Nombre de commandes sur les 15 dernières minutes" },
+                        "clientsCount": { "type": "integer", "description": "Nombre de clients sur place aujourd'hui" },
+                        "averageWaitingTime1h": { "type": "object", "description": "Temps d'attente moyen sur 1h", "properties": { "hours": { "type": "integer" }, "minutes": { "type": "integer" }, "seconds": { "type": "integer" } } },
+                        "averageWaitingTime15m": { "type": "object", "description": "Temps d'attente moyen sur 15min", "properties": { "hours": { "type": "integer" }, "minutes": { "type": "integer" }, "seconds": { "type": "integer" } } },
+                        "averagePrepTime1h": { "type": "object", "description": "Temps de préparation moyen sur 1h", "properties": { "hours": { "type": "integer" }, "minutes": { "type": "integer" }, "seconds": { "type": "integer" } } },
+                        "averagePrepTime15m": { "type": "object", "description": "Temps de préparation moyen sur 15min", "properties": { "hours": { "type": "integer" }, "minutes": { "type": "integer" }, "seconds": { "type": "integer" } } }
+                      },
+                      "example": {
+                        "last15mOrders": 20,
+                        "clientsCount": 100,
+                        "averageWaitingTime1h": { "hours": 0, "minutes": 10, "seconds": 0 },
+                        "averageWaitingTime15m": { "hours": 0, "minutes": 8, "seconds": 30 },
+                        "averagePrepTime1h": { "hours": 0, "minutes": 12, "seconds": 0 },
+                        "averagePrepTime15m": { "hours": 0, "minutes": 9, "seconds": 45 }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Paramètres invalides"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {

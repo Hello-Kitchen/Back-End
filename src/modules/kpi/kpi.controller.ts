@@ -328,4 +328,116 @@ export class KpiController {
       throw new InternalServerErrorException('Server error');
     }
   }
+
+  /**
+   * Get the KPIs for a specific use case
+   * @param idRestaurant - The restaurant identifier (must be positive)
+   * @param useCase - The use case (POS or KDS)
+   * @returns The KPIs for the specified use case
+   * @throws {BadRequestException} When input parameters are invalid
+   * @throws {InternalServerErrorException} When server encounters an error
+   * @example
+   * GET /api/1/kpi/displayKpi?useCase=POS
+   * // returns { ordersInProgress: 100, clientsCount: 100, averageWaitingTime1h: 100, averageWaitingTime15m: 100, averagePrepTime1h: 100, averagePrepTime15m: 100 }
+   */
+  @Get('displayKpi')
+  async kpiDisplayKpi(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Query('useCase', UseCasePipe) useCase: string,
+  ) {
+    const today = new Date().toISOString();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const oneHourAgo = new Date(
+      new Date().getTime() - 1 * 60 * 60 * 1000,
+    ).toISOString();
+    const fifteenMinutesAgo = new Date(
+      new Date().getTime() - 15 * 60 * 1000,
+    ).toISOString();
+    if (useCase === 'POS') {
+      const res = {
+        ordersInProgress: await this.kpiService.clientsCount(
+          idRestaurant,
+          today.split('T')[0],
+          tomorrow.toISOString().split('T')[0],
+          undefined,
+          undefined,
+        ),
+        clientsCount: await this.kpiService.clientsCount(
+          idRestaurant,
+          today.split('T')[0],
+          tomorrow.toISOString().split('T')[0],
+          'Sur place',
+          undefined,
+        ),
+        averagePrepTime1h: await this.kpiService.averageAllDishesTime(
+          idRestaurant,
+          oneHourAgo,
+          today,
+          true,
+        ),
+        averagePrepTime15m: await this.kpiService.averageAllDishesTime(
+          idRestaurant,
+          fifteenMinutesAgo,
+          today,
+          true,
+        ),
+        averageWaitingTime1h: await this.kpiService.averageTimeOrders(
+          idRestaurant,
+          oneHourAgo,
+          today,
+          undefined,
+        ),
+        averageWaitingTime15m: await this.kpiService.averageTimeOrders(
+          idRestaurant,
+          fifteenMinutesAgo,
+          today,
+          undefined,
+        ),
+      };
+      return res;
+    } else {
+      const res = {
+        last15mOrders: await this.kpiService.clientsCount(
+          idRestaurant,
+          fifteenMinutesAgo,
+          today,
+          undefined,
+          undefined,
+        ),
+        clientsCount: await this.kpiService.clientsCount(
+          idRestaurant,
+          today.split('T')[0],
+          tomorrow.toISOString().split('T')[0],
+          'Sur place',
+          undefined,
+        ),
+        averagePrepTime1h: await this.kpiService.averageAllDishesTime(
+          idRestaurant,
+          oneHourAgo,
+          today,
+          true,
+        ),
+        averagePrepTime15m: await this.kpiService.averageAllDishesTime(
+          idRestaurant,
+          fifteenMinutesAgo,
+          today,
+          true,
+        ),
+        averageWaitingTime1h: await this.kpiService.averageTimeOrders(
+          idRestaurant,
+          oneHourAgo,
+          today,
+          undefined,
+        ),
+        averageWaitingTime15m: await this.kpiService.averageTimeOrders(
+          idRestaurant,
+          fifteenMinutesAgo,
+          today,
+          undefined,
+        ),
+      };
+      return res;
+    }
+  }
 }
