@@ -487,12 +487,18 @@ export class KpiController {
           slot.timeBegin,
           slot.timeEnd,
           undefined,
-          undefined
+          undefined,
         );
       }
       return orders;
     } else {
-      return this.kpiService.clientsCount(idRestaurant, timeBegin, timeEnd, undefined, undefined);
+      return this.kpiService.clientsCount(
+        idRestaurant,
+        timeBegin,
+        timeEnd,
+        undefined,
+        undefined,
+      );
     }
   }
 }
