@@ -3529,6 +3529,63 @@
           }
         ]
       }
+    },
+    "/{restaurant_id}/kpi/ordersCount": {
+      "get": {
+        "tags": ["KPI"],
+        "summary": "Count the number of orders in a given interval, with optional grouping by time slot.",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID of the restaurant",
+            "required": true,
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "timeBegin",
+            "in": "query",
+            "description": "Start date/time of the interval (ISO 8601)",
+            "required": true,
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "timeEnd",
+            "in": "query",
+            "description": "End date/time of the interval (ISO 8601)",
+            "required": true,
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "breakdown",
+            "in": "query",
+            "description": "Slot duration in minutes for grouping (optional)",
+            "required": false,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns either the total number of orders, or an object grouped by time slot.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Grouped": {
+                    "value": { "00:00": 5, "00:15": 8 }
+                  },
+                  "Total": {
+                    "value": 23
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid parameters" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "5XX": { "$ref": "#/components/responses/ServerError" }
+        },
+        "security": [{ "BearerAuth": [] }]
+      }
     }
   },
   "components": {
