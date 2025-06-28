@@ -3529,6 +3529,174 @@
           }
         ]
       }
+    },
+    "/{restaurant_id}/kpi/revenues": {
+      "summary": "KPI endpoints",
+      "get": {
+        "tags": [
+          "KPI"
+        ],
+        "summary": "Récupérer les revenus pour une période spécifique",
+        "description": "Retourne les revenus et le nombre de commandes pour une période donnée. Si le paramètre breakdown est fourni, les données sont segmentées par tranches horaires. Le champ averageWaitingTime n'apparaît que si useCase est défini.",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "in": "path",
+            "description": "ID du restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "timeBegin",
+            "in": "query",
+            "description": "Date de début de la période d'analyse (format: YYYY-MM-DD)",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "timeEnd",
+            "in": "query",
+            "description": "Date de fin de la période d'analyse (format: YYYY-MM-DD)",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "breakdown",
+            "in": "query",
+            "description": "Durée en minutes pour segmenter les données par tranches horaires (optionnel)",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "example": 15
+            }
+          },
+          {
+            "name": "useCase",
+            "in": "query",
+            "description": "Cas d'usage (POS ou KDS) - si défini, inclut averageWaitingTime dans la réponse",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "enum": ["statsPOS"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Revenus pour la période demandée",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "description": "Réponse sans breakdown",
+                      "properties": {
+                        "revenues": {
+                          "type": "number",
+                          "description": "Montant total des revenus",
+                          "example": 0
+                        },
+                        "ordersCount": {
+                          "type": "integer",
+                          "description": "Nombre total de commandes",
+                          "example": 50
+                        },
+                        "averageWaitingTime": {
+                          "type": "object",
+                          "description": "Temps d'attente moyen (présent seulement si useCase est défini)",
+                          "properties": {
+                            "hours": { "type": "integer", "example": 0 },
+                            "minutes": { "type": "integer", "example": 15 },
+                            "seconds": { "type": "integer", "example": 30 }
+                          }
+                        }
+                      },
+                      "example": {
+                        "revenues": 0,
+                        "ordersCount": 50,
+                        "averageWaitingTime": { "hours": 0, "minutes": 15, "seconds": 30 }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "description": "Réponse avec breakdown par tranches horaires",
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "revenues": {
+                            "type": "number",
+                            "description": "Montant des revenus pour cette tranche",
+                            "example": 0
+                          },
+                          "ordersCount": {
+                            "type": "integer",
+                            "description": "Nombre de commandes pour cette tranche",
+                            "example": 5
+                          },
+                          "averageWaitingTime": {
+                            "type": "object",
+                            "description": "Temps d'attente moyen pour cette tranche (présent seulement si useCase est défini)",
+                            "properties": {
+                              "hours": { "type": "integer", "example": 0 },
+                              "minutes": { "type": "integer", "example": 12 },
+                              "seconds": { "type": "integer", "example": 45 }
+                            }
+                          }
+                        }
+                      },
+                      "example": {
+                        "12:00": {
+                          "revenues": 0,
+                          "ordersCount": 5,
+                          "averageWaitingTime": { "hours": 0, "minutes": 12, "seconds": 45 }
+                        },
+                        "12:15": {
+                          "revenues": 0,
+                          "ordersCount": 3,
+                          "averageWaitingTime": { "hours": 0, "minutes": 10, "seconds": 30 }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Paramètres invalides (ID restaurant ou format de date)"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {

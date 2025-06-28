@@ -20,7 +20,7 @@ import { UseCasePipe } from './pipe/useCase.pipe';
 @Controller('api/:idRestaurant/kpi')
 @UseGuards(JwtAuthGuard)
 export class KpiController {
-  constructor(private readonly kpiService: KpiService) {}
+  constructor(private readonly kpiService: KpiService) { }
 
   /**
    * Get the average preparation time for a specific dish
@@ -438,6 +438,96 @@ export class KpiController {
         ),
       };
       return res;
+    }
+  }
+
+
+  /**
+   * Get the revenues for a specific period
+   * @param idRestaurant - The restaurant identifier (must be positive)
+   * @param timeBegin - Start date of the analysis period (optional)
+   * @param timeEnd - End date of the analysis period (optional)
+   * @param breakdown - The breakdown of the analysis period (optional)
+   * @param useCase - The use case (POS or KDS)
+   * @returns The revenues for the specified period
+   * @throws {BadRequestException} When input parameters are invalid
+   * @throws {InternalServerErrorException} When server encounters an error
+   * @example
+   * GET /api/1/kpi/revenues?timeBegin=2024-01-01&timeEnd=2024-01-31&breakdown=15&useCase=POS
+   * // returns { "12:00": { revenues: 100, ordersCount: 10, averageWaitingTime: 10 }, "12:15": { revenues: 100, ordersCount: 10, averageWaitingTime: 10 } }
+   */
+  @Get('revenues')
+  async kpiRevenues(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Query('timeBegin', DatePipe) timeBegin: string,
+    @Query('timeEnd', DatePipe) timeEnd: string,
+    @Query('breakdown') breakdown?: number,
+    @Query('useCase', UseCasePipe) useCase?: string,
+  ) {
+    if (breakdown) {
+      const slots: { timeBegin: string; timeEnd: string }[] = [];
+      let current = new Date(timeBegin);
+      const end = new Date(timeEnd);
+      const orders = {};
+
+      while (current < end) {
+        const slotStart = new Date(current);
+        const slotEnd = new Date(current.getTime() + breakdown * 60000);
+        slots.push({
+          timeBegin: slotStart.toISOString(),
+          timeEnd: (slotEnd < end ? slotEnd : end).toISOString(),
+        });
+        current = slotEnd;
+      }
+
+      for (const slot of slots) {
+        const date = new Date(slot.timeBegin);
+        const hours = date.getUTCHours().toString().padStart(2, '0');
+        const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+        const averageWaitingTime = useCase !== undefined ? await this.kpiService.averageTimeOrders(
+          idRestaurant,
+          slot.timeBegin,
+          slot.timeEnd,
+          undefined,
+        ) : undefined;
+        
+        const orderData: any = {
+          "revenues": 0,
+          "ordersCount": await this.kpiService.clientsCount(
+            idRestaurant,
+            slot.timeBegin,
+            slot.timeEnd,
+            undefined,
+            undefined,
+          ),
+        };
+        useCase !== undefined ? orderData.averageWaitingTime = averageWaitingTime : orderData;
+        
+        orders[`${hours}:${minutes}`] = orderData;
+      }
+
+      return orders;
+    } else {
+      const averageWaitingTime = useCase !== undefined ? await this.kpiService.averageTimeOrders(
+        idRestaurant,
+        timeBegin,
+        timeEnd,
+        undefined,
+      ) : undefined;
+      
+      const orders: any = {
+        "revenues": 0,
+        "ordersCount": await this.kpiService.clientsCount(
+          idRestaurant,
+          timeBegin,
+          timeEnd,
+          undefined,
+          undefined,
+        ),
+      };
+      useCase !== undefined ? orders.averageWaitingTime = averageWaitingTime : orders;
+      
+      return orders;
     }
   }
 }
