@@ -137,10 +137,7 @@ export class KpiService extends DB {
       });
     }
 
-    console.log(breakdown);
-
     if (breakdown) {
-      console.log('breakdown');
       result.map((item) => {
         const orderDate = new Date(item.orders.date);
 
@@ -152,7 +149,14 @@ export class KpiService extends DB {
       });
 
       if (preparationTimes.length === 0) {
-        return null;
+        return {
+          time: {
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+          },
+          nbrOrders: 0,
+        };
       }
 
       const averageTime =
@@ -188,8 +192,6 @@ export class KpiService extends DB {
           dishMap.get(food.food).push(minutes);
         });
       });
-
-      console.log(dishMap);
 
       const resultArray = [];
       for (const [food, times] of dishMap.entries()) {
@@ -525,5 +527,90 @@ export class KpiService extends DB {
     const average = orders.length > 0 ? totalAmount / orders.length : 0;
 
     return { 'Average value': average, 'Nbr orders': orders.length };
+  }
+
+  /**
+   * Get the forecast for the ingredients
+   * @param idRestaurant - The restaurant identifier
+   * @param forecast - The forecast for the dishes
+   * @returns The forecast for the ingredients
+   */
+  async ingredientsForecast(
+    idRestaurant: number,
+    forecast: { food: number; forecast: number }[],
+    useCase: string = undefined,
+  ) {
+    const db = this.getDbConnection();
+    const foodIds = forecast.map((f) => f.food);
+
+    const restaurant = await db
+      .collection('restaurant')
+      .findOne(
+        { id: idRestaurant },
+        { projection: { _id: 0, foods: 1, ingredients: 1 } },
+      );
+    if (!restaurant || !restaurant.foods) return [];
+
+    const forecastMap = new Map(forecast.map((f) => [f.food, f.forecast]));
+
+    if (useCase === 'POS') {
+      const ingredientCount: Record<
+        number,
+        { id: number; name: string; quantity: number; unit: string }
+      > = {};
+
+      restaurant.foods
+        .filter((food: any) => foodIds.includes(food.id))
+        .forEach((food: any) => {
+          const forecastQty = forecastMap.get(food.id) || 0;
+          if (Array.isArray(food.ingredients)) {
+            food.ingredients.forEach(
+              (ingredient: { id_ingredient: number; quantity: number }) => {
+                const id = ingredient.id_ingredient;
+                const base =
+                  restaurant.ingredients?.find((ing: any) => ing.id === id) ||
+                  {};
+
+                if (!ingredientCount[id]) {
+                  ingredientCount[id] = {
+                    id,
+                    name: base.name || '',
+                    quantity: 0,
+                    unit: base.unit || '',
+                  };
+                }
+                ingredientCount[id].quantity +=
+                  (ingredient.quantity || 1) * forecastQty;
+              },
+            );
+          }
+        });
+
+      return Object.values(ingredientCount);
+    } else {
+      const ingredientCount: Record<number, number> = {};
+
+      restaurant.foods
+        .filter((food: any) => foodIds.includes(food.id))
+        .forEach((food: any) => {
+          const forecastQty = forecastMap.get(food.id) || 0;
+          if (Array.isArray(food.ingredients)) {
+            food.ingredients.forEach(
+              (ingredient: { id_ingredient: number; quantity: number }) => {
+                const id = ingredient.id_ingredient;
+                if (!ingredientCount[id]) {
+                  ingredientCount[id] = 0;
+                }
+                ingredientCount[id] += (ingredient.quantity || 1) * forecastQty;
+              },
+            );
+          }
+        });
+
+      return Object.entries(ingredientCount).map(([id, quantity]) => ({
+        id: parseInt(id, 10),
+        quantity,
+      }));
+    }
   }
 }
