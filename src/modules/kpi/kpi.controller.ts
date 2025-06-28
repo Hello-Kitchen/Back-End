@@ -293,19 +293,19 @@ export class KpiController {
   }
 
   /**
-   * Compte le nombre de commandes dans un intervalle donné, avec possibilité de regroupement par tranche de minutes.
-   * @param idRestaurant - L'identifiant du restaurant (doit être positif)
-   * @param timeBegin - Date/heure de début de l'intervalle (obligatoire)
-   * @param timeEnd - Date/heure de fin de l'intervalle (obligatoire)
-   * @param breakdown - (optionnel) Durée de la tranche en minutes pour le regroupement
-   * @returns Soit le nombre total de commandes, soit un objet groupé par tranche de temps
-   * @throws {BadRequestException} Si les paramètres sont invalides
-   * @throws {InternalServerErrorException} En cas d'erreur serveur
+   * Counts the number of orders within a given interval, with optional grouping by time slots (in minutes).
+   * @param idRestaurant - The restaurant identifier (must be positive)
+   * @param timeBegin - Start date/time of the interval (required)
+   * @param timeEnd - End date/time of the interval (required)
+   * @param breakdown - (optional) Slot duration in minutes for grouping
+   * @returns Either the total number of orders, or an object grouped by time slot
+   * @throws {BadRequestException} If parameters are invalid
+   * @throws {InternalServerErrorException} In case of server error
    * @example
    * GET /api/1/kpi/ordersCount?timeBegin=2024-01-01T00:00:00Z&timeEnd=2024-01-01T01:00:00Z&breakdown=15
-   * // retourne { "00:00": 5, "00:15": 8, ... }
+   * // returns { "00:00": 5, "00:15": 8, ... }
    * GET /api/1/kpi/ordersCount?timeBegin=2024-01-01T00:00:00Z&timeEnd=2024-01-01T01:00:00Z
-   * // retourne 23
+   * // returns 23
    */
   @Get('ordersCount')
   async kpiOrdersCount(
