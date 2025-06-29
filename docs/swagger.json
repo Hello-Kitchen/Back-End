@@ -1210,7 +1210,6 @@
           {
             "name": "password",
             "in": "query",
-            "description": "Hashed password",
             "required": true,
             "style": "form",
             "explode": true,
@@ -3765,7 +3764,7 @@
           },
           "password": {
             "type": "string",
-            "description": "User's password hashed",
+            "description": "User's password",
             "example": "$2a$10$uSADqxe22jNkrHd8mudiCOQpsWsvC2BW3jG.8.dmSLJxzsJJgpM5S"
           },
           "firstname": {
