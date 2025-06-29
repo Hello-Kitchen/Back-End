@@ -54,7 +54,7 @@ export class LoginService extends DB {
       password,
       `${process.env.SALT_HASH}`,
     );
-    
+
     // Compare the hashed password with the stored password
     if (hashedPassword !== user.users[0].password) {
       // Throw an error if the password does not match
