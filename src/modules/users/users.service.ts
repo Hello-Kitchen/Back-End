@@ -11,6 +11,7 @@ import { Counter } from '../../shared/interfaces/counter.interface';
 import { UsersDto } from './DTO/users.dto';
 import { UpdatePasswordDto } from './DTO/updatepassword.dto';
 import { UsersUpdateDto } from './DTO/usersupdate.dto';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService extends DB {
@@ -100,9 +101,14 @@ export class UsersService extends DB {
 
     body['id'] = counterDoc.sequence_value;
 
+    const newUser = {
+      ...body,
+      password: bcrypt.hashSync(body.password, `${process.env.SALT_HASH}`),
+    };
+
     return db
       .collection('restaurant')
-      .updateOne({ id: idRestaurant }, { $addToSet: { users: body } });
+      .updateOne({ id: idRestaurant }, { $addToSet: { users: newUser } });
   }
 
   /**
@@ -162,7 +168,16 @@ export class UsersService extends DB {
     id: number,
     updatePasswordDto: UpdatePasswordDto,
   ): Promise<UpdateResult> {
-    const { oldPassword, newPassword } = updatePasswordDto;
+    const { oldPassword, newPassword } = {
+      oldPassword: bcrypt.hashSync(
+        updatePasswordDto.oldPassword,
+        `${process.env.SALT_HASH}`,
+      ),
+      newPassword: bcrypt.hashSync(
+        updatePasswordDto.newPassword,
+        `${process.env.SALT_HASH}`,
+      ),
+    };
 
     const user = await this.findById(restaurantId, id);
 
