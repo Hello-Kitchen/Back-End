@@ -2,6 +2,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { DB } from '../../db/db';
 import { User } from '../users/schemas/users.schema';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 /**
@@ -49,8 +50,13 @@ export class LoginService extends DB {
       throw new BadRequestException();
     }
 
+    const hashedPassword = bcrypt.hashSync(
+      password,
+      `${process.env.SALT_HASH}`,
+    );
+
     // Compare the hashed password with the stored password
-    if (password !== user.users[0].password) {
+    if (hashedPassword !== user.users[0].password) {
       // Throw an error if the password does not match
       throw new BadRequestException();
     }

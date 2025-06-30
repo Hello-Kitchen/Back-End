@@ -441,6 +441,67 @@ export class KpiController {
     }
   }
 
+  /**
+   * Counts the number of orders within a given interval, with optional grouping by time slots (in minutes).
+   * @param idRestaurant - The restaurant identifier (must be positive)
+   * @param timeBegin - Start date/time of the interval (required)
+   * @param timeEnd - End date/time of the interval (required)
+   * @param breakdown - (optional) Slot duration in minutes for grouping
+   * @returns Either the total number of orders, or an object grouped by time slot
+   * @throws {BadRequestException} If parameters are invalid
+   * @throws {InternalServerErrorException} In case of server error
+   * @example
+   * GET /api/1/kpi/ordersCount?timeBegin=2024-01-01T00:00:00Z&timeEnd=2024-01-01T01:00:00Z&breakdown=15
+   * // returns { "00:00": 5, "00:15": 8, ... }
+   * GET /api/1/kpi/ordersCount?timeBegin=2024-01-01T00:00:00Z&timeEnd=2024-01-01T01:00:00Z
+   * // returns 23
+   */
+  @Get('ordersCount')
+  async kpiOrdersCount(
+    @Param('idRestaurant', PositiveNumberPipe) idRestaurant: number,
+    @Query('timeBegin', DatePipe) timeBegin: string,
+    @Query('timeEnd', DatePipe) timeEnd: string,
+    @Query('breakdown') breakdown?: number,
+  ) {
+    if (breakdown) {
+      const slots: { timeBegin: string; timeEnd: string }[] = [];
+      let current = new Date(timeBegin);
+      const end = new Date(timeEnd);
+      const orders = {};
+
+      while (current < end) {
+        const slotStart = new Date(current);
+        const slotEnd = new Date(current.getTime() + breakdown * 60000);
+        slots.push({
+          timeBegin: slotStart.toISOString(),
+          timeEnd: (slotEnd < end ? slotEnd : end).toISOString(),
+        });
+        current = slotEnd;
+      }
+      for (const slot of slots) {
+        const date = new Date(slot.timeBegin);
+        const hours = date.getUTCHours().toString().padStart(2, '0');
+        const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+        orders[`${hours}:${minutes}`] = await this.kpiService.clientsCount(
+          idRestaurant,
+          slot.timeBegin,
+          slot.timeEnd,
+          undefined,
+          undefined,
+        );
+      }
+      return orders;
+    } else {
+      return this.kpiService.clientsCount(
+        idRestaurant,
+        timeBegin,
+        timeEnd,
+        undefined,
+        undefined,
+      );
+    }
+  }
+
 
   /**
    * Get the revenues for a specific period
