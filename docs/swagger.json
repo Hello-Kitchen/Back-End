@@ -2952,12 +2952,12 @@
         "tags": [
           "KPI"
         ],
-        "summary": "Récupérer le plat le plus populaire sur une période donnée",
+        "summary": "Retrieve the most popular dish over a given period",
         "parameters": [
           {
             "name": "restaurant_id",
             "in": "path",
-            "description": "ID du restaurant",
+            "description": "Restaurant ID",
             "required": true,
             "style": "simple",
             "explode": false,
@@ -2968,7 +2968,7 @@
           {
             "name": "timeBegin",
             "in": "query",
-            "description": "Date de début de la période d'analyse (optionnel)",
+            "description": "Start date of the analysis period (optional)",
             "required": false,
             "style": "form",
             "explode": true,
@@ -2980,7 +2980,7 @@
           {
             "name": "timeEnd",
             "in": "query",
-            "description": "Date de fin de la période d'analyse (optionnel)",
+            "description": "End date of the analysis period (optional)",
             "required": false,
             "style": "form",
             "explode": true,
@@ -2992,7 +2992,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Succès - Plat le plus populaire retourné",
+            "description": "Success - Most popular dish returned",
             "content": {
               "application/json": {
                 "schema": {
@@ -3000,12 +3000,12 @@
                   "properties": {
                     "food": {
                       "type": "integer",
-                      "description": "ID du plat le plus commandé",
+                      "description": "ID of the most ordered dish",
                       "example": 123
                     },
                     "nbrOrders": {
                       "type": "integer",
-                      "description": "Nombre total de commandes pour ce plat",
+                      "description": "Total number of orders for this dish",
                       "example": 100
                     }
                   }
@@ -3014,16 +3014,16 @@
             }
           },
           "400": {
-            "description": "Paramètres invalides"
+            "description": "Invalid parameters"
           },
           "401": {
-            "description": "Authentification requise"
+            "description": "Authentication required"
           },
           "404": {
-            "description": "Aucun plat commandé sur la période spécifiée"
+            "description": "No dishes ordered in the specified period"
           },
           "5XX": {
-            "description": "Erreur interne du serveur"
+            "description": "Internal server error"
           }
         },
         "security": [
@@ -3136,13 +3136,13 @@
         "tags": [
           "KPI"
         ],
-        "summary": "Prévision des ventes journalières pour chaque plat",
-        "description": "Retourne, pour chaque plat, une prévision du nombre de ventes par jour sur la période analysée. La date cible est optionnelle et permet d'obtenir une prévision pour un jour spécifique.",
+        "summary": "Daily sales forecast for each dish",
+        "description": "Returns, for each dish, a forecast of the number of sales per day over the analyzed period. The target date is optional and allows for a forecast for a specific day.",
         "parameters": [
           {
             "name": "restaurant_id",
             "in": "path",
-            "description": "ID du restaurant",
+            "description": "ID of the restaurant",
             "required": true,
             "style": "simple",
             "explode": false,
@@ -3153,7 +3153,7 @@
           {
             "name": "date",
             "in": "query",
-            "description": "Date cible au format ISO (optionnel, ex: 2025-05-28T20:58:53.621Z)",
+            "description": "Target date in ISO format (optional, e.g., 2025-05-28T20:58:53.621Z)",
             "required": false,
             "schema": {
               "type": "string",
@@ -3163,7 +3163,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Prévision des ventes par plat",
+            "description": "Sales forecast by dish",
             "content": {
               "application/json": {
                 "schema": {
@@ -3173,17 +3173,17 @@
                     "properties": {
                       "food": {
                         "type": "integer",
-                        "description": "ID du plat"
+                        "description": "ID of the dish"
                       },
                       "forecast": {
                         "type": "number",
-                        "description": "Prévision du nombre de ventes par jour"
+                        "description": "Forecast of the number of sales per day"
                       }
                     }
                   }
                 },
                 "examples": {
-                  "Prévision": {
+                  "Forecast": {
                     "value": [
                       { "food": 12, "forecast": 15 },
                       { "food": 13, "forecast": 8 }
@@ -3194,13 +3194,13 @@
             }
           },
           "400": {
-            "description": "Paramètres invalides (ID restaurant ou date)"
+            "description": "Invalid parameters (restaurant ID or date)"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
           "404": {
-            "description": "Aucune commande trouvée pour un plat"
+            "description": "No orders found for a dish"
           },
           "5XX": {
             "$ref": "#/components/responses/ServerError"
@@ -3438,12 +3438,12 @@
         "tags": [
           "KPI"
         ],
-        "summary": "Récupérer les KPIs pour un cas d'usage spécifique (POS ou KDS)",
+        "summary": "Retrieve KPIs for a specific use case (POS or KDS)",
         "parameters": [
           {
             "name": "restaurant_id",
             "in": "path",
-            "description": "ID du restaurant",
+            "description": "Restaurant ID",
             "required": true,
             "style": "simple",
             "explode": false,
@@ -3454,7 +3454,7 @@
           {
             "name": "useCase",
             "in": "query",
-            "description": "Cas d'usage (POS ou KDS)",
+            "description": "Use case (POS or KDS)",
             "required": true,
             "schema": {
               "type": "string",
@@ -3464,7 +3464,7 @@
         ],
         "responses": {
           "200": {
-            "description": "KPIs pour le cas d'usage demandé",
+            "description": "KPIs for the requested use case",
             "content": {
               "application/json": {
                 "schema": {
@@ -3472,12 +3472,12 @@
                     {
                       "type": "object",
                       "properties": {
-                        "ordersInProgress": { "type": "integer", "description": "Nombre de commandes en cours" },
-                        "clientsCount": { "type": "integer", "description": "Nombre de clients sur place aujourd'hui" },
-                        "averageWaitingTime1h": { "type": "object", "description": "Temps d'attente moyen sur 1h", "properties": { "hours": { "type": "integer" }, "minutes": { "type": "integer" }, "seconds": { "type": "integer" } } },
-                        "averageWaitingTime15m": { "type": "object", "description": "Temps d'attente moyen sur 15min", "properties": { "hours": { "type": "integer" }, "minutes": { "type": "integer" }, "seconds": { "type": "integer" } } },
-                        "averagePrepTime1h": { "type": "object", "description": "Temps de préparation moyen sur 1h", "properties": { "hours": { "type": "integer" }, "minutes": { "type": "integer" }, "seconds": { "type": "integer" } } },
-                        "averagePrepTime15m": { "type": "object", "description": "Temps de préparation moyen sur 15min", "properties": { "hours": { "type": "integer" }, "minutes": { "type": "integer" }, "seconds": { "type": "integer" } } }
+                        "ordersInProgress": { "type": "integer", "description": "Number of orders in progress" },
+                        "clientsCount": { "type": "integer", "description": "Number of clients on site today" },
+                        "averageWaitingTime1h": { "type": "object", "description": "Average waiting time over 1h", "properties": { "hours": { "type": "integer" }, "minutes": { "type": "integer" }, "seconds": { "type": "integer" } } },
+                        "averageWaitingTime15m": { "type": "object", "description": "Average waiting time over 15min", "properties": { "hours": { "type": "integer" }, "minutes": { "type": "integer" }, "seconds": { "type": "integer" } } },
+                        "averagePrepTime1h": { "type": "object", "description": "Average preparation time over 1h", "properties": { "hours": { "type": "integer" }, "minutes": { "type": "integer" }, "seconds": { "type": "integer" } } },
+                        "averagePrepTime15m": { "type": "object", "description": "Average preparation time over 15min", "properties": { "hours": { "type": "integer" }, "minutes": { "type": "integer" }, "seconds": { "type": "integer" } } }
                       },
                       "example": {
                         "ordersInProgress": 100,
@@ -3491,12 +3491,12 @@
                     {
                       "type": "object",
                       "properties": {
-                        "last15mOrders": { "type": "integer", "description": "Nombre de commandes sur les 15 dernières minutes" },
-                        "clientsCount": { "type": "integer", "description": "Nombre de clients sur place aujourd'hui" },
-                        "averageWaitingTime1h": { "type": "object", "description": "Temps d'attente moyen sur 1h", "properties": { "hours": { "type": "integer" }, "minutes": { "type": "integer" }, "seconds": { "type": "integer" } } },
-                        "averageWaitingTime15m": { "type": "object", "description": "Temps d'attente moyen sur 15min", "properties": { "hours": { "type": "integer" }, "minutes": { "type": "integer" }, "seconds": { "type": "integer" } } },
-                        "averagePrepTime1h": { "type": "object", "description": "Temps de préparation moyen sur 1h", "properties": { "hours": { "type": "integer" }, "minutes": { "type": "integer" }, "seconds": { "type": "integer" } } },
-                        "averagePrepTime15m": { "type": "object", "description": "Temps de préparation moyen sur 15min", "properties": { "hours": { "type": "integer" }, "minutes": { "type": "integer" }, "seconds": { "type": "integer" } } }
+                        "last15mOrders": { "type": "integer", "description": "Number of orders over the last 15 minutes" },
+                        "clientsCount": { "type": "integer", "description": "Number of clients on site today" },
+                        "averageWaitingTime1h": { "type": "object", "description": "Average waiting time over 1h", "properties": { "hours": { "type": "integer" }, "minutes": { "type": "integer" }, "seconds": { "type": "integer" } } },
+                        "averageWaitingTime15m": { "type": "object", "description": "Average waiting time over 15min", "properties": { "hours": { "type": "integer" }, "minutes": { "type": "integer" }, "seconds": { "type": "integer" } } },
+                        "averagePrepTime1h": { "type": "object", "description": "Average preparation time over 1h", "properties": { "hours": { "type": "integer" }, "minutes": { "type": "integer" }, "seconds": { "type": "integer" } } },
+                        "averagePrepTime15m": { "type": "object", "description": "Average preparation time over 15min", "properties": { "hours": { "type": "integer" }, "minutes": { "type": "integer" }, "seconds": { "type": "integer" } } }
                       },
                       "example": {
                         "last15mOrders": 20,
@@ -3513,7 +3513,7 @@
             }
           },
           "400": {
-            "description": "Paramètres invalides"
+            "description": "Invalid parameters"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -3587,18 +3587,18 @@
       }
     },
     "/{restaurant_id}/kpi/revenues": {
-      "summary": "KPI endpoints",
+      "summary": "KPI Endpoints",
       "get": {
         "tags": [
           "KPI"
         ],
-        "summary": "Récupérer les revenus pour une période spécifique",
-        "description": "Retourne les revenus et le nombre de commandes pour une période donnée. Si le paramètre breakdown est fourni, les données sont segmentées par tranches horaires. Le champ averageWaitingTime n'apparaît que si useCase est défini.",
+        "summary": "Retrieve Revenues for a Specific Period",
+        "description": "Returns revenues and the number of orders for a given period. If the breakdown parameter is provided, the data is segmented by time slots. The averageWaitingTime field only appears if useCase is defined.",
         "parameters": [
           {
             "name": "restaurant_id",
             "in": "path",
-            "description": "ID du restaurant",
+            "description": "Restaurant ID",
             "required": true,
             "style": "simple",
             "explode": false,
@@ -3609,7 +3609,7 @@
           {
             "name": "timeBegin",
             "in": "query",
-            "description": "Date de début de la période d'analyse (format: YYYY-MM-DD)",
+            "description": "Start date of the analysis period (format: YYYY-MM-DD)",
             "required": false,
             "style": "form",
             "explode": true,
@@ -3621,7 +3621,7 @@
           {
             "name": "timeEnd",
             "in": "query",
-            "description": "Date de fin de la période d'analyse (format: YYYY-MM-DD)",
+            "description": "End date of the analysis period (format: YYYY-MM-DD)",
             "required": false,
             "style": "form",
             "explode": true,
@@ -3633,7 +3633,7 @@
           {
             "name": "breakdown",
             "in": "query",
-            "description": "Durée en minutes pour segmenter les données par tranches horaires (optionnel)",
+            "description": "Duration in minutes for segmenting data by time slots (optional)",
             "required": false,
             "style": "form",
             "explode": true,
@@ -3645,7 +3645,7 @@
           {
             "name": "useCase",
             "in": "query",
-            "description": "Cas d'usage (POS ou KDS) - si défini, inclut averageWaitingTime dans la réponse",
+            "description": "Use case (POS or KDS) - if defined, includes averageWaitingTime in the response",
             "required": false,
             "style": "form",
             "explode": true,
@@ -3657,28 +3657,28 @@
         ],
         "responses": {
           "200": {
-            "description": "Revenus pour la période demandée",
+            "description": "Revenues for the requested period",
             "content": {
               "application/json": {
                 "schema": {
                   "oneOf": [
                     {
                       "type": "object",
-                      "description": "Réponse sans breakdown",
+                      "description": "Response without breakdown",
                       "properties": {
                         "revenues": {
                           "type": "number",
-                          "description": "Montant total des revenus",
+                          "description": "Total revenue amount",
                           "example": 0
                         },
                         "ordersCount": {
                           "type": "integer",
-                          "description": "Nombre total de commandes",
+                          "description": "Total number of orders",
                           "example": 50
                         },
                         "averageWaitingTime": {
                           "type": "object",
-                          "description": "Temps d'attente moyen (présent seulement si useCase est défini)",
+                          "description": "Average waiting time (only present if useCase is defined)",
                           "properties": {
                             "hours": { "type": "integer", "example": 0 },
                             "minutes": { "type": "integer", "example": 15 },
@@ -3694,23 +3694,23 @@
                     },
                     {
                       "type": "object",
-                      "description": "Réponse avec breakdown par tranches horaires",
+                      "description": "Response with breakdown by time slots",
                       "additionalProperties": {
                         "type": "object",
                         "properties": {
                           "revenues": {
                             "type": "number",
-                            "description": "Montant des revenus pour cette tranche",
+                            "description": "Revenue amount for this slot",
                             "example": 0
                           },
                           "ordersCount": {
                             "type": "integer",
-                            "description": "Nombre de commandes pour cette tranche",
+                            "description": "Number of orders for this slot",
                             "example": 5
                           },
                           "averageWaitingTime": {
                             "type": "object",
-                            "description": "Temps d'attente moyen pour cette tranche (présent seulement si useCase est défini)",
+                            "description": "Average waiting time for this slot (only present if useCase is defined)",
                             "properties": {
                               "hours": { "type": "integer", "example": 0 },
                               "minutes": { "type": "integer", "example": 12 },
@@ -3738,7 +3738,7 @@
             }
           },
           "400": {
-            "description": "Paramètres invalides (ID restaurant ou format de date)"
+            "description": "Invalid parameters (restaurant ID or date format)"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"

@@ -613,4 +613,46 @@ export class KpiService extends DB {
       }));
     }
   }
+
+  /**
+   * Calculates the total revenue of a restaurant over a given period
+   * @param idRestaurant - The restaurant identifier
+   * @param timeBegin - Start date of the period (optional)
+   * @param timeEnd - End date of the period (optional)
+   * @param channel - The order channel (optional)
+   * @returns The total revenue and the number of orders
+   */
+  async revenueTotal(
+    idRestaurant: number,
+    timeBegin: string,
+    timeEnd: string,
+    channel?: string,
+  ): Promise<number> {
+    const db = this.getDbConnection();
+    let orders = await db
+      .collection('restaurant')
+      .aggregate([
+        { $match: { id: idRestaurant } },
+        { $unwind: '$orders' },
+        { $match: { 'orders.channel': channel || { $exists: true } } },
+        { $match: { 'orders.payment': { $exists: false } } },
+        { $project: { _id: 0, 'orders.date': 1, 'orders.total': 1 } },
+      ])
+      .toArray();
+
+    if (timeBegin && timeEnd) {
+      const beginDate = new Date(timeBegin);
+      const endDate = new Date(timeEnd);
+      orders = orders.filter((item) => {
+        const orderDate = new Date(item.orders.date);
+        return orderDate >= beginDate && orderDate <= endDate;
+      });
+    }
+
+    const totalRevenue = orders.reduce((sum, item) => {
+      return sum + parseFloat(item.orders.total);
+    }, 0);
+
+    return totalRevenue;
+  }
 }

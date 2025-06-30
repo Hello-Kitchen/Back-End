@@ -553,7 +553,7 @@ export class KpiController {
         ) : undefined;
         
         const orderData: any = {
-          "revenues": 0,
+          "revenues": await this.kpiService.revenueTotal(idRestaurant, slot.timeBegin, slot.timeEnd, undefined),
           "ordersCount": await this.kpiService.clientsCount(
             idRestaurant,
             slot.timeBegin,
@@ -577,7 +577,7 @@ export class KpiController {
       ) : undefined;
       
       const orders: any = {
-        "revenues": 0,
+        "revenues": await this.kpiService.revenueTotal(idRestaurant, timeBegin, timeEnd, undefined),
         "ordersCount": await this.kpiService.clientsCount(
           idRestaurant,
           timeBegin,
