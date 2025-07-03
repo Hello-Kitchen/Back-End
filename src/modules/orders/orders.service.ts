@@ -678,16 +678,14 @@ export class OrdersService extends DB {
         $unset: { 'pos_config.tables.$.orderId': '' },
       },
     );
-    return await db
-      .collection('restaurant')
-      .updateOne(
-        { id: idRestaurant, 'orders.id': idOrder },
-        {
-          $set: {
-            'orders.$.payment': payment,
-            'orders.$.timePayment': new Date().toISOString(),
-          },
+    return await db.collection('restaurant').updateOne(
+      { id: idRestaurant, 'orders.id': idOrder },
+      {
+        $set: {
+          'orders.$.payment': payment,
+          'orders.$.timePayment': new Date().toISOString(),
         },
-      );
+      },
+    );
   }
 }
