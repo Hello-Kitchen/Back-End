@@ -24,6 +24,10 @@ class ModsIngredient {
   @IsString()
   @IsNotEmpty()
   ingredient: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  suppPrice: number;
 }
 
 export class FoodOrderedDto {
