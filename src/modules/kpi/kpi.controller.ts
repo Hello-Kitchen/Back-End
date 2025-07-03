@@ -20,7 +20,7 @@ import { UseCasePipe } from './pipe/useCase.pipe';
 @Controller('api/:idRestaurant/kpi')
 @UseGuards(JwtAuthGuard)
 export class KpiController {
-  constructor(private readonly kpiService: KpiService) {}
+  constructor(private readonly kpiService: KpiService) { }
 
   /**
    * Get the average preparation time for a specific dish
@@ -547,27 +547,22 @@ export class KpiController {
         const averageWaitingTime =
           useCase !== undefined
             ? await this.kpiService.averageTimeOrders(
-                idRestaurant,
-                slot.timeBegin,
-                slot.timeEnd,
-                undefined,
-              )
+              idRestaurant,
+              slot.timeBegin,
+              slot.timeEnd,
+              undefined,
+            )
             : undefined;
 
+        const { total, ordersCount } = await this.kpiService.revenueTotal(
+          idRestaurant,
+          slot.timeBegin,
+          slot.timeEnd,
+          undefined,
+        );
         const orderData: any = {
-          revenues: await this.kpiService.revenueTotal(
-            idRestaurant,
-            slot.timeBegin,
-            slot.timeEnd,
-            undefined,
-          ),
-          ordersCount: await this.kpiService.clientsCount(
-            idRestaurant,
-            slot.timeBegin,
-            slot.timeEnd,
-            undefined,
-            undefined,
-          ),
+          revenues: total,
+          ordersCount: ordersCount,
         };
         if (useCase !== undefined)
           orderData.averageWaitingTime = averageWaitingTime;
@@ -579,27 +574,22 @@ export class KpiController {
       const averageWaitingTime =
         useCase !== undefined
           ? await this.kpiService.averageTimeOrders(
-              idRestaurant,
-              timeBegin,
-              timeEnd,
-              undefined,
-            )
+            idRestaurant,
+            timeBegin,
+            timeEnd,
+            undefined,
+          )
           : undefined;
 
+      const { total, ordersCount } = await this.kpiService.revenueTotal(
+        idRestaurant,
+        timeBegin,
+        timeEnd,
+        undefined,
+      );
       const orders: any = {
-        revenues: await this.kpiService.revenueTotal(
-          idRestaurant,
-          timeBegin,
-          timeEnd,
-          undefined,
-        ),
-        ordersCount: await this.kpiService.clientsCount(
-          idRestaurant,
-          timeBegin,
-          timeEnd,
-          undefined,
-          undefined,
-        ),
+        revenues: total,
+        ordersCount: ordersCount,
       };
       if (useCase !== undefined) orders.averageWaitingTime = averageWaitingTime;
       return orders;

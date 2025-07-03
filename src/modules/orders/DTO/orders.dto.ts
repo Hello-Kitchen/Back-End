@@ -56,6 +56,10 @@ export class OrdersDto {
   payment?: PaymentDto[];
 
   @IsOptional()
+  @IsString()
+  timePayment?: string;
+
+  @IsOptional()
   @IsNumber()
   id?: number;
 }

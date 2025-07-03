@@ -627,7 +627,7 @@ export class KpiService extends DB {
     timeBegin: string,
     timeEnd: string,
     channel?: string,
-  ): Promise<number> {
+  ): Promise<{ total: number; ordersCount: number }> {
     const db = this.getDbConnection();
     let orders = await db
       .collection('restaurant')
@@ -635,8 +635,8 @@ export class KpiService extends DB {
         { $match: { id: idRestaurant } },
         { $unwind: '$orders' },
         { $match: { 'orders.channel': channel || { $exists: true } } },
-        { $match: { 'orders.payment': { $exists: false } } },
-        { $project: { _id: 0, 'orders.date': 1, 'orders.total': 1 } },
+        { $match: { 'orders.payment': { $exists: true } } },
+        { $project: { _id: 0, 'orders.timePayment': 1, 'orders.total': 1 } },
       ])
       .toArray();
 
@@ -644,7 +644,7 @@ export class KpiService extends DB {
       const beginDate = new Date(timeBegin);
       const endDate = new Date(timeEnd);
       orders = orders.filter((item) => {
-        const orderDate = new Date(item.orders.date);
+        const orderDate = new Date(item.orders.timePayment);
         return orderDate >= beginDate && orderDate <= endDate;
       });
     }
@@ -653,6 +653,6 @@ export class KpiService extends DB {
       return sum + parseFloat(item.orders.total);
     }, 0);
 
-    return totalRevenue;
+    return { total: totalRevenue, ordersCount: orders.length };
   }
 }

@@ -682,7 +682,12 @@ export class OrdersService extends DB {
       .collection('restaurant')
       .updateOne(
         { id: idRestaurant, 'orders.id': idOrder },
-        { $set: { 'orders.$.payment': payment } },
+        {
+          $set: {
+            'orders.$.payment': payment,
+            'orders.$.timePayment': new Date().toISOString(),
+          },
+        },
       );
   }
 }
