@@ -25,8 +25,8 @@ class ModsIngredient {
   @IsNotEmpty()
   ingredient: string;
 
-  @IsNumber()
-  @IsNotEmpty()
+  @IsOptional()
+  @IsString()
   suppPrice?: string;
 }
 
