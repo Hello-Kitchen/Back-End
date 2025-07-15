@@ -398,7 +398,13 @@ export class OrdersService extends DB {
     body['id'] = id.sequence_value;
     body['served'] = false;
     for (const food of body['food_ordered']) {
-      total += Number(food.price);
+      let suppPrice = 0;
+      for (const mod of food.mods_ingredients) {
+        if (mod.suppPrice) {
+          suppPrice += Number(mod.suppPrice);
+        }
+      }
+      total += Number(food.price) + suppPrice;
       const id = await db
         .collection<Counter>('counter')
         .findOneAndUpdate(
