@@ -7,14 +7,6 @@
   },
   "servers": [
     {
-      "url": "http://vps-8a0c228a.vps.ovh.ca:3000/api",
-      "description": "Canadian VPS"
-    },
-    {
-      "url": "http://vps-e98b74b5.vps.ovh.net:3000/api",
-      "description": "UK VPS"
-    },
-    {
       "url": "http://localhost:{port}/api",
       "description": "Local development server",
       "variables": {
@@ -23,6 +15,14 @@
           "default": "3000"
         }
       }
+    },
+    {
+      "url": "https://vps-8a0c228a.vps.ovh.ca:3000/api",
+      "description": "Canadian VPS"
+    },
+    {
+      "url": "https://vps-e98b74b5.vps.ovh.net:3000/api",
+      "description": "UK VPS"
     }
   ],
   "paths": {
