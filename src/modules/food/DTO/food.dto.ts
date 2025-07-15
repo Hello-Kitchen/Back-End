@@ -14,6 +14,10 @@ export class IngredientDto {
   @IsNumber()
   @IsNotEmpty()
   quantity: number;
+
+  @IsNumber()
+  @IsOptional()
+  suppPrice?: number;
 }
 
 export class FoodDto {
@@ -31,7 +35,6 @@ export class FoodDto {
 
   @IsOptional()
   @IsArray()
-  @IsNumber({}, { each: true })
   ingredients?: IngredientDto[];
 
   @IsOptional()

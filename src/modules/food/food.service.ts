@@ -106,12 +106,7 @@ export class FoodService extends DB {
                   in: {
                     id_ingredient: '$$ingredient.id_ingredient',
                     quantity: '$$ingredient.quantity',
-                    suppPrice: {
-                      $arrayElemAt: [
-                        '$ingredients.price',
-                        '$$ingredient.id_ingredient',
-                      ],
-                    },
+                    suppPrice: '$$ingredient.suppPrice',
                     name: {
                       $arrayElemAt: [
                         '$ingredients.name',

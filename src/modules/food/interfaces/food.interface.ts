@@ -48,5 +48,9 @@ export interface Food {
    * List of identifiers for ingredients used in the food item.
    * @type {number[]}
    */
-  ingredients: number[];
+  ingredients: {
+    id_ingredient: number;
+    quantity: number;
+    suppPrice?: number;
+  };
 }
